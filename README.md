@@ -61,6 +61,7 @@ Il s'agit de questions sur une œuvre :
 Je pense qu'il manque un petit menu déroulant dans la barre du haut car :
 - il faut à terme accéder à une vue profil et à l'à propos.
 - Les vues parcours (lorsqu'ils sont associés à un musée) et musée doivent permettre d'accéder au plan du musée.
+- Améliorer les différentes vues. Par exemple, lorsqu'on affiche les collections d'un musée, on peut tenir compte du fait qu'on est justement dans un musée et que les œuvres sont réparties en salles.
 
 ## Ce qu'il manque en général
 - Une application decodart-admin afin de pouvoir gérer la base de données de manière optimisée pour notre usage (ajouter des œuvres une à une ou en batch, des parcours de visites, des expositions, des musées, des questions à décoder).
