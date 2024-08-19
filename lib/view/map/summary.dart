@@ -1,8 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
+import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 import 'package:flutter/cupertino.dart';
 
-class GeolocatedSummaryWidget extends StatelessWidget {
+class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
   final GeolocatedListItem item;
   const GeolocatedSummaryWidget({
     super.key,
@@ -94,7 +95,15 @@ class GeolocatedSummaryWidget extends StatelessWidget {
             width: double.infinity,
             child: CupertinoButton.filled(
               onPressed: () {
-                // Action à effectuer lors du clic sur le bouton
+                if (item.isMuseum) {
+                  showDecodModalBottomSheet(
+                    context,
+                    (context) => const Center(child:Text('This a museum')),
+                    expand: true,
+                    useRootNavigator: true);
+                } else {
+
+                }
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,

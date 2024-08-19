@@ -2,18 +2,17 @@ import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/view/details/artwork/artwork.dart' show ArtworkDetailsWidget;
 import 'package:decodart/view/details/museum.dart' show MuseumWidget;
 import 'package:decodart/view/map/summary.dart' show GeolocatedSummaryWidget;
-import 'package:decodart/widgets/modal/modal.dart' show ModalContentWidget;
+import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' show showCupertinoModalBottomSheet;
 
 typedef ModalOpen = void Function(WidgetBuilder);
 
-class MapView extends StatefulWidget {
+class MapView extends StatefulWidget{
   final Future<List<GeolocatedListItem>> markers;
   const MapView({super.key, required this.markers});
 
@@ -21,7 +20,7 @@ class MapView extends StatefulWidget {
   State<MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends State<MapView> {
+class _MapViewState extends State<MapView> with ShowModal {
   List<Marker> markers = [];
   List<GeolocatedListItem>? items;
 
@@ -40,7 +39,7 @@ class _MapViewState extends State<MapView> {
         height: 80,
         child: GestureDetector(
           onTap: () {
-            _showModalBottomSheet((context) => GeolocatedSummaryWidget(item: item),);
+            showDecodModalBottomSheet(context, (context) => GeolocatedSummaryWidget(item: item),);
             // if (item.isMuseum) {
             //   Navigator.of(context, rootNavigator: false).push(
             //     CupertinoPageRoute(builder: (context) => MuseumWidget(
@@ -92,15 +91,6 @@ class _MapViewState extends State<MapView> {
       ));
     }
     setState(() {});
-  }
-
-  void _showModalBottomSheet(WidgetBuilder builder) {
-    showCupertinoModalBottomSheet(
-      context: context,
-      builder: (context) => ModalContentWidget(
-        content: builder(context)
-      )
-    );
   }
 
   @override
