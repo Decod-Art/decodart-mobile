@@ -1,22 +1,27 @@
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/view/details/artwork/artwork.dart' show ArtworkDetailsWidget;
 import 'package:decodart/view/details/museum.dart' show MuseumWidget;
+import 'package:decodart/view/map/summary.dart' show GeolocatedSummaryWidget;
+import 'package:decodart/widgets/modal/modal.dart' show ModalContentWidget;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' show showCupertinoModalBottomSheet;
 
-class MapTab extends StatefulWidget {
+typedef ModalOpen = void Function(WidgetBuilder);
+
+class MapView extends StatefulWidget {
   final Future<List<GeolocatedListItem>> markers;
-  const MapTab({super.key, required this.markers});
+  const MapView({super.key, required this.markers});
 
   @override
-  State<MapTab> createState() => _MapTabState();
+  State<MapView> createState() => _MapViewState();
 }
 
-class _MapTabState extends State<MapTab> {
+class _MapViewState extends State<MapView> {
   List<Marker> markers = [];
   List<GeolocatedListItem>? items;
 
@@ -35,26 +40,27 @@ class _MapTabState extends State<MapTab> {
         height: 80,
         child: GestureDetector(
           onTap: () {
-            if (item.isMuseum) {
-              Navigator.of(context, rootNavigator: false).push(
-                CupertinoPageRoute(builder: (context) => MuseumWidget(
-                  title: item.title,
-                  museumId: item.uid
-                  )
-                ),
-              );
-            } else {
-              showCupertinoModalPopup(
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: MediaQuery.of(context).size.height, // Couvre toute la hauteur de l'écran
-                    color: CupertinoColors.black, // Fond blanc par défaut
-                    child: ArtworkDetailsWidget(artworkId: item.uid),
-                  );
-                },
-              );
-            }
+            _showModalBottomSheet((context) => GeolocatedSummaryWidget(item: item),);
+            // if (item.isMuseum) {
+            //   Navigator.of(context, rootNavigator: false).push(
+            //     CupertinoPageRoute(builder: (context) => MuseumWidget(
+            //       title: item.title,
+            //       museumId: item.uid
+            //       )
+            //     ),
+            //   );
+            // } else {
+            //   showCupertinoModalPopup(
+            //     context: context,
+            //     builder: (BuildContext context) {
+            //       return Container(
+            //         height: MediaQuery.of(context).size.height, // Couvre toute la hauteur de l'écran
+            //         color: CupertinoColors.black, // Fond blanc par défaut
+            //         child: ArtworkDetailsWidget(artworkId: item.uid),
+            //       );
+            //     },
+            //   );
+            // }
           },
           child: Column(
             children: [
@@ -86,6 +92,15 @@ class _MapTabState extends State<MapTab> {
       ));
     }
     setState(() {});
+  }
+
+  void _showModalBottomSheet(WidgetBuilder builder) {
+    showCupertinoModalBottomSheet(
+      context: context,
+      builder: (context) => ModalContentWidget(
+        content: builder(context)
+      )
+    );
   }
 
   @override

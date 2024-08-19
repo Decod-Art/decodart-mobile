@@ -16,12 +16,7 @@ void main() {
         Locale('fr', 'FR'), // Français
         // autres langues supportées
       ],
-      home: CupertinoTheme(
-        data: CupertinoThemeData(
-          brightness: Brightness.dark, // Active le mode sombre pour les widgets Cupertino
-        ),
-        child: HomePage() // SafeArea
-      )//TourWidget()//SplashScreen()/
+      home: HomePage()
     )
   );
 }

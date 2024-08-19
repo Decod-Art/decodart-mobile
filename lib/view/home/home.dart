@@ -11,8 +11,8 @@ import 'package:decodart/view/details/tour.dart' show TourWidget;
 import 'package:flutter/cupertino.dart';
 
 // Tabs
+import 'package:decodart/view/map/map.dart' show MapView;
 import 'item_tab.dart' show ItemTab;
-import 'map_tab.dart' show MapTab;
 import 'camera_tab.dart' show CameraTabWidget;
 import 'package:decodart/view/home/decod_tab.dart' show DecodTab;
 
@@ -47,10 +47,10 @@ class _HomePageState extends State<HomePage> {
       controller: _tabController,
       backgroundColor: CupertinoColors.black,
       tabBar: CupertinoTabBar(
-        backgroundColor: const Color.fromARGB(200, 0, 0, 0),
         items: [
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.map),
+            activeIcon: Icon(CupertinoIcons.map_fill),
             label: 'Carte'),
           const BottomNavigationBarItem(
             icon: Icon(CupertinoIcons.list_bullet),
@@ -84,7 +84,7 @@ class _HomePageState extends State<HomePage> {
             switch (index) {
               case 0:
                 _cachedOnMap ??= fetchAllOnMap();
-                return MapTab(markers: _cachedOnMap!);
+                return MapView(markers: _cachedOnMap!);
               case 1:
                 _cachedArtworks ??= fetchAllArtworks();
                 _cachedMuseums ??= fetchAllMuseums();
@@ -95,8 +95,6 @@ class _HomePageState extends State<HomePage> {
                   onMap: _cachedOnMap!,
                   listName: 'À voir'
                 );
-              case 2:
-                return const HomePage();
               case 3:
                 _cachedTours ??= fetchAllTours();
                 return ListFutureWidget(
@@ -106,7 +104,7 @@ class _HomePageState extends State<HomePage> {
               case 4:
                 return const DecodTab();
               default:
-                return const HomeTab();
+                return MapView(markers: _cachedOnMap!);
             }
           },
         );
@@ -122,45 +120,5 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-}
-
-class HomeTab extends StatelessWidget {
-  const HomeTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Accueil')),
-      child: Center(
-        child: CupertinoButton(
-          child: const Text('Aller à la page de détails'),
-          onPressed: () {
-            Navigator.of(context).push(
-              CupertinoPageRoute(builder: (context) => const DetailPage()),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-// Créez des widgets pour SearchTab, CameraTab, FavoritesTab, et ProfileTab de manière similaire à HomeTab
-
-class DetailPage extends StatelessWidget {
-  const DetailPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(middle: Text('Page de détails')),
-      child: Center(
-        child: CupertinoButton(
-          child: const Text('Retour'),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-      ),
-    );
   }
 }
