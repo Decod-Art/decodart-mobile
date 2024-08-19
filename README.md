@@ -1,5 +1,21 @@
 # decodart-mobile
 
+Install into a project : 
+
+```
+#!/bin/bash
+
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 source_directory target_directory"
+    exit 1
+fi
+
+source_directory=$1;
+target_directory=$2;
+
+rsync -av --relative "$source_directory"/. "$target_directory"
+```
+
 ## L'interface principale
 5 onglets (détaillés plus bas) :
 - Vue carte
