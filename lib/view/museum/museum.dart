@@ -44,7 +44,6 @@ class _MuseumViewState extends State<MuseumView> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 15),
             Padding(
               padding: const EdgeInsets.all(15),
               child: Text(
