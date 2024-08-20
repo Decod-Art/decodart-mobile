@@ -10,6 +10,7 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
   @override
   final AbstractImage image;
   final bool isMuseum;
+  final String description;
 
   const GeolocatedListItem({
     required super.uid,
@@ -18,11 +19,25 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
     required this.longitude,
     required this.subtitle,
     required this.image,
-    required this.isMuseum
+    required this.isMuseum,
+    required this.description
   }): super(name: title);
 
   @override
   String get title => name;
+
+  String get descriptionText {
+    final lines = description.split('\n');
+
+    final filteredLines = lines
+        .where((line) => !RegExp(r'\[.*?\]\(.*?\)').hasMatch(line))
+        .where((line) => !line.startsWith('#'))
+        .where((line) => line != "")
+        .map((line) => line.replaceAll('*', ''))
+        .toList();
+
+    return filteredLines.join('\n');
+  }
 
   factory GeolocatedListItem.fromJson(Map<String, dynamic> json) {
     return GeolocatedListItem(
@@ -32,7 +47,8 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
       latitude: json['latitude'],
       longitude: json['longitude'],
       image: ImageWithPath.fromJson(json['image']),
-      isMuseum: json['ismuseum']);
+      isMuseum: json['ismuseum'],
+      description: json['description']);
   }
 
   @override

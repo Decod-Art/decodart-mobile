@@ -95,7 +95,7 @@ class Artwork extends AbstractItem {
       height: json['height'],
       depth: json['depth'],
       title: json['title'],
-      museum: MuseumForeignKey.fromJson(json['museum']),
+      museum: (json['museum']!=null)?MuseumForeignKey.fromJson(json['museum']):null,
       room: json['room'],
       artist: Artist.fromJson(json['artist']),
       context: Context.fromJson(json['context']),

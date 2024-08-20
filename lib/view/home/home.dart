@@ -53,28 +53,26 @@ class _HomePageState extends State<HomePage> {
             activeIcon: Icon(CupertinoIcons.map_fill),
             label: 'Carte'),
           const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.list_bullet),
-            label: 'Liste'),
+            icon: Icon(CupertinoIcons.camera),
+            activeIcon: Icon(CupertinoIcons.camera_fill),
+            label: 'Scanner'),
+          const BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.compass),
+            activeIcon: Icon(CupertinoIcons.compass_fill),
+            label: 'Explorer'),
           BottomNavigationBarItem(
-            icon: GestureDetector(
-              onTap: (){
-                Navigator.of(context, rootNavigator: true).push(
-                  CupertinoPageRoute(
-                    builder: (context) => const CameraTabWidget()
-                  ),
-                );
-              },
-              child: const IconTheme(
-                data: IconThemeData(size: 50, color: Color.fromARGB(255, 175, 175, 175)), // Rend l'icône de la caméra plus grande
-                child: Icon(CupertinoIcons.camera),
-              )
-            ),
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.map_pin_ellipse),
-            label: 'Parcours'),
-          const BottomNavigationBarItem(
-            icon: Icon(CupertinoIcons.infinite),
+            icon: Image.asset(
+                'images/icons/questionmark_bubble.png',
+                width: 30,
+                height: 30,
+                color: CupertinoColors.systemGrey, // Optionnel : pour colorer l'icône
+              ),
+            activeIcon: Image.asset(
+                'images/icons/questionmark_bubble_fill.png',
+                width: 30,
+                height: 30,
+                color: CupertinoColors.activeBlue, // Optionnel : pour colorer l'icône
+              ),
             label: 'Décoder'),
         ],
       ),

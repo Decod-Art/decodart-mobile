@@ -97,4 +97,17 @@ class Museum extends MuseumListItem {
       'longitude': longitude,
     };
   }
+
+  String get descriptionText {
+    final lines = description.split('\n');
+
+    final filteredLines = lines
+        .where((line) => !RegExp(r'\[.*?\]\(.*?\)').hasMatch(line))
+        .where((line) => !line.startsWith('#'))
+        .where((line) => line != "")
+        .map((line) => line.replaceAll('*', ''))
+        .toList();
+
+    return filteredLines.join('\n');
+  }
 }
