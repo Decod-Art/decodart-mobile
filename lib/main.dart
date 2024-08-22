@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'package:decodart/view/home/home.dart' show HomePage;
 
 void main() {
+  debugPaintSizeEnabled=false;
   runApp(
     const CupertinoApp(
       localizationsDelegates: [

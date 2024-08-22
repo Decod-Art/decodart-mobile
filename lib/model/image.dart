@@ -136,4 +136,8 @@ class BoundingBox extends UnnamedAbstractItem{
   Offset get endPoint {
     return Offset(x+width, y+height);
   }
+
+  Offset get center {
+    return Offset(x+width/2, y+height/2);
+  }
 }

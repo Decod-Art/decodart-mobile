@@ -17,10 +17,8 @@ class FutureArtworkView extends StatelessWidget {
       future: artwork,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Expanded(
-            child: Center(
-              child: CupertinoActivityIndicator(),
-            )
+          return const Center(
+            child: CupertinoActivityIndicator(),
           );
         } else if (snapshot.hasError) {
           return Center(

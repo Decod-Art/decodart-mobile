@@ -10,7 +10,7 @@ class ContentScrolling extends StatelessWidget {
     super.key,
     required this.text,
     this.alignment=WrapAlignment.start,
-    this.edges=const EdgeInsets.only(bottom: 15, top: 15, right: 15, left: 15)});
+    this.edges=const EdgeInsets.only(bottom: 0, top: 0, right: 0, left: 0)});
 
   @override
   Widget build(BuildContext context) {

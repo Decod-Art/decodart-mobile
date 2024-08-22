@@ -88,15 +88,15 @@ List<AbstractFormattedContent> parseString(String input) {
 
 MarkdownStyleSheet getStyleSheet(BuildContext context, WrapAlignment alignment) {
   return MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
-      p: const TextStyle(color: Colors.white, fontSize: 14), // Set the text color to white
-      h1: const TextStyle(color: Colors.white, fontSize: 20), // Set the header color to white
-      h2: const TextStyle(color: Colors.white, fontSize: 22),
+      p: const TextStyle(fontSize: 14), // Set the text color to white
+      h1: const TextStyle(fontSize: 20), // Set the header color to white
+      h2: const TextStyle(fontSize: 22),
       h2Padding: const EdgeInsets.only(bottom: 15),
-      h3: const TextStyle(color: Colors.white),
-      h4: const TextStyle(color: Colors.white),
-      h5: const TextStyle(color: Colors.white),
-      h6: const TextStyle(color: Colors.white),
-      listBullet: const TextStyle(color: Colors.white),
+      h3: const TextStyle(),
+      h4: const TextStyle(),
+      h5: const TextStyle(),
+      h6: const TextStyle(),
+      listBullet: const TextStyle(),
       textAlign: alignment
     );
 }

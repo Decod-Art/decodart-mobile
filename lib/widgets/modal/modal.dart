@@ -14,6 +14,7 @@ mixin ShowModal {
       builder: (context) => ModalContentWidget(
         content: builder(context),
         safeArea: !useRootNavigator,
+        withScroll: expand,
       ),
       expand: expand,
       useRootNavigator: useRootNavigator
@@ -21,14 +22,78 @@ mixin ShowModal {
   }
 }
 
-class ModalContentWidget extends StatelessWidget {
+class ModalContentWidget extends StatefulWidget {
   final Widget content;
   final bool safeArea;
+  final bool withScroll;
+  
   const ModalContentWidget({
     super.key,
     required this.content,
-    this.safeArea=false
+    this.safeArea=false,
+    this.withScroll=false
   });
+
+  @override
+  State<ModalContentWidget> createState() => _ModalContentWidgetState();
+
+}
+
+class _ModalContentWidgetState extends State<ModalContentWidget> {
+  final ScrollController _scrollController = ScrollController();
+  bool _showTopLine = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels > 0) {
+      if (!_showTopLine) {
+        setState(() {
+          _showTopLine = true;
+        });
+      }
+    } else {
+      if (_showTopLine) {
+        setState(() {
+          _showTopLine = false;
+        });
+      }
+    }
+  }
+
+  Widget _scrollableContent(BuildContext context) {
+    return PrimaryScrollController(
+      controller: ScrollController(),
+      child: Expanded(
+        child: Column(
+          children: [
+            if (_showTopLine)
+              Container(
+                height: 1,
+                color: CupertinoColors.lightBackgroundGray,
+              ),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                child: widget.content
+              )
+            )
+          ]
+        )
+      )
+    );
+  }
 
   Widget _modalContent(BuildContext context) {
     return Stack(
@@ -51,7 +116,10 @@ class ModalContentWidget extends StatelessWidget {
               )
             ),
             const SizedBox(height: 35),
-            content
+            if (widget.withScroll)
+              _scrollableContent(context)
+            else
+              widget.content,
           ]
         ),
         Positioned(
@@ -82,7 +150,7 @@ class ModalContentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (safeArea) {
+    if (widget.safeArea) {
       return SafeArea(child: _modalContent(context));
     }
     return _modalContent(context);

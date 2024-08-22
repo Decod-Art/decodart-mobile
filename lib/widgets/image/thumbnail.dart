@@ -1,20 +1,22 @@
 import 'package:decodart/model/image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Colors;
 
 class ThumbnailWidget extends StatelessWidget {
   final String title;
   final AbstractImage image;
+  final VoidCallback onPressed;
   const ThumbnailWidget({
     super.key,
     required this.title,
-    required this.image
+    required this.image,
+    required this.onPressed
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return CupertinoButton(
       padding: const EdgeInsets.all(10),
+      onPressed: onPressed,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12.0),
         child: Stack(

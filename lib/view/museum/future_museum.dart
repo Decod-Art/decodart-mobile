@@ -17,10 +17,8 @@ class FutureMuseumView extends StatelessWidget {
       future: museum,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Expanded(
-            child: Center(
+          return const Center(
               child: CupertinoActivityIndicator(),
-            )
           );
         } else if (snapshot.hasError) {
           return Center(

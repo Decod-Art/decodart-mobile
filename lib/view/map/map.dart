@@ -48,7 +48,7 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
       if (modalBox != null) {
         final screenHeight = MediaQuery.of(context).size.height;
         final modalHeight = modalBox.size.height;
-        final offset = (screenHeight - modalHeight-80)/2;
+        final offset = (screenHeight - modalHeight-160)/2;
         
         final camera = mapController.mapController.camera;
 
