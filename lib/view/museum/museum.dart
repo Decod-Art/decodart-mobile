@@ -1,14 +1,16 @@
 import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchArtworkByMuseum;
-import 'package:decodart/api/tour.dart' show fetchTourByMuseum, fetchExhibitionByMuseum;
+import 'package:decodart/api/tour.dart' show fetchExhibitionByMuseum, fetchTourById, fetchTourByMuseum;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/model/tour.dart' show TourListItem;
-import 'package:decodart/model/artwork.dart' show Artwork, ArtworkListItem;
+import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
+import 'package:decodart/view/list/list.dart' show SliverListViewPage;
+import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
-import 'package:decodart/widgets/image/thumbnail.dart' show ThumbnailWidget;
+import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/set_block.dart' show SetBlock;
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
@@ -77,6 +79,24 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _onArtworkPressed(AbstractListItem item){
+    final futureArtwork = fetchArtworkById(item.uid!);
+    showDecodModalBottomSheet(
+      context,
+      (context) => FutureArtworkView(artwork: futureArtwork),
+      expand: true,
+      useRootNavigator: true);
+  }
+
+  void _onTourPressed(AbstractListItem item){
+    final futureFuture = fetchTourById(item.uid!);
+    showDecodModalBottomSheet(
+      context,
+      (context) => FutureTourView(tour: futureFuture),
+      expand: true,
+      useRootNavigator: true);
   }
 
   @override
@@ -167,56 +187,47 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
         ),
         const SizedBox(height: 15),
         if (widget.museum.hasExhibitions)
-          ..._rowOfItems(context, 'Expositions', exhibition, (item){}),
-        if (widget.museum.hasCollection)
-          ..._rowOfItems(
-            context,
-            'Collection',
-            collection,
-            (item) {
+          SetBlock(
+            name: 'Expositions',
+            items: exhibition,
+            onPressed: _onTourPressed,
+            isMuseum: (item)=>false,
+            onTitlePressed: (){
               showDecodModalBottomSheet(
                 context,
-                (context) => FutureArtworkView(artwork: item),
+                (context) => ListWithThumbnail(items: exhibition, onPress: _onTourPressed),
                 expand: true,
                 useRootNavigator: true);
-            }),
+            },),
+        if (widget.museum.hasCollection)
+          SetBlock(
+            name: 'Collection',
+            items: collection,
+            onPressed: _onArtworkPressed,
+            isMuseum: (item)=>false,
+            onTitlePressed: (){
+              showDecodModalBottomSheet(
+                context,
+                (context) => ListWithThumbnail(items: collection, onPress: _onArtworkPressed),
+                expand: true,
+                useRootNavigator: true);
+            },),
         if (widget.museum.hasTours)
-          ..._rowOfItems(context, 'Visites', tours, (item){}),
+          SetBlock(
+            name: 'Visites',
+            items: tours, 
+            onPressed: _onTourPressed,
+            isMuseum: (item)=>false,
+            onTitlePressed: (){
+              showDecodModalBottomSheet(
+                context,
+                (context) => ListWithThumbnail(items: tours, onPress: _onTourPressed),
+                expand: true,
+                useRootNavigator: true);
+            },),
         const SizedBox(height: 35)
         // Ajoutez d'autres widgets pour afficher les autres propriétés de l'artwork
       ],
     );
   }
-
-  List<Widget> _rowOfItems(BuildContext context, String name, List<AbstractListItem> items, FutureItemCallback onPressed) {
-    return [ChevronButtonWidget(
-      text: name,
-      fontWeight: FontWeight.w500,
-      fontSize: 22,
-      chevronColor: CupertinoColors.activeBlue,
-      marginRight: 20,
-      onPressed: (){},),
-      if (items.isEmpty)
-        const Center(
-          child: CupertinoActivityIndicator(),
-        )
-      else
-        SizedBox(
-          height: 250, // Ajustez la hauteur selon vos besoins
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final item = items[index];
-              return ThumbnailWidget(
-                title: item.title,
-                image: item.image,
-                onPressed: (){onPressed(fetchArtworkById(item.uid!));}
-              );
-            },
-          ),
-        )];
-  }
 }
-
-typedef FutureItemCallback = void Function(Future<Artwork>);

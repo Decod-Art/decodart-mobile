@@ -137,25 +137,35 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        InteractiveViewer(
-          transformationController: _transformationController,
-          child: CachedNetworkImage(
-            key: _imageKey,
-            imageUrl: widget.image.path,
-            placeholder: (context, url) => const CupertinoActivityIndicator(),
-            errorWidget: (context, url, error) => const Icon(CupertinoIcons.exclamationmark_circle),
-            fit: BoxFit.contain,
-            imageBuilder: (context, imageProvider) {
-              _postFrameCallback();
-              return Image(
-                image: imageProvider,
-                fit: BoxFit.contain,
-              );
+        PrimaryScrollController(
+          controller: ScrollController(),
+          child: GestureDetector(
+            onTap: () {
+              if (selectedBox!=null){
+                _zoomToBoundingBox();
+              }
             },
+            child: InteractiveViewer(
+              transformationController: _transformationController,
+              child: CachedNetworkImage(
+                key: _imageKey,
+                imageUrl: widget.image.path,
+                placeholder: (context, url) => const CupertinoActivityIndicator(),
+                errorWidget: (context, url, error) => const Icon(CupertinoIcons.exclamationmark_circle),
+                fit: BoxFit.contain,
+                imageBuilder: (context, imageProvider) {
+                  _postFrameCallback();
+                  return Image(
+                    image: imageProvider,
+                    fit: BoxFit.contain,
+                  );
+                },
+              ),
+              onInteractionUpdate: (details){
+                _postFrameCallback(true);
+              },
+            ),
           ),
-          onInteractionUpdate: (details){
-            _postFrameCallback(true);
-          },
         ),
         if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox)
           for (var b in widget.image.boundingBoxes!) ...[

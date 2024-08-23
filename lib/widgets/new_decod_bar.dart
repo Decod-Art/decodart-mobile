@@ -9,12 +9,20 @@ class NewDecodNavigationBar extends StatelessWidget implements ObstructingPrefer
   final StringCallback? onTabValueChanged;
   final String? selectedFilter;
   final Map<String, String>? tabs;
+  final Widget? leading;
 
-  const NewDecodNavigationBar({super.key, this.selectedFilter, this.tabs, this.onTabValueChanged, this.title});
+  const NewDecodNavigationBar({
+    super.key,
+    this.selectedFilter,
+    this.tabs,
+    this.onTabValueChanged,
+    this.title,
+    this.leading});
 
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
+      leading: leading,
       middle: title!=null?Text(title!):null,
       trailing: CupertinoButton(
         padding: EdgeInsets.zero,
@@ -24,6 +32,7 @@ class NewDecodNavigationBar extends StatelessWidget implements ObstructingPrefer
         child: const Icon(
           CupertinoIcons.person_circle,
           color: CupertinoColors.activeBlue,
+          size: 24
         ),
       ),
     );

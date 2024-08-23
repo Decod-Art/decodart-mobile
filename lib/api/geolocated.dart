@@ -19,3 +19,19 @@ Future<List<GeolocatedListItem>>  fetchAllOnMap() async {
   }
   return [];
 }
+
+Future<List<GeolocatedListItem>>  fetchAroundMe() async {
+    try {
+    final response = await http.get(Uri.parse('$hostName/geolocated/aroundme'));
+    if (response.statusCode == 200) {
+      List<GeolocatedListItem> listItems = jsonDecode(response.body).map((item) => GeolocatedListItem.fromJson(item))
+                                                                    .toList()
+                                                                    .cast<GeolocatedListItem>();
+      return listItems;
+    }
+  } catch (e, stackTrace) {
+    print(e);
+    print(stackTrace);
+  }
+  return [];
+}

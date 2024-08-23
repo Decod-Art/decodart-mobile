@@ -75,23 +75,23 @@ class _ModalContentWidgetState extends State<ModalContentWidget> {
   Widget _scrollableContent(BuildContext context) {
     return PrimaryScrollController(
       controller: ScrollController(),
-      child: Expanded(
-        child: Column(
-          children: [
-            if (_showTopLine)
-              Container(
-                height: 1,
-                color: CupertinoColors.lightBackgroundGray,
-              ),
-            Expanded(
-              child: SingleChildScrollView(
-                controller: _scrollController,
-                child: widget.content
+        child: Expanded(
+          child: Column(
+            children: [
+              if (_showTopLine)
+                Container(
+                  height: 1,
+                  color: CupertinoColors.lightBackgroundGray,
+                ),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: widget.content
+                )
               )
-            )
-          ]
+            ]
+          )
         )
-      )
     );
   }
 

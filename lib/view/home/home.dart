@@ -12,8 +12,8 @@ import 'package:flutter/cupertino.dart';
 
 // Tabs
 import 'package:decodart/view/map/map.dart' show MapView;
+import 'package:decodart/view/explore/explore.dart' show ExploreView;
 import 'item_tab.dart' show ItemTab;
-import 'camera_tab.dart' show CameraTabWidget;
 import 'package:decodart/view/home/decod_tab.dart' show DecodTab;
 
 
@@ -93,6 +93,8 @@ class _HomePageState extends State<HomePage> {
                   onMap: _cachedOnMap!,
                   listName: 'À voir'
                 );
+              case 2:
+                return const ExploreView();
               case 3:
                 _cachedTours ??= fetchAllTours();
                 return ListFutureWidget(

@@ -5,12 +5,32 @@ class ThumbnailWidget extends StatelessWidget {
   final String title;
   final AbstractImage image;
   final VoidCallback onPressed;
+  final bool isMuseum;
   const ThumbnailWidget({
     super.key,
     required this.title,
     required this.image,
-    required this.onPressed
+    required this.onPressed,
+    this.isMuseum=false
   });
+
+  Widget _icon(BuildContext context) {
+    if(isMuseum) {
+      return Image.asset(
+        'images/icons/museum.png',
+        width: 20,
+        height: 20,
+        color: CupertinoColors.white, // Optionnel : pour colorer l'icône
+      );
+    }
+    else {
+      return const Icon(
+          CupertinoIcons.paintbrush_fill,
+          color: CupertinoColors.white,
+          size: 20,
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +58,7 @@ class ThumbnailWidget extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 padding: const EdgeInsets.all(8.0),
-                child: const Icon(
-                  CupertinoIcons.paintbrush_fill,
-                  color: CupertinoColors.white,
-                  size: 20,
-                ),
+                child: _icon(context)
               ),
             ),
             // Titre en bas à gauche

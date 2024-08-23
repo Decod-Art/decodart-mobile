@@ -5,7 +5,6 @@ import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.d
 import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 import 'package:flutter/cupertino.dart';
-import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
 class ArtworkView extends StatelessWidget with ShowModal{
   final Artwork artwork;
