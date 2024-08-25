@@ -9,13 +9,18 @@ class ContentWidget extends StatelessWidget {
   final String items;
   final WrapAlignment alignment;
   final EdgeInsets edges;
+  final void Function(int) onButtonPressed;
 
   const ContentWidget({
     super.key,
     required this.items,
     this.alignment=WrapAlignment.start,
-    this.edges=const EdgeInsets.only(bottom: 0, top: 0, right: 0, left: 0)});
+    this.edges=const EdgeInsets.only(bottom: 0, top: 0, right: 0, left: 0),
+    this.onButtonPressed=_defaultOnButtonPressed});
   
+  static void _defaultOnButtonPressed(int uid) {
+  }
+
   List<Widget> buildContentWidgets(BuildContext context) {
     List<Widget> contentWidgets = [];
     for (var item in parseString(items)) {
@@ -34,18 +39,7 @@ class ContentWidget extends StatelessWidget {
               imagePath: button.image.path,
               title: button.title,
               subtitle: button.subtitle,
-              onTap: () {
-                showCupertinoModalPopup(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return Container(
-                      height: MediaQuery.of(context).size.height, // Couvre toute la hauteur de l'écran
-                      color: CupertinoColors.black,
-                      child: ArtworkDetailsWidget(artworkId: button.uid),
-                    );
-                  },
-                );
-              }));
+              onTap: ()=>onButtonPressed(button.uid)));
         case _:break;
       }
     }

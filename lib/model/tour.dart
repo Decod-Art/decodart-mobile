@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
+import 'package:decodart/model/artwork.dart' show ArtworkForeignKey;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 
@@ -40,6 +41,7 @@ class Tour extends TourListItem {
   final DateTime? startDate;
   final DateTime? endDate;
   final MuseumForeignKey? museum;
+  final List<ArtworkForeignKey> artworks;
 
   const Tour({
     super.uid,
@@ -51,6 +53,7 @@ class Tour extends TourListItem {
     this.startDate,
     this.endDate,
     this.museum,
+    required this.artworks
     });
 
 
@@ -65,7 +68,8 @@ class Tour extends TourListItem {
       startDate: json['startdate'] != null ? DateTime.parse(json['startdate']) : null,
       endDate: json['enddate'] != null ? DateTime.parse(json['enddate']) : null,
       museum: json['museum']!=null?MuseumForeignKey.fromJson(json['museum']):null,
-      image: ImageWithPath.fromJson(json['image'])
+      image: ImageWithPath.fromJson(json['image']),
+      artworks: (json['artworks'] as List).map((item)=>ArtworkForeignKey.fromJson(item)).toList()
     );
   }
 
@@ -77,7 +81,8 @@ class Tour extends TourListItem {
       'isexhibition': isExhibition,
       'startdate': startDate?.toString(),
       'enddate': endDate?.toString(),
-      'museum': museum?.toJson()
+      'museum': museum?.toJson(),
+      'artworks': artworks.map((item) => item.toJson()).toList()
     };
   }
 }

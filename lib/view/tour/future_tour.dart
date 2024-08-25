@@ -1,4 +1,5 @@
 import 'package:decodart/model/tour.dart' show Tour;
+import 'package:decodart/view/tour/tour.dart' show TourView;
 import 'package:flutter/cupertino.dart';
 
 class FutureTourView extends StatelessWidget {
@@ -28,7 +29,7 @@ class FutureTourView extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           final tour = snapshot.data!;
-          return const Text('It works!');
+          return TourView(tour: tour);
         } else {
           return const Center(
             child: Text('Aucune donnée disponible'),

@@ -1,3 +1,4 @@
+import 'package:decodart/view/decod/questions/bounding_box/decod_images_2.dart' show ImageDrawingWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
 
@@ -19,11 +20,13 @@ class BoundingBoxQuestion extends AbstractQuestionWidget {
 class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
   bool isOver = false;
   late List<bool> found;
+  late int tries;
   
   @override
   void initState() {
     super.initState();
     found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
+    tries = 2 + widget.question.image.boundingBoxes!.length;
   }
 
   @override
@@ -32,6 +35,7 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
     if (oldWidget.question != widget.question) {
       found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
       isOver = false;
+      tries = 2 + widget.question.image.boundingBoxes!.length;
     }
   }
 
@@ -57,42 +61,51 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
   }
 
   void foundIncorrect() {
-    isOver = true;
-    setState(() {});
-    final double numberFound = found.where((element) => element).length.toDouble();
-    final double total = found.length.toDouble();
-    widget.submitPoints(numberFound/total);
+    tries -= 1;
+    if (tries <= 0){
+      isOver = true;
+      setState(() {});
+      final double numberFound = found.where((element) => element).length.toDouble();
+      final double total = found.length.toDouble();
+      widget.submitPoints(numberFound/total);
+    }
   }
 
   @override
   Widget getQuestion(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            widget.question.question,
-            style: const TextStyle(color: Colors.white, fontSize: 24),
-          )
-        ]
-      ),
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.question.question,
+          style: const TextStyle(fontSize: 24),
+        ),
+      ]
     );
   }
 
   @override
   Widget getAnswers(BuildContext context) {
-    return InteractiveViewer(
-      panEnabled: true, // Permet le panoramique
-      minScale: 0.5, // Échelle minimale
-      maxScale: 4.0, // Échelle maximale
-      child: FindInImageWidget(
+    return Padding(
+      padding: const EdgeInsets.all(15),
+      child: ImageDrawingWidget(
         image: widget.question.answers[0].image!,
         foundCorrect: foundCorrect,
         foundIncorrect: foundIncorrect,
         isOver: isOver,
         isCorrect: foundEverything(),
-      ),
+      )
     );
+  }
+
+  Widget _finalMessage() {
+    if(isOver){
+      return foundEverything()?const Text("🎉", style: TextStyle(fontSize: 35),):const Text("☠", style: TextStyle(fontSize: 35));
+    }
+    else {
+      return Container();
+    }
   }
 
   @override
@@ -100,13 +113,27 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 1,
-              child: getQuestion(context),
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: getQuestion(context),
+              )
             ),
             Expanded(
-              flex: 5,
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Center(
+                  child: _finalMessage()
+                )
+              )
+            ),
+            Expanded(
+              flex: 10,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 15),
                 child: getAnswers(context)

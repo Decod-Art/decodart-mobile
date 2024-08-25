@@ -1,4 +1,5 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
+import 'package:decodart/view/decod/manager.dart' show DecodView;
 import 'package:decodart/widgets/buttons/button_list.dart' show ButtonListWidget;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
@@ -88,7 +89,25 @@ class ArtworkView extends StatelessWidget with ShowModal{
                 child: CupertinoButton.filled(
                   padding: const EdgeInsets.symmetric(vertical: 15),
                   onPressed: () {
-                    // Action pour le bouton
+                    Navigator.of(
+                    context, rootNavigator: true).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => DecodView(artworkId: artwork.uid!,),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        var begin = const Offset(0.0, 1.0);
+                        var end = Offset.zero;
+                        var curve = Curves.ease;
+
+                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                        var offsetAnimation = animation.drive(tween);
+
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
                   },
                   child: Row(
                     mainAxisSize: MainAxisSize.min,

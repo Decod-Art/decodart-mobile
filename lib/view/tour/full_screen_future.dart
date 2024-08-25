@@ -15,25 +15,28 @@ class FullScreenFutureTourView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: NewDecodNavigationBar(
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Row(
-            children: [
-              Icon(CupertinoIcons.back, color: CupertinoColors.activeBlue),
-              SizedBox(width: 4),
-              Text('Retour', style: TextStyle(color: CupertinoColors.activeBlue)),
-            ],
+      child: CustomScrollView(
+        slivers: [
+          CupertinoSliverNavigationBar(
+            largeTitle: const Text('Parcours'),
+            trailing: CupertinoButton(
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                // Action à effectuer lors du tap sur l'icône
+              },
+              child: const Icon(
+                CupertinoIcons.person_circle,
+                color: CupertinoColors.activeBlue,
+                size: 24
+              ),
+            ),
           ),
-        ),
-      ),
-      child: SafeArea(
-        child: SingleChildScrollView(
-            child: FutureTourView(tour: tour)
-        )
+          SliverSafeArea(
+            sliver: SliverToBoxAdapter(
+              child: FutureTourView(tour: tour)
+            )
+          )
+        ]
       )
     );
   }

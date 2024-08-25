@@ -9,22 +9,24 @@ import 'package:decodart/view/decod/questions/text.dart' show TextQuestion;
 import 'package:decodart/view/decod/questions/bounding_box/bounding_box.dart' show BoundingBoxQuestion;
 import 'package:decodart/view/decod/questions/image.dart' show ImageQuestion;
 
-class DecodManagerWidget extends StatefulWidget {
+class DecodView extends StatefulWidget {
   final int? artworkId;
-  const DecodManagerWidget({super.key, this.artworkId});
+  const DecodView({super.key, this.artworkId});
 
   @override
-  State<DecodManagerWidget> createState() => _DecodManagerWidgetState();
+  State<DecodView> createState() => _DecodViewState();
 }
 
-class _DecodManagerWidgetState extends State<DecodManagerWidget> {
+class _DecodViewState extends State<DecodView> {
   double totalPoints = 0;
   int currentQuestionIndex = 0;
   final List<DecodQuestion> questions = [];
 
-  Future<void> _saveScore(int score) async {
+  Future<void> _saveScore(double score) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('score', score + (prefs.getInt('score') ?? 0));
+    await prefs.setDouble('success', score + (prefs.getDouble('success') ?? 0));
+    await prefs.setDouble('count', 1 + (prefs.getDouble('count') ?? 0));
+    //score + (prefs.getInt('score') ?? 0
   }
 
   @override
@@ -43,6 +45,7 @@ class _DecodManagerWidgetState extends State<DecodManagerWidget> {
   }
 
   void _nextQuestion() {
+    print('Next question');
     currentQuestionIndex++;
     if (currentQuestionIndex >= questions.length + 1) {
       if (mounted) {
@@ -55,8 +58,8 @@ class _DecodManagerWidgetState extends State<DecodManagerWidget> {
   }
 
   void _validateQuestion(double points, {int duration=1}) {
-    totalPoints += points*10;
-    _saveScore((points*10).toInt());
+    totalPoints += points;
+    _saveScore(points);
     Future.delayed(Duration(seconds: duration), () {
       _nextQuestion();
     });
@@ -65,11 +68,22 @@ class _DecodManagerWidgetState extends State<DecodManagerWidget> {
   Widget _showQuestion() {
     if (currentQuestionIndex >= questions.length) {
       _validateQuestion(0, duration: 5);
-      return Center(
-        child: Text(
-          "Votre score : ${totalPoints.toInt()}",
-          style: const TextStyle(color: Colors.white, fontSize: 24),
-        )
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: Text("${totalPoints == totalPoints.toInt() ? totalPoints.toInt() : totalPoints}/${questions.length}", style: const TextStyle(fontSize: 55))
+            )
+          ),
+          Expanded(
+            flex: 1,
+            child: Center(
+              child: Text(totalPoints>questions.length/2?"🎉":"😭", style: const TextStyle(fontSize: 60))
+            )
+          )
+        ],
       );
     }
     final currentQuestion = questions[currentQuestionIndex];
@@ -101,24 +115,35 @@ class _DecodManagerWidgetState extends State<DecodManagerWidget> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: Colors.black,
       navigationBar: CupertinoNavigationBar(
-        backgroundColor: Colors.black,
-        leading: GestureDetector(
+        leading: const Text(""),
+        middle: const Text('Décoder', style: TextStyle(color: CupertinoColors.black)),
+        trailing: GestureDetector(
           onTap: () {
-            Navigator.pop(context);
+            Navigator.of(context).pop();
           },
-          child: const Icon(CupertinoIcons.clear, color: Colors.white),
+          child: Container(
+            height: 30,
+            width: 30,
+            decoration: const BoxDecoration(
+              color: CupertinoColors.lightBackgroundGray, // Fond plus clair
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              CupertinoIcons.clear_thick,
+              size: 17,
+              color: CupertinoColors.systemGrey,
+            ),
+          ),
         ),
       ),
-      child: Container(
-        color: Colors.black,
+      child: SafeArea(
         child: Center(
           child: questions.isEmpty
               ? const CircularProgressIndicator(color: Colors.white)
               : _showQuestion(),
         ),
-      ),
+      )
     );
   }
 }

@@ -1,12 +1,7 @@
 // Model
-import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show MuseumListItem;
-import 'package:decodart/model/tour.dart' show TourListItem;
-
-// view
-import 'package:decodart/view/details/tour.dart' show TourWidget;
 
 import 'package:flutter/cupertino.dart';
 
@@ -14,17 +9,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:decodart/view/map/map.dart' show MapView;
 import 'package:decodart/view/explore/explore.dart' show ExploreView;
 import 'item_tab.dart' show ItemTab;
-import 'package:decodart/view/home/decod_tab.dart' show DecodTab;
+import 'package:decodart/view/decod/decod.dart' show DecodMainMenuView, DecodMainMenuViewState;
 
 
 // API
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
-import 'package:decodart/api/tour.dart' show fetchAllTours;
-
-// Widgets
-import 'package:decodart/widgets/list/list_future.dart' show ListFutureWidget;
 
 class HomePage extends StatefulWidget {
 
@@ -38,8 +29,9 @@ class _HomePageState extends State<HomePage> {
   Future<List<ArtworkListItem>>? _cachedArtworks;
   Future<List<GeolocatedListItem>>? _cachedOnMap;
   Future<List<MuseumListItem>>? _cachedMuseums;
-  Future<List<TourListItem>>? _cachedTours;
   final CupertinoTabController _tabController = CupertinoTabController();
+  final GlobalKey<DecodMainMenuViewState> _decodMainMenuKey = GlobalKey<DecodMainMenuViewState>();
+  
 
   @override
   Widget build(BuildContext context) {
@@ -96,13 +88,12 @@ class _HomePageState extends State<HomePage> {
               case 2:
                 return const ExploreView();
               case 3:
-                _cachedTours ??= fetchAllTours();
-                return ListFutureWidget(
-                  listName: 'Parcours',
-                  listContent: _cachedTours!,
-                  onClick: (AbstractListItem item) => TourWidget(title: item.title, tourId: item.uid!));
+                if (_decodMainMenuKey.currentState!=null) {
+                  _decodMainMenuKey.currentState!.loadScore();
+                }
+                return DecodMainMenuView(key: _decodMainMenuKey);
               case 4:
-                return const DecodTab();
+                return const DecodMainMenuView();
               default:
                 return MapView(markers: _cachedOnMap!);
             }

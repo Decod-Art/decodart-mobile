@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import "package:decodart/widgets/images.dart" show ImageGallery;
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/view/decod/manager.dart' show DecodManagerWidget;
+import 'package:decodart/view/decod/manager.dart' show DecodView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
 
 
@@ -152,7 +152,7 @@ class _AnimatedArtworkViewState extends State<AnimatedArtworkView> {
         Navigator.push(
           context,
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => DecodManagerWidget(artworkId: widget.artwork.uid!),
+            pageBuilder: (context, animation, secondaryAnimation) => DecodView(artworkId: widget.artwork.uid!),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               var begin = const Offset(0.0, 1.0);
               var end = Offset.zero;

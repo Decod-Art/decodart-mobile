@@ -28,36 +28,43 @@ class _TextQuestionState extends AbstractQuestionWidgetState {
 
   @override
   Widget getAnswers(BuildContext context) {
-    return GridView.builder(
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 3,
-      ),
-      itemCount: widget.question.answers.length, // Remplacez par le nombre d'éléments que vous avez
-      itemBuilder: (context, index) {
-        return GestureDetector(
-          onTap: () {
-            // Action à effectuer lors du clic sur l'élément
-            print('Element $index cliqué');
-            _click(index);
-          },
-          child: Container(
-            margin: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-              color: selectedAnswer==index
-                ?(widget.question.answers[index].isCorrect?Colors.green:Colors.red)
-                :Colors.grey[300],
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Center(
-              child: Text(
-                widget.question.answers[index].text!, // Remplacez par le texte de votre élément
-                style: const TextStyle(color: Colors.black),
-              ),
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Calculez la hauteur des éléments en fonction de l'espace disponible
+        double itemHeight = constraints.maxHeight / (widget.question.answers.length / 2).ceil();
+
+        return GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisExtent: itemHeight,
           ),
+          itemCount: widget.question.answers.length, // Remplacez par le nombre d'éléments que vous avez
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () {
+                // Action à effectuer lors du clic sur l'élément
+                print('Element $index cliqué');
+                _click(index);
+              },
+              child: Container(
+                margin: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  color: selectedAnswer==index
+                    ?(widget.question.answers[index].isCorrect?Colors.green:Colors.red)
+                    :Colors.grey[300],
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: Center(
+                  child: Text(
+                    widget.question.answers[index].text!, // Remplacez par le texte de votre élément
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                ),
+              ),
+            );
+          },
         );
-      },
+      }
     );
   }
 
@@ -69,15 +76,28 @@ class _TextQuestionState extends AbstractQuestionWidgetState {
         children: [
           Text(
             widget.question.question, // Remplacez par le contenu de votre question
-            style: const TextStyle(color: Colors.white, fontSize: 24),
+            style: const TextStyle(fontSize: 24),
           ),
           if (widget.question.showImage)
-            Expanded(
-              child: Image.network(
-                widget.question.image.path,
-                fit: BoxFit.contain,
-              ),
-            )
+            ...[
+              const SizedBox(height: 5),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.grey, // Couleur de fond grise
+                    borderRadius: BorderRadius.circular(15), // Coins arrondis
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(15), // Coins arrondis pour l'image
+                    child: Image.network(
+                      widget.question.image.path,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          const SizedBox(height: 15),
         ]
       ),
     );
@@ -94,21 +114,29 @@ class _TextQuestionState extends AbstractQuestionWidgetState {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Column(
-          children: [
-            Expanded(
-              flex: widget.question.answers.length==2?4:2,
-              child: getQuestion(context),
-            ),
-            Expanded(
-              flex: 1,
-              child: getAnswers(context)
-            ),
-          ],
-        );
-      },
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Column(
+            children: [
+              Expanded(
+                flex: widget.question.answers.length==2?8:5,
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: getQuestion(context),
+                )
+              ),
+              Expanded(
+                flex: 1,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 7, right: 7, bottom: 15),
+                  child: getAnswers(context)
+                )
+              ),
+            ],
+          );
+        },
+      )
     );
   }
 

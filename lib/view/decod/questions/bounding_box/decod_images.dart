@@ -19,9 +19,6 @@ class ToFindBoundingBox extends BoundingBox {
       width: b.width, 
       height: b.height);
   }
-
-
-  
 }
 
 class FindInImageWidget extends StatefulWidget {
@@ -102,7 +99,9 @@ void didUpdateWidget(covariant FindInImageWidget oldWidget) {
         shouldRepaint = !shouldRepaint;
         return Center(
           child: GestureDetector(
-            onTap: () {if(!widget.isOver){widget.foundIncorrect();}},
+            onTap: () {
+              // if(!widget.isOver){widget.foundIncorrect();}
+              },
             child: Stack(
               alignment: Alignment.center,
               children: [
@@ -132,10 +131,10 @@ void didUpdateWidget(covariant FindInImageWidget oldWidget) {
                     top: box.y * height, // Ces valeurs seront mises à jour
                     child: GestureDetector(
                       onTap: () {
-                        if (!widget.isOver) {
-                          box.found = true;
-                          widget.foundCorrect(index);
-                        }
+                        // if (!widget.isOver) {
+                        //   box.found = true;
+                        //   widget.foundCorrect(index);
+                        // }
                       },
                       child: Container(
                         width: box.width * width, // Ces valeurs seront mises à jour

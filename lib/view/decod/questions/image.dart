@@ -28,74 +28,97 @@ class _ImageQuestionState extends AbstractQuestionWidgetState {
 
   @override
   Widget getAnswers(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0), // Ajoutez un padding autour de la colonne
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (clickable) {
-                  setState(() {
-                    selectedAnswer = 0;
-                    clickable = false;
-                  });
-                  widget.submitPoints(widget.question.answers[0].isCorrect?1:0);
-                }
-              },
-              child: Stack(
-                children: [
-                  Image.network(
-                    widget.question.answers[0].image!.path,
-                    fit: BoxFit.contain,
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      color: selectedAnswer == 0
-                        ?widget.question.answers[0].isCorrect
-                          ?Colors.green.withOpacity(0.5)
-                          :Colors.red.withOpacity(0.5)
-                        :Colors.transparent
-                    ),
-                  ),
-                ]
-              )
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              if (clickable) {
+                setState(() {
+                  selectedAnswer = 0;
+                  clickable = false;
+                });
+                widget.submitPoints(widget.question.answers[0].isCorrect ? 1 : 0);
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.all(8.0),
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Center(
+                  child: Stack(
+                    children: [
+                      Image.network(
+                        widget.question.answers[0].image!.path,
+                        fit: BoxFit.contain,
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          color: selectedAnswer == 0
+                              ? widget.question.answers[0].isCorrect
+                                  ? Colors.green.withOpacity(0.5)
+                                  : Colors.red.withOpacity(0.5)
+                              : Colors.transparent,
+                        ),
+                      ),
+                    ],
+                  )
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 16.0),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (clickable) {
-                  setState(() {
-                    selectedAnswer = 1;
-                    clickable = false;
-                  });
-                  widget.submitPoints(widget.question.answers[1].isCorrect?1:0);
-                }
-              },
-              child:  Stack(
-                children: [
-                  Image.network(
-                    widget.question.answers[1].image!.path,
-                    fit: BoxFit.contain,
+        ),
+        const SizedBox(height: 16.0),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              if (clickable) {
+                setState(() {
+                  selectedAnswer = 1;
+                  clickable = false;
+                });
+                widget.submitPoints(widget.question.answers[1].isCorrect ? 1 : 0);
+              }
+            },
+            child: Container(
+              margin: const EdgeInsets.all(8.0),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16.0),
+                child: Center(
+                  child: Stack(
+                    children: [
+                      Image.network(
+                        widget.question.answers[1].image!.path,
+                        fit: BoxFit.contain,
+                      ),
+                      Positioned.fill(
+                        child: Container(
+                          color: selectedAnswer == 1
+                              ? widget.question.answers[1].isCorrect
+                                  ? Colors.green.withOpacity(0.5)
+                                  : Colors.red.withOpacity(0.5)
+                              : Colors.transparent,
+                        ),
+                      ),
+                    ],
                   ),
-                  Positioned.fill(
-                    child: Container(
-                      color: selectedAnswer == 1
-                        ?widget.question.answers[1].isCorrect
-                          ?Colors.green.withOpacity(0.5)
-                          :Colors.red.withOpacity(0.5)
-                        :Colors.transparent
-                    ),
-                  ),
-                ]
-              )
+                )
+              ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -107,27 +130,11 @@ class _ImageQuestionState extends AbstractQuestionWidgetState {
         children: [
           Text(
             widget.question.question, // Remplacez par le contenu de votre question
-            style: const TextStyle(color: Colors.white, fontSize: 24),
+            style: const TextStyle(fontSize: 24),
           ),
-          if (widget.question.showImage)
-            Expanded(
-              child: Image.network(
-                widget.question.image.path,
-                fit: BoxFit.contain,
-              ),
-            )
         ]
       ),
     );
-  }
-
-  void _click(int index) {
-    if (clickable) {
-      selectedAnswer = index;
-      clickable = false;
-      setState(() {});
-      widget.submitPoints(widget.question.answers[index].isCorrect?1:0);
-    }
   }
 
   @override
@@ -135,14 +142,21 @@ class _ImageQuestionState extends AbstractQuestionWidgetState {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
               flex: 1,
-              child: getQuestion(context),
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: getQuestion(context),
+              )
             ),
             Expanded(
               flex: 5,
-              child: getAnswers(context)
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: getAnswers(context)
+              )
             ),
           ],
         );

@@ -7,6 +7,8 @@ import 'package:decodart/model/technique.dart' show TechniqueForeignKey;
 import 'package:decodart/model/context.dart' show Context;
 
 
+typedef ArtworkForeignKey = ArtworkListItem;
+
 class ArtworkListItem extends AbstractItem implements AbstractListItem {
   final ArtistForeignKey artist;
   @override
