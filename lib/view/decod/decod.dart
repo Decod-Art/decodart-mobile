@@ -116,7 +116,7 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
               child: Container()
             ),
             Expanded(
-              flex: 1,
+              flex: 2,
               child: GestureDetector(
                 onTap: () {
                   Navigator.of(
