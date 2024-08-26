@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
-import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget, AbstractQuestionWidgetState;
+import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget;
 
 class ImageQuestion extends AbstractQuestionWidget {
   const ImageQuestion({
@@ -13,7 +13,7 @@ class ImageQuestion extends AbstractQuestionWidget {
   State<StatefulWidget> createState() => _ImageQuestionState();
 }
 
-class _ImageQuestionState extends AbstractQuestionWidgetState {
+class _ImageQuestionState extends State<ImageQuestion> {
   bool clickable = true;
   int selectedAnswer = -1;
 

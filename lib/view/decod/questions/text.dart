@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
-import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget, AbstractQuestionWidgetState;
+import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget;
 
 class TextQuestion extends AbstractQuestionWidget {
   const TextQuestion({
@@ -13,7 +13,7 @@ class TextQuestion extends AbstractQuestionWidget {
   State<StatefulWidget> createState() => _TextQuestionState();
 }
 
-class _TextQuestionState extends AbstractQuestionWidgetState {
+class _TextQuestionState extends State<TextQuestion> {
   bool clickable = true;
   int selectedAnswer = -1;
 
@@ -120,14 +120,14 @@ class _TextQuestionState extends AbstractQuestionWidgetState {
           return Column(
             children: [
               Expanded(
-                flex: widget.question.answers.length==2?8:5,
+                flex: widget.question.answers.length==2?20:10,
                 child: Padding(
                   padding: const EdgeInsets.all(15),
                   child: getQuestion(context),
                 )
               ),
               Expanded(
-                flex: 1,
+                flex: 3,
                 child: Padding(
                   padding: const EdgeInsets.only(left: 7, right: 7, bottom: 15),
                   child: getAnswers(context)

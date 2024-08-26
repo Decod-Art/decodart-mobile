@@ -6,11 +6,11 @@ import 'package:shared_preferences/shared_preferences.dart' show SharedPreferenc
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
 import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
 import 'package:decodart/view/decod/questions/text.dart' show TextQuestion;
-import 'package:decodart/view/decod/questions/bounding_box/bounding_box.dart' show BoundingBoxQuestion;
+import 'package:decodart/view/decod/questions/colorize/colorize.dart' show BoundingBoxQuestion;
 import 'package:decodart/view/decod/questions/image.dart' show ImageQuestion;
 
 class DecodView extends StatefulWidget {
-  final int? artworkId;
+  final int? artworkId;//TODO Artwork
   const DecodView({super.key, this.artworkId});
 
   @override
@@ -18,15 +18,16 @@ class DecodView extends StatefulWidget {
 }
 
 class _DecodViewState extends State<DecodView> {
+
   double totalPoints = 0;
   int currentQuestionIndex = 0;
+
   final List<DecodQuestion> questions = [];
 
   Future<void> _saveScore(double score) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setDouble('success', score + (prefs.getDouble('success') ?? 0));
     await prefs.setDouble('count', 1 + (prefs.getDouble('count') ?? 0));
-    //score + (prefs.getInt('score') ?? 0
   }
 
   @override
@@ -45,16 +46,8 @@ class _DecodViewState extends State<DecodView> {
   }
 
   void _nextQuestion() {
-    print('Next question');
     currentQuestionIndex++;
-    if (currentQuestionIndex >= questions.length + 1) {
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } else {
-      setState(() {
-      });
-    }
+    setState(() {});
   }
 
   void _validateQuestion(double points, {int duration=1}) {
@@ -67,7 +60,9 @@ class _DecodViewState extends State<DecodView> {
 
   Widget _showQuestion() {
     if (currentQuestionIndex >= questions.length) {
-      _validateQuestion(0, duration: 5);
+      Future.delayed(const Duration(seconds: 5), () {
+        _nextQuestion();
+      });
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

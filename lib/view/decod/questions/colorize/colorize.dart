@@ -1,9 +1,7 @@
-import 'package:decodart/view/decod/questions/bounding_box/decod_images_2.dart' show ImageDrawingWidget;
+import 'package:decodart/view/decod/questions/colorize/image_drawing.dart' show ImageDrawingWidget;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Colors;
 
-import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget, AbstractQuestionWidgetState;
-import 'package:decodart/view/decod/questions/bounding_box/decod_images.dart' show FindInImageWidget;
+import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget;
 
 class BoundingBoxQuestion extends AbstractQuestionWidget {
 
@@ -17,7 +15,8 @@ class BoundingBoxQuestion extends AbstractQuestionWidget {
   State<AbstractQuestionWidget> createState() => _BoundingBoxQuestionState();
 }
 
-class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
+class _BoundingBoxQuestionState extends State<BoundingBoxQuestion> {
+  final int numberOfErrorsAllowed = 2;
   bool isOver = false;
   late List<bool> found;
   late int tries;
@@ -26,7 +25,7 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
   void initState() {
     super.initState();
     found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
-    tries = 2 + widget.question.image.boundingBoxes!.length;
+    tries = numberOfErrorsAllowed + widget.question.image.boundingBoxes!.length;
   }
 
   @override
@@ -35,7 +34,7 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
     if (oldWidget.question != widget.question) {
       found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
       isOver = false;
-      tries = 2 + widget.question.image.boundingBoxes!.length;
+      tries = numberOfErrorsAllowed + widget.question.image.boundingBoxes!.length;
     }
   }
 
@@ -54,10 +53,14 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
     }
     setState(() {});
     if(isOver) {
-      final double numberFound = found.where((element) => element).length.toDouble();
-      final double total = found.length.toDouble();
-      widget.submitPoints(numberFound/total);
+      computePoints();
     }
+  }
+
+  void computePoints() {
+    final double numberFound = found.where((element) => element).length.toDouble();
+    final double total = found.length.toDouble();
+    widget.submitPoints(numberFound/total);
   }
 
   void foundIncorrect() {
@@ -65,43 +68,13 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
     if (tries <= 0){
       isOver = true;
       setState(() {});
-      final double numberFound = found.where((element) => element).length.toDouble();
-      final double total = found.length.toDouble();
-      widget.submitPoints(numberFound/total);
+      computePoints();
     }
-  }
-
-  @override
-  Widget getQuestion(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          widget.question.question,
-          style: const TextStyle(fontSize: 24),
-        ),
-      ]
-    );
-  }
-
-  @override
-  Widget getAnswers(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(15),
-      child: ImageDrawingWidget(
-        image: widget.question.answers[0].image!,
-        foundCorrect: foundCorrect,
-        foundIncorrect: foundIncorrect,
-        isOver: isOver,
-        isCorrect: foundEverything(),
-      )
-    );
   }
 
   Widget _finalMessage() {
     if(isOver){
-      return foundEverything()?const Text("🎉", style: TextStyle(fontSize: 35),):const Text("☠", style: TextStyle(fontSize: 35));
+      return foundEverything()?const Text("🎉", style: TextStyle(fontSize: 35),):const Text("❌", style: TextStyle(fontSize: 35));
     }
     else {
       return Container();
@@ -120,23 +93,38 @@ class _BoundingBoxQuestionState extends AbstractQuestionWidgetState {
               flex: 2,
               child: Padding(
                 padding: const EdgeInsets.all(15),
-                child: getQuestion(context),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.question.question,
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ]
+                )
               )
             ),
             Expanded(
               flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Center(
-                  child: _finalMessage()
-                )
+              child: Center(
+                child: _finalMessage()
               )
             ),
             Expanded(
               flex: 10,
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 15),
-                child: getAnswers(context)
+                child: Padding(
+                  padding: const EdgeInsets.all(15),
+                  child: ImageDrawingWidget(
+                    image: widget.question.answers[0].image!,
+                    foundCorrect: foundCorrect,
+                    foundIncorrect: foundIncorrect,
+                    isOver: isOver,
+                    isCorrect: foundEverything(),
+                  )
+                )
               )
             ),
           ],

@@ -99,6 +99,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   }
 
   void _isLastIn() {
+    // calls the callbacks with respect to the last drawing done
     bool isIn = false;
     int i = 0;
     while (i < (widget.image.boundingBoxes?.length??0) && !isIn) {

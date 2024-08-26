@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Colors;
 
 import 'package:decodart/view/decod/manager.dart' show DecodView;
 import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
@@ -12,8 +11,6 @@ class DecodMainMenuView extends StatefulWidget {
 }
 
 class DecodMainMenuViewState extends State<DecodMainMenuView> {
-  double? _success;
-  double? _count;
   double? _rate;
 
   @override
@@ -43,16 +40,24 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
   Future<void> loadScore() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      _success = prefs.getDouble('success') ?? 0.0;
-      _count = prefs.getDouble('count') ?? 0.0;
-      if (_count != 0) {
-        _rate = _success! * 100 / _count!;
+      double success = prefs.getDouble('success') ?? 0.0;
+      double count = prefs.getDouble('count') ?? 0.0;
+      if (count != 0) {
+        _rate = success * 100 / count;
       }
     });
   }
 
+  Future<void> reset() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('success');
+    prefs.remove('count');
+    _rate = null;
+    setState(() {});
+  }
+
   Widget _statsBlock(BuildContext context) {
-  if (_count == null || _count == 0) {
+  if (_rate == null) {
     return Container(
       width: double.infinity,
       height: double.infinity,
@@ -88,6 +93,20 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
           style: TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),
+        const SizedBox(height: 15),
+        CupertinoButton(
+        padding: EdgeInsets.zero,
+        onPressed: () async {
+          await reset();
+        },
+        child: const Text(
+          'Réinitialiser',
+          style: TextStyle(
+            fontSize: 16,
+            color: CupertinoColors.activeBlue,
+          ),
+        ),
+      ),
       ]
     )
   );

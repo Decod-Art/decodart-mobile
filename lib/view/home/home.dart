@@ -9,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:decodart/view/map/map.dart' show MapView;
 import 'package:decodart/view/explore/explore.dart' show ExploreView;
 import 'item_tab.dart' show ItemTab;
-import 'package:decodart/view/decod/decod.dart' show DecodMainMenuView, DecodMainMenuViewState;
+import 'package:decodart/view/decod/main_menu.dart' show DecodMainMenuView, DecodMainMenuViewState;
 
 
 // API
