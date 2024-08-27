@@ -1,15 +1,17 @@
-import 'dart:async';
 import 'package:decodart/view/camera/button.dart';
+import 'package:decodart/view/camera/core_camera.dart' show CoreCamera, CoreCameraState;
+import 'package:decodart/view/camera/help.dart' show HelpView;
 import 'package:decodart/view/camera/no_result.dart';
 import 'package:decodart/view/camera/results.dart' show ResultsView;
 import 'package:flutter/cupertino.dart';
-import 'package:decodart/api/artwork.dart' show fetchAllArtworks, fetchArtworkById;
+import 'package:decodart/api/artwork.dart' show fetchAllArtworks, fetchArtworkById, fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/result.dart' show ResultsWidget;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
-import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar; // Assurez-vous d'importer votre NewDecodNavigationBar
+import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
+
 
 class CameraView extends StatefulWidget {
   const CameraView({super.key});
@@ -25,14 +27,16 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
   final List<ArtworkListItem> results = [];
   bool noResult = false;
 
-  late AnimationController _controller;
+  late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
+
+  final GlobalKey<CoreCameraState> cameraViewKey = GlobalKey<CoreCameraState>();
 
   @override
   void initState() {
     super.initState();
     _fetchRecent();
-    _controller = AnimationController(
+    _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
@@ -40,14 +44,14 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
       begin: const Offset(0.0, 1.0),
       end: const Offset(0.0, 0.0),
     ).animate(CurvedAnimation(
-      parent: _controller,
+      parent: _animationController,
       curve: Curves.easeInOut,
     ));
   }
 
    @override
   void dispose() {
-    _controller.dispose();
+    _animationController.dispose();
     super.dispose();
   }
 
@@ -56,19 +60,10 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
     setState(() {});
   }
 
-  void _search() async {
-    _startSearch();
-    await Future.delayed(const Duration(seconds: 2));
-    results.add(recent[0]);
-    results.add(recent[1]);
-    // TODO Append to recent as well top10 ?
-    _showResults();
-  }
-
   void _showResults() {
     setState(() {isLoading = false;});
     if (results.length == 1) {
-      _controller.forward();
+      _animationController.forward();
     } else if (results.isNotEmpty){
       showDecodModalBottomSheet(
         context,
@@ -82,40 +77,48 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
 
   void _startSearch() async {
     noResult = false;
-    await _controller.reverse();
+    await _animationController.reverse();
     results.clear();
     isLoading = true;
+    cameraViewKey.currentState?.takePicture();
     setState(() {});
   }
 
-  // Future<String> _sendPicture(BuildContext context, String imagePath) async {
-  //   // await Future.delayed(const Duration(seconds: 2));
-  //   var artworks = await fetchArtworkByImage(imagePath);
-    
-  //   if (context.mounted && artworks.isNotEmpty) {
-  //     Navigator.of(context).pushReplacement(
-  //       CupertinoPageRoute(builder: (BuildContext context) {
-  //         return ListWidget(
-  //           listName: 'Résultats',
-  //           listContent: artworks,
-  //           onClick: (AbstractListItem item) => ArtworkDetailsWidget(artworkId: item.uid!),
-  //         );
-  //       }),
-  //     );
-  //   }
-  //   return 'Artwork not found';
-  // }
+  
+
+  void _runSearch(String imagePath) async {
+    // await Future.delayed(const Duration(seconds: 2));
+    var artworks = await fetchArtworkByImage(imagePath);
+    results.addAll(artworks);
+    _showResults();
+    // if (context.mounted && artworks.isNotEmpty) {
+    //   Navigator.of(context).pushReplacement(
+    //     CupertinoPageRoute(builder: (BuildContext context) {
+    //       return ListWidget(
+    //         listName: 'Résultats',
+    //         listContent: artworks,
+    //         onClick: (AbstractListItem item) => ArtworkDetailsWidget(artworkId: item.uid!),
+    //       );
+    //     }),
+    //   );
+    //}
+    // return 'Artwork not found';
+  }
 
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-    double containerHeight = screenHeight * 2 / 3;
+    double containerHeight = screenHeight * 4 / 7;
     return CupertinoPageScaffold(
       navigationBar: NewDecodNavigationBar(
         leading: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
-          // Ajoutez ici la logique pour ce qui doit se passer lorsque l'icône est cliquée
+          showDecodModalBottomSheet(
+            context,
+            (context) => const HelpView(),
+            expand: true,
+            useRootNavigator: true);
         },
         child: const Icon(CupertinoIcons.info_circle, size: 24),
       ),
@@ -137,10 +140,10 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15),
-                        child: Image.network(
-                          'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Leonardo_da_vinci%2C_la_gioconda%2C_1503-06_circa.jpg/1280px-Leonardo_da_vinci%2C_la_gioconda%2C_1503-06_circa.jpg',
-                          fit: BoxFit.cover,
-                        ),
+                        child: CoreCamera(
+                          key: cameraViewKey,
+                          onImageTaken: _runSearch,
+                        )
                       ),
                     ),
                     if (results.length==1)
@@ -153,9 +156,9 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
                             position: _offsetAnimation,
                             child: Center(
                               child: ResultsWidget(
-                                artwork: recent[0],
+                                artwork: results[0],
                                 onPressed: () {
-                                  final futureArtwork = fetchArtworkById(recent[0].uid!);
+                                  final futureArtwork = fetchArtworkById(results[0].uid!);
                                   showDecodModalBottomSheet(
                                     context,
                                     (context) => FutureArtworkView(artwork: futureArtwork),
@@ -174,7 +177,7 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
               if (!noResult)
                 CameraButtonWidget(
                   isLoading: isLoading,
-                  onPressed: _search,)
+                  onPressed: _startSearch,)
               else
                 NoResultWidget(onPressed: (){
                   setState(() {
