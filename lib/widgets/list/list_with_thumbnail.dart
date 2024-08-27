@@ -46,7 +46,7 @@ class ListWithThumbnail<T extends AbstractListItem> extends StatelessWidget {
                             style: const TextStyle(
                               color: CupertinoColors.black,
                               fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                           const SizedBox(height: 4.0),
@@ -70,7 +70,7 @@ class ListWithThumbnail<T extends AbstractListItem> extends StatelessWidget {
             ),
             if (item != items.last)
               const Divider(
-                indent: 16.0,
+                indent: 80.0,
                 color: CupertinoColors.separator,
               ),
             if (item == items.last)

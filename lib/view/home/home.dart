@@ -2,13 +2,13 @@
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show MuseumListItem;
+import 'package:decodart/view/camera/camera.dart' show CameraView;
 
 import 'package:flutter/cupertino.dart';
 
 // Tabs
 import 'package:decodart/view/map/map.dart' show MapView;
 import 'package:decodart/view/explore/explore.dart' show ExploreView;
-import 'item_tab.dart' show ItemTab;
 import 'package:decodart/view/decod/main_menu.dart' show DecodMainMenuView, DecodMainMenuViewState;
 
 
@@ -76,15 +76,7 @@ class _HomePageState extends State<HomePage> {
                 _cachedOnMap ??= fetchAllOnMap();
                 return MapView(markers: _cachedOnMap!);
               case 1:
-                _cachedArtworks ??= fetchAllArtworks();
-                _cachedMuseums ??= fetchAllMuseums();
-                _cachedOnMap ??= fetchAllOnMap();
-                return ItemTab(
-                  artworks: _cachedArtworks!,
-                  museums: _cachedMuseums!, // _cachedMuseums!
-                  onMap: _cachedOnMap!,
-                  listName: 'À voir'
-                );
+                return const CameraView();
               case 2:
                 return const ExploreView();
               case 3:

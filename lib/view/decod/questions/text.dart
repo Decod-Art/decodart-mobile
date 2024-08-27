@@ -26,7 +26,6 @@ class _TextQuestionState extends State<TextQuestion> {
     }
   }
 
-  @override
   Widget getAnswers(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -68,7 +67,6 @@ class _TextQuestionState extends State<TextQuestion> {
     );
   }
 
-  @override
   Widget getQuestion(BuildContext context) {
     return Center(
       child: Column(
@@ -107,8 +105,8 @@ class _TextQuestionState extends State<TextQuestion> {
     if (clickable) {
       selectedAnswer = index;
       clickable = false;
-      setState(() {});
       widget.submitPoints(widget.question.answers[index].isCorrect?1:0);
+      setState(() {});
     }
   }
 

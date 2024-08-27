@@ -83,6 +83,7 @@ flutter:
     - images/icons/questionmark_bubble.png
     - images/icons/questionmark_bubble_fill.png
     - images/icons/square_split_bottomrightquarter.png
+    - images/icons/photo_on_rectangle_angled.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

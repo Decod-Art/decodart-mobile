@@ -1,5 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, UnnamedAbstractItem;
-import 'package:decodart/model/artwork.dart' show ArtworkListItem;
+import 'package:decodart/model/artwork.dart' show ArtworkForeignKey;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 
 
@@ -37,7 +37,7 @@ class DecodQuestion extends DecodQuestionListItem {
   final DecodQuestionType questionType;
   final List<DecodAnswer> answers;
   final bool showImage;
-  final ArtworkListItem? artwork;
+  final ArtworkForeignKey? artwork;
   const DecodQuestion({
     super.uid,
     required super.name,
@@ -58,8 +58,20 @@ class DecodQuestion extends DecodQuestionListItem {
       questionType: DecodQuestionType.values.firstWhere((e) => e.toString().split('.').last == json['question_type']),
       answers: (json['answers'] as List).map((item)=>DecodAnswer.fromJson(item)).toList(),
       showImage: json['showimage'],
-      artwork: json['artwork']!=null?ArtworkListItem.fromJson(json['artwork']):null
+      artwork: json['artwork']!=null?ArtworkForeignKey.fromJson(json['artwork']):null
     );
+  }
+
+  DecodAnswer? get correctAnswer {
+    DecodAnswer? answer;
+    int i = 0;
+    while (i< answers.length && answer == null) {
+      if (answers[i].isCorrect){
+        answer = answers[i];
+      }
+      i++;
+    }
+    return answer;
   }
 
   @override

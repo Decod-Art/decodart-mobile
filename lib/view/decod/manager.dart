@@ -1,16 +1,17 @@
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show CircularProgressIndicator, Colors;
 import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
+
+import 'package:decodart/view/decod/end.dart' show EndingWidget;
 
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
 import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
 import 'package:decodart/view/decod/questions/text.dart' show TextQuestion;
-import 'package:decodart/view/decod/questions/colorize/colorize.dart' show BoundingBoxQuestion;
+import 'package:decodart/view/decod/questions/colorize/colorize.dart' show ColorizeQuestion;
 import 'package:decodart/view/decod/questions/image.dart' show ImageQuestion;
 
 class DecodView extends StatefulWidget {
-  final int? artworkId;//TODO Artwork
+  final int? artworkId; // TODO Artwork
   const DecodView({super.key, this.artworkId});
 
   @override
@@ -23,17 +24,18 @@ class _DecodViewState extends State<DecodView> {
   int currentQuestionIndex = 0;
 
   final List<DecodQuestion> questions = [];
-
-  Future<void> _saveScore(double score) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('success', score + (prefs.getDouble('success') ?? 0));
-    await prefs.setDouble('count', 1 + (prefs.getDouble('count') ?? 0));
-  }
+  final List<bool> results = [];
 
   @override
   void initState() {
     super.initState();
     _fetchQuestions();
+  }
+
+  Future<void> _saveScore(double score) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setDouble('success', score + (prefs.getDouble('success') ?? 0));
+    await prefs.setDouble('count', 1 + (prefs.getDouble('count') ?? 0));
   }
 
   Future<void> _fetchQuestions() async {
@@ -42,6 +44,7 @@ class _DecodViewState extends State<DecodView> {
     } else {
       questions.addAll(await fetchDecodQuestionRandomly());
     }
+    results.addAll(List.generate(questions.length, (_)=>false));
     setState(() {});
   }
 
@@ -51,6 +54,10 @@ class _DecodViewState extends State<DecodView> {
   }
 
   void _validateQuestion(double points, {int duration=1}) {
+    // TODO raise exception if points > 1 or points < 0
+    if (points >= 1) {
+      results[currentQuestionIndex] = true;
+    }
     totalPoints += points;
     _saveScore(points);
     Future.delayed(Duration(seconds: duration), () {
@@ -60,25 +67,10 @@ class _DecodViewState extends State<DecodView> {
 
   Widget _showQuestion() {
     if (currentQuestionIndex >= questions.length) {
-      Future.delayed(const Duration(seconds: 5), () {
-        _nextQuestion();
-      });
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: Text("${totalPoints == totalPoints.toInt() ? totalPoints.toInt() : totalPoints}/${questions.length}", style: const TextStyle(fontSize: 55))
-            )
-          ),
-          Expanded(
-            flex: 1,
-            child: Center(
-              child: Text(totalPoints>questions.length/2?"🎉":"😭", style: const TextStyle(fontSize: 60))
-            )
-          )
-        ],
+      return EndingWidget(
+        totalPoints: totalPoints,
+        questions: questions,
+        results: results
       );
     }
     final currentQuestion = questions[currentQuestionIndex];
@@ -94,16 +86,9 @@ class _DecodViewState extends State<DecodView> {
           submitPoints: _validateQuestion,
         );
       case DecodQuestionType.boundingbox:
-        return BoundingBoxQuestion(
+        return ColorizeQuestion(
           submitPoints: _validateQuestion,
           question: currentQuestion);
-      default:
-        return const Center(
-          child: Text(
-            'Type de question inconnu',
-            style: TextStyle(color: Colors.white),
-          ),
-        );
     }
   } 
 
@@ -135,7 +120,7 @@ class _DecodViewState extends State<DecodView> {
       child: SafeArea(
         child: Center(
           child: questions.isEmpty
-              ? const CircularProgressIndicator(color: Colors.white)
+              ? const CupertinoActivityIndicator()
               : _showQuestion(),
         ),
       )

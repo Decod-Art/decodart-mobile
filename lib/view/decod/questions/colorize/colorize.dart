@@ -3,9 +3,9 @@ import 'package:flutter/cupertino.dart';
 
 import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget;
 
-class BoundingBoxQuestion extends AbstractQuestionWidget {
+class ColorizeQuestion extends AbstractQuestionWidget {
 
-  const BoundingBoxQuestion({
+  const ColorizeQuestion({
     super.key,
     required super.submitPoints,
     required super.question
@@ -15,7 +15,7 @@ class BoundingBoxQuestion extends AbstractQuestionWidget {
   State<AbstractQuestionWidget> createState() => _BoundingBoxQuestionState();
 }
 
-class _BoundingBoxQuestionState extends State<BoundingBoxQuestion> {
+class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
   final int numberOfErrorsAllowed = 2;
   bool isOver = false;
   late List<bool> found;
@@ -24,17 +24,20 @@ class _BoundingBoxQuestionState extends State<BoundingBoxQuestion> {
   @override
   void initState() {
     super.initState();
+    _initQuestion();
+  }
+
+  void _initQuestion() {
     found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
-    tries = numberOfErrorsAllowed + widget.question.image.boundingBoxes!.length;
+    tries = numberOfErrorsAllowed;
   }
 
   @override
-  void didUpdateWidget(covariant BoundingBoxQuestion oldWidget) {
+  void didUpdateWidget(covariant ColorizeQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.question != widget.question) {
-      found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
+      _initQuestion();
       isOver = false;
-      tries = numberOfErrorsAllowed + widget.question.image.boundingBoxes!.length;
     }
   }
 
@@ -65,10 +68,11 @@ class _BoundingBoxQuestionState extends State<BoundingBoxQuestion> {
 
   void foundIncorrect() {
     tries -= 1;
+    print('tries:$tries');
     if (tries <= 0){
       isOver = true;
-      setState(() {});
       computePoints();
+      setState(() {});
     }
   }
 

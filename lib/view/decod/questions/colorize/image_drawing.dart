@@ -24,7 +24,7 @@ class ImagePainter extends CustomPainter {
         canvas.drawLine(points[i], points[i + 1], paint);
       }
     } else if (points.isNotEmpty){
-      //canvas.drawCircle(points[0], 30, paint);
+      canvas.drawCircle(points[0], 15, paint);
     }
   }
 
@@ -112,7 +112,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
         if (bb.x+bb.width > dx && dx >bb.x && bb.y+bb.height > dy && dy >bb.y){
           nbCorrect += 1;
         }
-        if (nbCorrect / points.length > 0.5) {
+        if (nbCorrect / points.last.length > 0.4) {
           isIn = true;
           isCorrect.last = true;
         }
@@ -169,7 +169,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
               Positioned.fill(
                   child: GestureDetector(
                     onPanStart: widget.isOver?null:(details) {
-                      points.add([]);
+                      points.add([details.localPosition]);
                       isCorrect.add(false);
                       isDrawing = true;
                     },

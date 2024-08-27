@@ -26,7 +26,6 @@ class _ImageQuestionState extends State<ImageQuestion> {
     }
   }
 
-  @override
   Widget getAnswers(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -123,21 +122,6 @@ class _ImageQuestionState extends State<ImageQuestion> {
   }
 
   @override
-  Widget getQuestion(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            widget.question.question, // Remplacez par le contenu de votre question
-            style: const TextStyle(fontSize: 24),
-          ),
-        ]
-      ),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -148,7 +132,17 @@ class _ImageQuestionState extends State<ImageQuestion> {
               flex: 1,
               child: Padding(
                 padding: const EdgeInsets.all(15),
-                child: getQuestion(context),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.question.question, // Remplacez par le contenu de votre question
+                        style: const TextStyle(fontSize: 24),
+                      ),
+                    ]
+                  ),
+                )
               )
             ),
             Expanded(

@@ -1,3 +1,9 @@
+import 'package:decodart/api/artwork.dart' show fetchAllArtworks, fetchArtworkById;
+import 'package:decodart/model/artwork.dart' show ArtworkListItem;
+import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
+import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
+import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/new_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:decodart/view/decod/manager.dart' show DecodView;
@@ -10,13 +16,20 @@ class DecodMainMenuView extends StatefulWidget {
   State<DecodMainMenuView> createState() => DecodMainMenuViewState();
 }
 
-class DecodMainMenuViewState extends State<DecodMainMenuView> {
+class DecodMainMenuViewState extends State<DecodMainMenuView> with ShowModal {
   double? _rate;
+  final List<ArtworkListItem> decoded = [];
 
   @override
   void initState() {
     super.initState();
     loadScore();
+    _fetchDecoded();
+  }
+
+  void _fetchDecoded() async {
+    decoded.addAll(await fetchAllArtworks());
+    setState(() {});
   }
 
   @override
@@ -60,7 +73,7 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
   if (_rate == null) {
     return Container(
       width: double.infinity,
-      height: double.infinity,
+      height: 200,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: CupertinoColors.systemGrey6,
@@ -78,7 +91,8 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
   // Retourner un autre widget ou rien si _count n'est pas égal à 0
   return Container(
     width: double.infinity,
-    padding: const EdgeInsets.all(16.0),
+    height: 200,
+    //padding: const EdgeInsets.all(16.0),
     decoration: BoxDecoration(
       color: CupertinoColors.systemGrey6,
       borderRadius: BorderRadius.circular(16.0),
@@ -93,7 +107,6 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
           style: TextStyle(fontSize: 16),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 15),
         CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () async {
@@ -114,57 +127,78 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: const CupertinoNavigationBar(
-        middle: Text('Décoder'),
+      navigationBar: const NewDecodNavigationBar(
+        title: "Décoder"
       ),
       child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 20,
+                horizontal: 20),
+              child: _statsBlock(context)
+            ),
             Expanded(
               flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 20,
-                  horizontal: 20),
-                child: _statsBlock(context)
+              child: SingleChildScrollView(
+                child: decoded.isEmpty?Container():Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Padding(
+                      padding: EdgeInsets.only(left: 16, bottom: 15),
+                      child: Text(
+                        'Œuvres décodées',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w500)),
+                      ),
+                    ListWithThumbnail(items: decoded, onPress: (item) async {
+                      final futureArtwork = fetchArtworkById(item.uid!);
+                      showDecodModalBottomSheet(
+                        context,
+                        (context) => FutureArtworkView(artwork: futureArtwork),
+                        expand: true,
+                        useRootNavigator: true);
+                    },)
+                  ],
+                )
               )
             ),
-            Expanded(
-              flex: 3,
-              child: Container()
-            ),
-            Expanded(
-              flex: 2,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.of(
-                    context, rootNavigator: true).push(
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => const DecodView(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        var begin = const Offset(0.0, 1.0);
-                        var end = Offset.zero;
-                        var curve = Curves.ease;
+            Container(
+              color: CupertinoColors.systemGrey6,
+              width: double.infinity,
+              height: 100,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(
+                      context, rootNavigator: true).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const DecodView(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          var begin = const Offset(0.0, 1.0);
+                          var end = Offset.zero;
+                          var curve = Curves.ease;
 
-                        var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                        var offsetAnimation = animation.drive(tween);
+                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+                          var offsetAnimation = animation.drive(tween);
 
-                        return SlideTransition(
-                          position: offsetAnimation,
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(10),
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
                   child: Column(
                     children: [
                       Container(
-                        height: 75,
-                        margin: const EdgeInsets.all(8.0),
+                        height: 60,
+                        margin: const EdgeInsets.all(5.0),
                         decoration: BoxDecoration(
                           color: CupertinoColors.activeBlue,
                           borderRadius: BorderRadius.circular(8.0),
