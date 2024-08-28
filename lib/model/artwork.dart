@@ -1,5 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
-import 'package:decodart/model/artist.dart' show ArtistForeignKey, Artist;
+import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey, ArtistListItem;
+import 'package:decodart/model/hive/artwork.dart' as hive;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 import 'package:decodart/model/style.dart' show StyleForeignKey;
@@ -28,6 +29,22 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
       artist: ArtistForeignKey.fromJson(json['artist']),
       image: ImageWithPath.fromJson(json['image'])
     );
+  }
+
+  factory ArtworkListItem.fromHive(hive.ArtworkListItem artwork) {
+    return ArtworkListItem(
+      uid: artwork.uid,
+      title: artwork.title,
+      artist: ArtistForeignKey.fromHive(artwork.artist),
+      image: ImageWithPath.fromHive(artwork.image));
+  }
+
+  hive.ArtworkListItem toHive(){
+    return hive.ArtworkListItem(
+      uid: uid!,
+      title: title,
+      artist: artist.toHive(),
+      image: (image as ImageWithPath).toHive(saveBoundingBox: false));
   }
 
   @override
@@ -141,4 +158,15 @@ class Artwork extends AbstractItem {
   }
 
   String get title => name;
+
+  // to extract a preview of the artwork (recent, decoded, etc.)
+  ArtworkListItem get listItem {
+    return ArtworkListItem(
+      uid: uid,
+      title: title,
+      artist: ArtistListItem(
+        uid: artist.uid,
+        name: artist.name
+      ), image: images[0]);
+  }
 }

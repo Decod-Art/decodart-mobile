@@ -1,8 +1,7 @@
 import 'dart:math' show Point;
 
+import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/view/details/artwork/artwork.dart' show ArtworkDetailsWidget;
-import 'package:decodart/view/details/museum.dart' show MuseumWidget;
 import 'package:decodart/view/map/summary.dart' show GeolocatedSummaryWidget;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
@@ -15,8 +14,7 @@ import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
 class MapView extends StatefulWidget{
-  final Future<List<GeolocatedListItem>> markers;
-  const MapView({super.key, required this.markers});
+  const MapView({super.key});
 
   @override
   State<MapView> createState() => _MapViewState();
@@ -24,7 +22,6 @@ class MapView extends StatefulWidget{
 
 class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMixin {
   List<Marker> markers = [];
-  List<GeolocatedListItem>? items;
   late final mapController = AnimatedMapController(vsync: this);
 
   // position of the modal window
@@ -66,8 +63,7 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
   
 
   Future<void> _loadMarkers() async {
-    items = await widget.markers;
-    for(var item in items!) {
+    for(var item in await fetchAllOnMap()) {
       markers.add(Marker(
         point: item.coordinates,
         width: 80,

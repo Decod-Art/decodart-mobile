@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
-import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget;
+import 'package:decodart/view/decod/game/questions/abstract_question.dart' show AbstractQuestionWidget;
 
 class ImageQuestion extends AbstractQuestionWidget {
   const ImageQuestion({

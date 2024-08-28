@@ -1,5 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
 import 'package:decodart/api/util.dart' show checkUrlForCdn;
+import 'package:decodart/model/hive/image.dart' as hive;
 import 'package:flutter/material.dart';
 
 
@@ -42,6 +43,22 @@ class ImageWithPath extends AbstractImage {
 
     );
   }
+
+  factory ImageWithPath.fromHive(hive.Image image) {
+    return ImageWithPath(
+      image.path,
+      uid: image.uid,
+      boundingBoxes: image.boundingBoxes?.map((item) => BoundingBox.fromHive(item)).toList(),
+      );
+  }
+
+  hive.Image toHive({saveBoundingBox=true}) {
+    return hive.Image(
+      uid: uid!,
+      boundingBoxes: saveBoundingBox?boundingBoxes?.map((item) => item.toHive()).toList():null,
+      path: path);
+  }
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -114,6 +131,23 @@ class BoundingBox extends UnnamedAbstractItem{
       height: json['height'],
       label: json['label'],
       description: json['description']);
+  }
+
+  factory BoundingBox.fromHive(hive.BoundingBox boundingBox) {
+    return BoundingBox(
+      x: boundingBox.x,
+      y: boundingBox.y,
+      width: boundingBox.width,
+      height: boundingBox.height);
+  }
+
+  hive.BoundingBox toHive(){
+    return hive.BoundingBox(
+      uid: uid,
+      x: x,
+      y: y,
+      width: width,
+      height: height);
   }
 
   @override

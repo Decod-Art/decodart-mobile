@@ -1,18 +1,21 @@
 
+import 'package:decodart/model/artwork.dart' show Artwork;
+import 'package:decodart/model/hive/decod.dart' show GameData;
+import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:flutter/cupertino.dart';
-import 'package:shared_preferences/shared_preferences.dart' show SharedPreferences;
+import 'package:hive_flutter/hive_flutter.dart';
 
-import 'package:decodart/view/decod/end.dart' show EndingWidget;
+import 'package:decodart/view/decod/game/end.dart' show EndingWidget;
 
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
 import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
-import 'package:decodart/view/decod/questions/text.dart' show TextQuestion;
-import 'package:decodart/view/decod/questions/colorize/colorize.dart' show ColorizeQuestion;
-import 'package:decodart/view/decod/questions/image.dart' show ImageQuestion;
+import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
+import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
+import 'package:decodart/view/decod/game/questions/image.dart' show ImageQuestion;
 
 class DecodView extends StatefulWidget {
-  final int? artworkId; // TODO Artwork
-  const DecodView({super.key, this.artworkId});
+  final Artwork? artwork;
+  const DecodView({super.key, this.artwork});
 
   @override
   State<DecodView> createState() => _DecodViewState();
@@ -22,6 +25,8 @@ class _DecodViewState extends State<DecodView> {
 
   double totalPoints = 0;
   int currentQuestionIndex = 0;
+  Box<GameData>? gameDataBox;
+  Box<List>? artworkHistory;
 
   final List<DecodQuestion> questions = [];
   final List<bool> results = [];
@@ -30,17 +35,36 @@ class _DecodViewState extends State<DecodView> {
   void initState() {
     super.initState();
     _fetchQuestions();
+    _openBox();
   }
 
+  Future<void> _openBox() async {
+      gameDataBox = await Hive.openBox<GameData>('gameDataBox');
+      artworkHistory = await Hive.openBox<List>('gameArtworkHistory');
+      setState(() {});
+    }
+
   Future<void> _saveScore(double score) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setDouble('success', score + (prefs.getDouble('success') ?? 0));
-    await prefs.setDouble('count', 1 + (prefs.getDouble('count') ?? 0));
+    var scoreData = gameDataBox?.get('score', defaultValue: GameData());
+    scoreData?.count += 1;
+    scoreData?.success += score;
+    gameDataBox?.put('score', scoreData!);
+  }
+
+  void _addArtwork() {
+    if (widget.artwork != null){
+      var history = artworkHistory?.get('history', defaultValue: [])
+                                  ?.cast<hive.ArtworkListItem>();
+      if (history !=null && !history.any((item) => item.uid == widget.artwork!.uid)) {
+        history.insert(0, widget.artwork!.listItem.toHive());
+        artworkHistory?.put('history', history);
+      }
+    }
   }
 
   Future<void> _fetchQuestions() async {
-    if (widget.artworkId != null){
-      questions.addAll(await fetchDecodQuestionByArtworkId(widget.artworkId!));
+    if (widget.artwork != null){
+      questions.addAll(await fetchDecodQuestionByArtworkId(widget.artwork!.uid!));
     } else {
       questions.addAll(await fetchDecodQuestionRandomly());
     }
@@ -67,6 +91,7 @@ class _DecodViewState extends State<DecodView> {
 
   Widget _showQuestion() {
     if (currentQuestionIndex >= questions.length) {
+      _addArtwork();
       return EndingWidget(
         totalPoints: totalPoints,
         questions: questions,

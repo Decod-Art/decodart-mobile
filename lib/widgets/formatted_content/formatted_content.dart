@@ -1,5 +1,4 @@
-import 'package:decodart/view/details/artwork/artwork.dart' show ArtworkDetailsWidget;
-import 'package:decodart/widgets/buttons.dart' show ArtworkButton;
+import 'package:decodart/widgets/formatted_content/buttons.dart' show ArtworkButton;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 

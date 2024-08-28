@@ -1,14 +1,14 @@
-import 'package:decodart/view/camera/button.dart';
-import 'package:decodart/view/camera/core_camera.dart' show CoreCamera, CoreCameraState;
+import 'package:decodart/view/camera/camera/button.dart';
+import 'package:decodart/view/camera/camera/core_camera.dart' show CoreCamera, CoreCameraState;
 import 'package:decodart/view/camera/help.dart' show HelpView;
-import 'package:decodart/view/camera/no_result.dart';
-import 'package:decodart/view/camera/results.dart' show ResultsView;
+import 'package:decodart/view/camera/recent.dart' show RecentScan, RecentScanState;
+import 'package:decodart/view/camera/results/no_result.dart';
+import 'package:decodart/view/camera/results/results.dart' show ResultsView;
 import 'package:flutter/cupertino.dart';
-import 'package:decodart/api/artwork.dart' show fetchAllArtworks, fetchArtworkById, fetchArtworkByImage;
+import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/camera/result.dart' show ResultsWidget;
-import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
+import 'package:decodart/view/camera/results/result.dart' show ResultsWidget;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
 
@@ -21,8 +21,7 @@ class CameraView extends StatefulWidget {
 }
 
 class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerProviderStateMixin {
-  bool isLoading = false;
-  final List<ArtworkListItem> recent = [];
+  bool isLoading = false;  
 
   final List<ArtworkListItem> results = [];
   bool noResult = false;
@@ -31,11 +30,12 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
   late Animation<Offset> _offsetAnimation;
 
   final GlobalKey<CoreCameraState> cameraViewKey = GlobalKey<CoreCameraState>();
+  final GlobalKey<RecentScanState> recentScanKey = GlobalKey<RecentScanState>();
+  
 
   @override
   void initState() {
     super.initState();
-    _fetchRecent();
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
@@ -53,11 +53,6 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  void _fetchRecent() async {
-    recent.addAll(await fetchAllArtworks());
-    setState(() {});
   }
 
   void _showResults() {
@@ -90,19 +85,8 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
     // await Future.delayed(const Duration(seconds: 2));
     var artworks = await fetchArtworkByImage(imagePath);
     results.addAll(artworks);
+    recentScanKey.currentState!.addScan(artworks);
     _showResults();
-    // if (context.mounted && artworks.isNotEmpty) {
-    //   Navigator.of(context).pushReplacement(
-    //     CupertinoPageRoute(builder: (BuildContext context) {
-    //       return ListWidget(
-    //         listName: 'Résultats',
-    //         listContent: artworks,
-    //         onClick: (AbstractListItem item) => ArtworkDetailsWidget(artworkId: item.uid!),
-    //       );
-    //     }),
-    //   );
-    //}
-    // return 'Artwork not found';
   }
 
   @override
@@ -184,32 +168,7 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
                     noResult=false;
                   });
                 }),
-              if (recent.isNotEmpty)
-                Container(
-                  padding: const EdgeInsets.only(top: 45, bottom: 15),
-                  width: double.infinity,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 16),
-                        child: Text(
-                          'Scans récents',
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500)),
-                        ),
-                      ListWithThumbnail(items: recent, onPress: (item) async {
-                        final futureArtwork = fetchArtworkById(item.uid!);
-                        showDecodModalBottomSheet(
-                          context,
-                          (context) => FutureArtworkView(artwork: futureArtwork),
-                          expand: true,
-                          useRootNavigator: true);
-                      },)
-                    ]
-                  )
-                )
+              RecentScan(key: recentScanKey)
             ],
           )
         )

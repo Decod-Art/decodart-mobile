@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
+import 'package:decodart/model/hive/artist.dart' as hive;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 
 typedef ArtistForeignKey = ArtistListItem;
@@ -12,6 +13,18 @@ class ArtistListItem extends AbstractItem {
     return ArtistListItem(
       uid: json['uid'],
       name: json['name']);
+  }
+
+  factory ArtistListItem.fromHive(hive.ArtistForeignKey artist) {
+    return ArtistListItem(
+      uid: artist.uid,
+      name: artist.name);
+  }
+
+  hive.ArtistForeignKey toHive(){
+    return hive.ArtistForeignKey(
+      uid: uid!,
+      name: name);
   }
 }
 

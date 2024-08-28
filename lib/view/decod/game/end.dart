@@ -1,5 +1,5 @@
 import 'package:decodart/model/decod.dart' show DecodQuestion;
-import 'package:decodart/view/decod/widgets/summary.dart' show SummaryWidget;
+import 'package:decodart/view/decod/game/widgets/summary.dart' show SummaryWidget;
 import 'package:flutter/cupertino.dart';
 
 class EndingWidget extends StatelessWidget {

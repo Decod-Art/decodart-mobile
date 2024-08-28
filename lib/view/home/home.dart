@@ -1,21 +1,10 @@
-// Model
-import 'package:decodart/model/artwork.dart' show ArtworkListItem;
-import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/model/museum.dart' show MuseumListItem;
-import 'package:decodart/view/camera/camera.dart' show CameraView;
-
 import 'package:flutter/cupertino.dart';
 
 // Tabs
 import 'package:decodart/view/map/map.dart' show MapView;
+import 'package:decodart/view/camera/camera.dart' show CameraView;
 import 'package:decodart/view/explore/explore.dart' show ExploreView;
-import 'package:decodart/view/decod/main_menu.dart' show DecodMainMenuView, DecodMainMenuViewState;
-
-
-// API
-import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
-import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
-import 'package:decodart/api/museum.dart' show fetchAllMuseums;
+import 'package:decodart/view/decod/menu/main_menu.dart' show DecodMainMenuView;
 
 class HomePage extends StatefulWidget {
 
@@ -26,11 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<List<ArtworkListItem>>? _cachedArtworks;
-  Future<List<GeolocatedListItem>>? _cachedOnMap;
-  Future<List<MuseumListItem>>? _cachedMuseums;
   final CupertinoTabController _tabController = CupertinoTabController();
-  final GlobalKey<DecodMainMenuViewState> _decodMainMenuKey = GlobalKey<DecodMainMenuViewState>();
   
 
   @override
@@ -73,21 +58,17 @@ class _HomePageState extends State<HomePage> {
           builder: (context) {
             switch (index) {
               case 0:
-                _cachedOnMap ??= fetchAllOnMap();
-                return MapView(markers: _cachedOnMap!);
+                return const MapView();
               case 1:
                 return const CameraView();
               case 2:
                 return const ExploreView();
               case 3:
-                if (_decodMainMenuKey.currentState!=null) {
-                  _decodMainMenuKey.currentState!.loadScore();
-                }
-                return DecodMainMenuView(key: _decodMainMenuKey);
+                return const DecodMainMenuView();
               case 4:
                 return const DecodMainMenuView();
               default:
-                return MapView(markers: _cachedOnMap!);
+                return Container();
             }
           },
         );

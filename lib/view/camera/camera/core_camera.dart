@@ -59,10 +59,15 @@ class CoreCameraState extends State<CoreCamera> {
 
   @override
   Widget build(BuildContext context) {
-    return _cameraController == null
-      ? const Center(child: CupertinoActivityIndicator())
-      : _errorMessage != null
-        ? Text(_errorMessage!)
+    return _errorMessage != null
+      ? Padding(
+        padding: const EdgeInsets.all(5),
+        child: Center(
+          child: Text(_errorMessage!)
+        )
+      )
+      : _cameraController == null
+        ? const Center(child: CupertinoActivityIndicator())
         : OverflowBox(
             alignment: Alignment.center,
             child: FittedBox(

@@ -1,7 +1,7 @@
-import 'package:decodart/view/decod/questions/colorize/image_drawing.dart' show ImageDrawingWidget;
+import 'package:decodart/view/decod/game/questions/colorize/image_drawing.dart' show ImageDrawingWidget;
 import 'package:flutter/cupertino.dart';
 
-import 'package:decodart/view/decod/questions/abstract_question.dart' show AbstractQuestionWidget;
+import 'package:decodart/view/decod/game/questions/abstract_question.dart' show AbstractQuestionWidget;
 
 class ColorizeQuestion extends AbstractQuestionWidget {
 

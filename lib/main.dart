@@ -1,3 +1,7 @@
+import 'package:decodart/model/hive/artist.dart' show ArtistForeignKeyAdapter;
+import 'package:decodart/model/hive/artwork.dart' show ArtworkListItemAdapter;
+import 'package:decodart/model/hive/decod.dart' show GameDataAdapter;
+import 'package:decodart/model/hive/image.dart' show ImageAdapter;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -6,7 +10,13 @@ import 'package:decodart/view/home/home.dart' show HomePage;
 
 void main() async {
   debugPaintSizeEnabled=false;
+  // configure DB
   await Hive.initFlutter();
+  Hive.registerAdapter(GameDataAdapter());
+  Hive.registerAdapter(ImageAdapter());
+  Hive.registerAdapter(ArtistForeignKeyAdapter());
+  Hive.registerAdapter(ArtworkListItemAdapter());
+
   runApp(
     const CupertinoApp(
       localizationsDelegates: [
