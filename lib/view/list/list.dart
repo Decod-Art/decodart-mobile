@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:flutter/cupertino.dart';
 
@@ -31,7 +32,10 @@ class SliverListViewPage<T extends AbstractListItem> extends StatelessWidget {
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                // Action à effectuer lors du tap sur l'icône
+                Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => const AproposView()),
+              );
               },
               child: const Icon(
                 CupertinoIcons.person_circle,

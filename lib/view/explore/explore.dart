@@ -7,6 +7,7 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
+import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:decodart/view/artwork/full_screen_future.dart' show FullScreenFutureArtworkView;
 import 'package:decodart/view/list/list.dart' show SliverListViewPage;
 import 'package:decodart/view/museum/full_screen_future.dart' show FullScreenFutureMuseumView;
@@ -127,7 +128,10 @@ class _ExploreViewState extends State<ExploreView> {
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
-                // Action à effectuer lors du tap sur l'icône
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(builder: (context) => const AproposView()),
+                );
               },
               child: const Icon(
                 CupertinoIcons.person_circle,
