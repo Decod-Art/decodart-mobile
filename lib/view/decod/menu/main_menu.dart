@@ -35,7 +35,7 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> with ShowModal {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            StatsWidget(key: statsWidgetKey),
+            StatsWidget(key: statsWidgetKey, onReset: reset,),
             Expanded(
               flex: 3,
               child: DecodedHistory(key: decodedHistoryKey),

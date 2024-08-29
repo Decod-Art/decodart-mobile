@@ -3,7 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 class StatsWidget extends StatefulWidget {
-  const StatsWidget({super.key});
+  final Future<void> Function() onReset;
+  const StatsWidget({
+    super.key,
+    required this.onReset});
 
   @override
   State<StatsWidget> createState() => StatsWidgetState();
@@ -60,14 +63,14 @@ class StatsWidgetState extends State<StatsWidget> {
                 const Text('Taux de réussite', style: TextStyle(fontSize: 14, color: CupertinoColors.systemGrey2)),
                 Text('${(score.rate!*100).toStringAsFixed(0)} %', style: const TextStyle(fontSize: 55)),
                 const Text(
-                  "Continuez de Décoder afin d'apprendre à mieux reconnaître les symboles dans l'art 🕵️",
+                  "Continuez de décoder afin d'apprendre à mieux reconnaître les symboles dans l'art 🕵️",
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
                 CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () async {
-                  await reset();
+                  await widget.onReset();
                 },
                 child: const Text(
                   'Réinitialiser',
