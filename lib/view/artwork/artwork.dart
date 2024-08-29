@@ -2,6 +2,7 @@ import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/view/decod/game/manager.dart' show DecodView;
 import 'package:decodart/widgets/buttons/button_list.dart' show ButtonListWidget;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
+import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
 import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
@@ -139,8 +140,8 @@ class ArtworkView extends StatelessWidget with ShowModal{
         ),
         Padding(
           padding: const EdgeInsets.all(15),
-          child: ContentScrolling(
-              text: artwork.description,
+          child: ContentWidget(
+              items: artwork.description,
             )
           ),
         // Ajoutez d'autres widgets pour afficher les autres propriétés de l'artwork

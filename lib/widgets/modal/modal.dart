@@ -17,7 +17,8 @@ mixin ShowModal {
         withScroll: expand,
       ),
       expand: expand,
-      useRootNavigator: useRootNavigator
+      useRootNavigator: useRootNavigator,
+      enableDrag: true
     );
   }
 }
@@ -42,6 +43,8 @@ class ModalContentWidget extends StatefulWidget {
 class _ModalContentWidgetState extends State<ModalContentWidget> {
   final ScrollController _scrollController = ScrollController();
   bool _showTopLine = false;
+  bool _canScroll = true;
+  final events = [];
 
   @override
   void initState() {
@@ -86,7 +89,48 @@ class _ModalContentWidgetState extends State<ModalContentWidget> {
               Expanded(
                 child: SingleChildScrollView(
                   controller: _scrollController,
-                  child: widget.content
+                  physics: _canScroll
+                    ? const ScrollPhysics()
+                    : const NeverScrollableScrollPhysics(),
+                  child: Listener(
+                    onPointerDown: (event) {
+                      events.add(event.pointer);
+                    },
+                    onPointerUp: (event) {
+                      events.clear();
+                      setState(() {
+                        _canScroll = true;
+                      });
+                    },
+                    onPointerMove: (event) {
+                      if (events.length >= 2) {                        
+                        setState(() {
+                          _canScroll = false;
+                        });
+                      }
+                    },
+                    child: GestureDetector(
+                      onScaleStart: (details) {
+                        // Fonction vide pour le début du geste de mise à l'échelle
+                      },
+                      onScaleUpdate: (details) {
+                        // Fonction vide pour la mise à jour du geste de mise à l'échelle
+                      },
+                      onScaleEnd: (details) {
+                        // Fonction vide pour la fin du geste de mise à l'échelle
+                      },
+                      onTap: () {
+                        // Fonction vide pour le tap
+                      },
+                      onDoubleTap: () {
+                        // Fonction vide pour le double tap
+                      },
+                      onLongPress: () {
+                        // Fonction vide pour le long press
+                      },
+                      child: widget.content
+                    )
+                  )
                 )
               )
             ]
