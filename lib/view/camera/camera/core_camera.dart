@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
@@ -74,9 +73,9 @@ class CoreCameraState extends State<CoreCamera> {
               fit: BoxFit.cover,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
+                height: MediaQuery.of(context).size.width*_cameraController!.value.aspectRatio,
                 child: CameraPreview(_cameraController!),
-              )
+              ),
             )
         );
   }

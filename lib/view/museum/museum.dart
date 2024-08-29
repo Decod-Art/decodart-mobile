@@ -1,4 +1,4 @@
-import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchArtworkByMuseum;
+import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchArtworksByMuseum;
 import 'package:decodart/api/tour.dart' show fetchExhibitionByMuseum, fetchTourById, fetchTourByMuseum;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/museum.dart' show Museum;
@@ -54,7 +54,7 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
   }
 
   Future<void> _fetchCollection() async {
-    collection.addAll(await fetchArtworkByMuseum(widget.museum.uid!));
+    collection.addAll(await fetchArtworksByMuseum(widget.museum.uid!));
     setState(() {});
   }
 

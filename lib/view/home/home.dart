@@ -54,25 +54,27 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       tabBuilder: (context, index) {
-        return CupertinoTabView(
-          builder: (context) {
-            switch (index) {
-              case 0:
-                return const MapView();
-              case 1:
-                return const CameraView();
-              case 2:
-                return const ExploreView();
-              case 3:
-                return const DecodMainMenuView();
-              case 4:
-                return const DecodMainMenuView();
-              default:
-                return Container();
-            }
-          },
-        );
-      },
+        switch (index) {
+          case 0:
+            return CupertinoTabView(
+              builder: (BuildContext context) => const MapView(),
+            );
+          case 1:
+            return CupertinoTabView(
+              builder: (BuildContext context) => const CameraView(),
+            );
+          case 2:
+            return CupertinoTabView(
+              builder: (BuildContext context) => const ExploreView(),
+            );
+          case 3:
+            return CupertinoTabView(
+              builder: (BuildContext context) => const DecodMainMenuView(),
+            );
+          default:
+            return Container();
+        }
+      }
     );
   }
 

@@ -46,6 +46,7 @@ class SliverListViewPage<T extends AbstractListItem> extends StatelessWidget {
             middle: const Text('Explorer')
           ),
           SliverSafeArea(
+            top: false,
             sliver: SliverList(
               delegate: SliverChildListDelegate(
                 [ 

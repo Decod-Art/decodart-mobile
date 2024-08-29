@@ -142,6 +142,7 @@ class _ExploreViewState extends State<ExploreView> {
             middle: const Text('Explorer')
           ),
           SliverSafeArea(
+            top: false,
             sliver: SliverList(
               delegate: SliverChildListDelegate(
                 [

@@ -1,4 +1,5 @@
 import 'package:decodart/view/camera/camera/button.dart';
+import 'package:visibility_detector/visibility_detector.dart';
 import 'package:decodart/view/camera/camera/core_camera.dart' show CoreCamera, CoreCameraState;
 import 'package:decodart/view/camera/help.dart' show HelpView;
 import 'package:decodart/view/camera/recent.dart' show RecentScan, RecentScanState;
@@ -17,14 +18,15 @@ class CameraView extends StatefulWidget {
   const CameraView({super.key});
 
   @override
-  State<CameraView> createState() => _CameraViewState();
+  State<CameraView> createState() => CameraViewState();
 }
 
-class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerProviderStateMixin {
+class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool isLoading = false;  
 
   final List<ArtworkListItem> results = [];
   bool noResult = false;
+  bool hideCamera=false;
 
   late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
@@ -36,6 +38,7 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
   @override
   void initState() {
     super.initState();
+    print('init');
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 200),
       vsync: this,
@@ -49,9 +52,13 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
     ));
   }
 
-   @override
+  @override
+  bool get wantKeepAlive => false;
+
+  @override
   void dispose() {
     _animationController.dispose();
+    print('disposing 1');
     super.dispose();
   }
 
@@ -124,9 +131,15 @@ class _CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPr
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(15),
-                        child: CoreCamera(
-                          key: cameraViewKey,
-                          onImageTaken: _runSearch,
+                        child: VisibilityDetector(
+                          key: const Key('camera-view-key'),
+                          onVisibilityChanged: (VisibilityInfo info){
+                            setState(() {hideCamera=info.visibleFraction == 0;});
+                          },
+                          child: hideCamera?Container():CoreCamera(
+                            key: cameraViewKey,
+                            onImageTaken: _runSearch,
+                          )
                         )
                       ),
                     ),

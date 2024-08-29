@@ -76,7 +76,7 @@ class RecentScanState extends State<RecentScan> with ShowModal {
                 const Padding(
                   padding: EdgeInsets.only(left: 16, bottom: 15, top: 30),
                   child: Text(
-                    'Œuvres décodées',
+                    'Scans récents',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.w500)),
