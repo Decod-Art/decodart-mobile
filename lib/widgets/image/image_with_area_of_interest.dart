@@ -24,6 +24,8 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   double _imageWidth = 0;
   double _imageHeight = 0;
   bool showBoundingBox = true;
+  bool manuallyHideBoundingBox = false;
+  bool isZoomed = false;
   late TransformationController _transformationController;
   late AnimationController _animationController;
   late Animation<Matrix4> _animation;
@@ -58,14 +60,16 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     final double scale = (b!=null)?(scaleX < scaleY ? scaleX : scaleY)*lambda+1-lambda:1;
     double translateX = b != null ? -b.center.dx * _imageWidth * scale + (_imageWidth / 2) : 0;
     double translateY = b != null ? -b.center.dy * _imageHeight * scale + (_imageHeight / 2) : 0;
-    
+    _zoomIn(scale, translateX, translateY);
+  }
+
+  void _zoomIn(double scale, double translateX, double translateY) {
     final double maxTranslateX = - _imageWidth * scale + _imageWidth;
     final double maxTranslateY = - _imageHeight * scale + _imageHeight;
     translateX = translateX<maxTranslateX?-_imageWidth*scale+_imageWidth:translateX;
     translateX = translateX>0?0:translateX;
     translateY = translateY<maxTranslateY?-_imageHeight*scale+_imageHeight:translateY;
     translateY = translateY>0?0:translateY;
-
     final Matrix4 endMatrix = Matrix4.identity()
       ..translate(translateX, translateY)
       ..scale(scale);
@@ -84,15 +88,15 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     });
     
     _animation.addStatusListener((status) {
-    if (status == AnimationStatus.completed) {
-      // Code à exécuter lorsque l'animation est terminée
-      if (selectedBox == null) {
-        setState(() {
-          showBoundingBox = true;
-        });
+      if (status == AnimationStatus.completed) {
+        // Code à exécuter lorsque l'animation est terminée
+        if (selectedBox == null&&!isZoomed) {
+          setState(() {
+            showBoundingBox = true;
+          });
+        }
       }
-    }
-  });
+    });
   }
 
   Widget _areaOfInterest(BoundingBox b){
@@ -137,37 +141,56 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        PrimaryScrollController(
-          controller: ScrollController(),
-          child: GestureDetector(
-            onTap: () {
-              if (selectedBox!=null){
-                _zoomToBoundingBox();
-              }
-            },
-            child: InteractiveViewer(
-              transformationController: _transformationController,
-              child: CachedNetworkImage(
-                key: _imageKey,
-                imageUrl: widget.image.path,
-                placeholder: (context, url) => const CupertinoActivityIndicator(),
-                errorWidget: (context, url, error) => const Icon(CupertinoIcons.exclamationmark_circle),
-                fit: BoxFit.contain,
-                imageBuilder: (context, imageProvider) {
-                  _postFrameCallback();
-                  return Image(
-                    image: imageProvider,
-                    fit: BoxFit.contain,
-                  );
-                },
-              ),
-              onInteractionUpdate: (details){
-                _postFrameCallback(true);
+        GestureDetector(
+          onTap: () {
+            if (selectedBox!=null || isZoomed){
+              isZoomed = false;
+              _zoomToBoundingBox();
+            } else {
+              setState(() {
+                final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
+                showBoundingBox = !isVisible;
+                manuallyHideBoundingBox = isVisible;
+              });
+            }
+          },
+          onDoubleTapDown: (details) {
+            if (selectedBox!=null||isZoomed){
+              isZoomed = false;
+              _zoomToBoundingBox();
+            } else {
+              isZoomed = true;
+              setState(() {
+                showBoundingBox = false;
+              });
+              _zoomIn(4,
+              -details.localPosition.dx * 4 + (_imageWidth / 2),
+              -details.localPosition.dy * 4 + (_imageHeight / 2));
+            }
+          },
+          child: InteractiveViewer(
+            scaleEnabled: false,
+            transformationController: _transformationController,
+            child: CachedNetworkImage(
+              key: _imageKey,
+              imageUrl: widget.image.path,
+              placeholder: (context, url) => const CupertinoActivityIndicator(),
+              errorWidget: (context, url, error) => const Icon(CupertinoIcons.exclamationmark_circle),
+              fit: BoxFit.contain,
+              imageBuilder: (context, imageProvider) {
+                _postFrameCallback();
+                return Image(
+                  image: imageProvider,
+                  fit: BoxFit.contain,
+                );
               },
             ),
+            onInteractionUpdate: (details){
+              _postFrameCallback(true);
+            },
           ),
         ),
-        if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox)
+        if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox && !manuallyHideBoundingBox)
           for (var b in widget.image.boundingBoxes!) ...[
             _areaOfInterest(b),
           ],

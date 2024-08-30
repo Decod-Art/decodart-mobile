@@ -35,7 +35,7 @@ class ImageGallery extends StatelessWidget {
     for(int i = 0 ; i < images.length && !hasAreaOfInterest;i++) {
       hasAreaOfInterest |= images[i].boundingBoxes!=null?images[i].boundingBoxes!.isNotEmpty:false;
     }
-    return hasAreaOfInterest?" Touchez sur les zones d'intérêts pour voir leur description.":"";
+    return hasAreaOfInterest?" Touchez sur les zones d'intérêts pour voir leur description. Tapez une fois sur l'image pour masquer les zones d'intérêts":"";
   }
 
   @override
@@ -85,7 +85,7 @@ class ImageGallery extends StatelessWidget {
               const SizedBox(width: 5,),
               Expanded(
                 child: Text(
-                  'Pincez pour zoomer et voir les détails.${_multipleImages()}${_areaOfInterest()}',
+                  'Tapotez deux fois pour zoomer et voir les détails.${_multipleImages()}${_areaOfInterest()}', // Pincez ou 
                   style: const TextStyle(color: CupertinoColors.systemGrey4, fontSize: 15),)
               )
             ]

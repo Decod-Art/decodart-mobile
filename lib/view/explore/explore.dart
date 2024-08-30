@@ -8,7 +8,7 @@ import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
-import 'package:decodart/view/artwork/full_screen_future.dart' show FullScreenFutureArtworkView;
+import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/list/list.dart' show SliverListViewPage;
 import 'package:decodart/view/museum/full_screen_future.dart' show FullScreenFutureMuseumView;
 import 'package:decodart/view/tour/full_screen_future.dart' show FullScreenFutureTourView;
@@ -73,7 +73,9 @@ class _ExploreViewState extends State<ExploreView> {
       Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => FullScreenFutureArtworkView(artwork: futureArtwork),
+          builder: (context) => FutureArtworkView(
+            artwork: futureArtwork,
+            fullScreen: true,),
         ),
       );
     }
@@ -84,7 +86,9 @@ class _ExploreViewState extends State<ExploreView> {
     Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => FullScreenFutureArtworkView(artwork: futureArtwork),
+        builder: (context) => FutureArtworkView(
+          artwork: futureArtwork,
+          fullScreen: true,),
       ),
     );
   }

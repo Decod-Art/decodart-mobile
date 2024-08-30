@@ -109,27 +109,7 @@ class _ModalContentWidgetState extends State<ModalContentWidget> {
                         });
                       }
                     },
-                    child: GestureDetector(
-                      onScaleStart: (details) {
-                        // Fonction vide pour le début du geste de mise à l'échelle
-                      },
-                      onScaleUpdate: (details) {
-                        // Fonction vide pour la mise à jour du geste de mise à l'échelle
-                      },
-                      onScaleEnd: (details) {
-                        // Fonction vide pour la fin du geste de mise à l'échelle
-                      },
-                      onTap: () {
-                        // Fonction vide pour le tap
-                      },
-                      onDoubleTap: () {
-                        // Fonction vide pour le double tap
-                      },
-                      onLongPress: () {
-                        // Fonction vide pour le long press
-                      },
-                      child: widget.content
-                    )
+                    child: widget.content
                   )
                 )
               )
