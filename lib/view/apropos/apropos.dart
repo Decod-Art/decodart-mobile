@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 class AproposView extends StatelessWidget {
   const AproposView({super.key});
@@ -40,6 +41,42 @@ class AproposView extends StatelessWidget {
                 // Action à effectuer lors du tap
               },
             ),
+            CupertinoListTile(
+              title: const Text('Scans récents'),
+              trailing: CupertinoButton(
+                child: const Text('Réinitialiser'),
+                onPressed: () async {
+                  showCupertinoDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return CupertinoAlertDialog(
+                        title: const Text('Confirmation'),
+                        content: const Text('Voulez-vous vraiment supprimer tous les scans récents ?'),
+                        actions: <CupertinoDialogAction>[
+                          CupertinoDialogAction(
+                            child: const Text('Annuler', style: TextStyle(color: CupertinoColors.systemRed),),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          CupertinoDialogAction(
+                            child: const Text('Ok'),
+                            onPressed: () async {
+                              Box<List>? recentScanBox = await Hive.openBox<List>('recentScan');
+                              await recentScanBox.clear(); // Vider la boîte
+                              await recentScanBox.close(); // Fermer la boîte
+                              if(context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+            )
             // Ajoutez plus d'options ici
           ],
         ),

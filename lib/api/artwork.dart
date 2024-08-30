@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:http_parser/http_parser.dart'; // Importez cette bibliothèque pour définir le type MIME
+import 'package:http_parser/http_parser.dart'; // MIME
 
 import 'package:decodart/model/artwork.dart' show ArtworkListItem, Artwork;
 import 'package:decodart/api/util.dart' show hostName;
@@ -14,13 +14,13 @@ class FetchArtworkException implements Exception {
 }
 
 Future<List<ArtworkListItem>> fetchAllArtworks({int limit=10, int offset=0}) async {
-    try {
+  try {
     final response = await http.get(Uri.parse('$hostName/artworks?limit=$limit&offset=$offset'));
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body);
       List<ArtworkListItem> listItems = results['data'].map((item) => ArtworkListItem.fromJson(item))
-                                                                 .toList()
-                                                                 .cast<ArtworkListItem>();
+                                                       .toList()
+                                                       .cast<ArtworkListItem>();
       return listItems;
     }
   } catch (e, stackTrace) {

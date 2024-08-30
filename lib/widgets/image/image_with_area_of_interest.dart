@@ -154,7 +154,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
               });
             }
           },
-          onDoubleTapDown: (details) {
+          onDoubleTapDown: selectedBox!=null || isZoomed?null:(details) {
             if (selectedBox!=null||isZoomed){
               isZoomed = false;
               _zoomToBoundingBox();

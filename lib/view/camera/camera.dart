@@ -58,7 +58,6 @@ class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPro
   @override
   void dispose() {
     _animationController.dispose();
-    print('disposing 1');
     super.dispose();
   }
 

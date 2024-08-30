@@ -15,6 +15,7 @@ class RecentScan extends StatefulWidget{
 }
 
 class RecentScanState extends State<RecentScan> with ShowModal {
+  final int maxRecentSaved = 10;
   Box<List>? recentScanBox;
   final List<ArtworkListItem> recent = [];
 
@@ -54,7 +55,9 @@ class RecentScanState extends State<RecentScan> with ShowModal {
     var recentList = recentScanBox?.get('recent', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList !=null) {
-      recentList.insertAll(0, items.map((item)=> item.toHive()).toList());      
+      recentList.insertAll(0, items.map((item)=> item.toHive())
+                                   .take(maxRecentSaved)
+                                   .toList());      
       recentScanBox?.put('recent', recentList);
     }
   }

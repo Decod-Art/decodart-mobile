@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/widgets/list/list_tile.dart' show ListTile;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
 
@@ -20,54 +21,7 @@ class ListWithThumbnail<T extends AbstractListItem> extends StatelessWidget {
           children: [
             if (item == items.first)
               const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 15),
-              child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => onPress(item),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8.0),
-                      child: Image.network(
-                        item.image.path,
-                        width: 50,
-                        height: 50,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title,
-                            style: const TextStyle(
-                              color: CupertinoColors.black,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          const SizedBox(height: 4.0),
-                          Text(
-                            item.subtitle,
-                            style: const TextStyle(
-                              color: CupertinoColors.systemGrey,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const Icon(
-                      CupertinoIcons.chevron_forward,
-                      color: CupertinoColors.systemGrey,
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            ListTile(item: item, onPress: onPress),
             if (item != items.last)
               const Divider(
                 indent: 80.0,

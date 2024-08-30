@@ -62,15 +62,44 @@ class StatsWidgetState extends State<StatsWidget> {
               children: [
                 const Text('Taux de réussite', style: TextStyle(fontSize: 14, color: CupertinoColors.systemGrey2)),
                 Text('${(score.rate!*100).toStringAsFixed(0)} %', style: const TextStyle(fontSize: 55)),
-                const Text(
-                  "Continuez de décoder afin d'apprendre à mieux reconnaître les symboles dans l'art 🕵️",
-                  style: TextStyle(fontSize: 16),
-                  textAlign: TextAlign.center,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 5),
+                  child: Text(
+                    "Continuez de décoder afin d'apprendre à mieux reconnaître les symboles dans l'art 🕵️",
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  )
                 ),
                 CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () async {
-                  await widget.onReset();
+                  showCupertinoDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return CupertinoAlertDialog(
+                        title: const Text('Confirmation'),
+                        content: const Text('Voulez-vous vraiment supprimer les œuvres déjà décodées ?'),
+                        actions: <CupertinoDialogAction>[
+                          CupertinoDialogAction(
+                            child: const Text(
+                              'Annuler',
+                              style: TextStyle(color: CupertinoColors.destructiveRed),
+                            ),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                          CupertinoDialogAction(
+                            child: const Text('Ok'),
+                            onPressed: () async {
+                              Navigator.of(context).pop();
+                              await widget.onReset();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
                 child: const Text(
                   'Réinitialiser',
