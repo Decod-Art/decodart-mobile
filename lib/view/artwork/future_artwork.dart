@@ -40,10 +40,11 @@ class FutureArtworkView extends StatelessWidget {
       future: artwork,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
+          final screenSize = MediaQuery.of(context).size;
           return Center(
             child: Container(
-              width: double.infinity,
-              height: double.infinity,
+              width: screenSize.width,
+              height: screenSize.height,
               color: CupertinoColors.white, // Fond blanc
               child: const CupertinoActivityIndicator(),
               ),
@@ -73,6 +74,7 @@ class FutureArtworkView extends StatelessWidget {
   Widget build(BuildContext context) {
     if (fullScreen) {
       return _pageView(context, _builder(context));
-    } return _builder(context);
+    }
+    return _builder(context);
   }
 }
