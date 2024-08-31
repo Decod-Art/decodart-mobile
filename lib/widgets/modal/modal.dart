@@ -7,14 +7,15 @@ mixin ShowModal {
     WidgetBuilder builder,
     {
       useRootNavigator=false,
-      expand=false
+      expand=false,
+      scroll=true
     }) {
     return showCupertinoModalBottomSheet(
       context: context,
       builder: (context) => ModalContentWidget(
         content: builder(context),
         safeArea: !useRootNavigator,
-        withScroll: expand,
+        withScroll: expand&&scroll,
       ),
       expand: expand,
       useRootNavigator: useRootNavigator,

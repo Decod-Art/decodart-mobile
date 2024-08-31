@@ -26,7 +26,7 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
 class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends State<LazyHorizontalListWithHeader<T>> {
   late ScrollController _scrollController;
   bool isLoading = false;
-  late final LazyList<T> items;
+  late LazyList<T> items;
 
   @override
   void initState() {
@@ -37,6 +37,19 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkIfNeedsLoading();
     });
+  }
+
+  @override
+  void didUpdateWidget(covariant LazyHorizontalListWithHeader<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.fetch != widget.fetch) {
+      setState(() {
+        items = LazyList<T>(fetch: widget.fetch);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _checkIfNeedsLoading();
+        });
+      });
+    }
   }
 
   @override
@@ -58,10 +71,6 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
       isLoading = true;
     });
     await items.fetchMore();
-
-    // Appeler la fonction pour charger plus d'éléments
-    //await widget.loadMoreItems();
-
     setState(() {
       isLoading = false;
     });
@@ -70,38 +79,39 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
 
   @override
   Widget build(BuildContext context) {
-    print('Ici ${items.length}');
     return Column(
       children: [
-        ChevronButtonWidget(
-          text: widget.name,
-          fontWeight: FontWeight.w500,
-          fontSize: 22,
-          chevronColor: CupertinoColors.activeBlue,
-          marginRight: 20,
-          onPressed: widget.onTitlePressed,
-        ),
-        SizedBox(
-          height: 250, // Ajustez la hauteur selon vos besoins
-          child: ListView.builder(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            itemCount: items.length + (isLoading?1:0),
-            itemBuilder: (context, index) {
-              if (index != items.length){
-                final item = items[index];
-                return ThumbnailWidget(
-                    title: item.title,
-                    image: item.image,
-                    isMuseum: widget.isMuseum(item),
-                    onPressed: (){widget.onPressed(item);}
-                  );
-              } else {
-                return const Center(child: CupertinoActivityIndicator());
-              }
-            },
+        if (items.isNotEmpty || items.hasMore) ... [
+          ChevronButtonWidget(
+            text: widget.name,
+            fontWeight: FontWeight.w500,
+            fontSize: 22,
+            chevronColor: CupertinoColors.activeBlue,
+            marginRight: 20,
+            onPressed: widget.onTitlePressed,
           ),
-        ),
+          SizedBox(
+            height: 250, // Ajustez la hauteur selon vos besoins
+            child: ListView.builder(
+              controller: _scrollController,
+              scrollDirection: Axis.horizontal,
+              itemCount: items.length + (isLoading?1:0),
+              itemBuilder: (context, index) {
+                if (index != items.length){
+                  final item = items[index];
+                  return ThumbnailWidget(
+                      title: item.title,
+                      image: item.image,
+                      isMuseum: widget.isMuseum(item),
+                      onPressed: (){widget.onPressed(item);}
+                    );
+                } else {
+                  return const Center(child: CupertinoActivityIndicator());
+                }
+              },
+            ),
+          ),
+        ]
     ],
   );
   }

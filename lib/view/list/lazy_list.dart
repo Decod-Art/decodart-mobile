@@ -1,4 +1,4 @@
-import 'package:decodart/api/util.dart' show DataFetcher, LazyList;
+import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:decodart/widgets/list/list_tile.dart' show ListTile;
@@ -8,7 +8,7 @@ import 'package:flutter/material.dart' show Divider;
 class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   final String title;
   final void Function(T) onPress;
-  final DataFetcher<T> fetch;
+  final Future<List<T>> Function({int limit, int offset, String? query}) fetch;
   const SliverLazyListView({
     super.key,
     required this.title,
@@ -23,7 +23,7 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
 class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {
   late ScrollController _scrollController;
   bool isLoading = false;
-  late final LazyList<T> items;
+  late LazyList<T> items;
 
   @override
   void initState() {
@@ -36,6 +36,12 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
     });
   }
 
+  @override
+  void dispose() {
+    _scrollController.removeListener(_checkIfNeedsLoading);
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   Future<void> _checkIfNeedsLoading() async {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !isLoading && items.hasMore) {
@@ -74,7 +80,8 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
               child: CupertinoSearchTextField(
                 placeholder: 'Rechercher',
                 onChanged: (String value) {
-                  // Action à effectuer lors de la saisie dans le champ de recherche
+                  items = LazyList<T>(fetch: ({limit=10, offset=0}){return widget.fetch(limit: limit, offset: offset, query: value.isEmpty?null:value);});
+                  _checkIfNeedsLoading();
                 },
               ),
             ),

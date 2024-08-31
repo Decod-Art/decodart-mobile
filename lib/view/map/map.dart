@@ -22,21 +22,31 @@ class MapView extends StatefulWidget{
 
 class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMixin {
   List<Marker> markers = [];
+  List<GeolocatedListItem> items = [];
   late final mapController = AnimatedMapController(vsync: this);
 
   // position of the modal window
   final GlobalKey modalKey = GlobalKey();
+  bool showSearchButton = true;
 
   @override
   void initState() {
     super.initState();
-    _loadMarkers();
+    mapController.mapController.mapEventStream.listen(_onMapMoved);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadMarkers();
+    });
   }
 
   @override
   void dispose() {
     mapController.dispose();
     super.dispose();
+  }
+  void _onMapMoved(MapEvent event) {
+    if (event is MapEventMoveEnd||event is MapEventDoubleTapZoomEnd) {
+      _loadMarkers();
+    }
   }
 
   void _moveMap(GeolocatedListItem item) {
@@ -60,51 +70,87 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
       }
     });
   }
+
+  void _updateMarkers(List<Marker> fetchAllMapResults) {
+    final fetchAllMapSet = fetchAllMapResults.toSet();
+
+    // Conserver uniquement les marqueurs qui sont dans fetchAllMapResults
+    markers.retainWhere((marker) => fetchAllMapSet.contains(marker));
+
+    // Ajouter les nouveaux marqueurs de fetchAllMapResults qui ne sont pas déjà dans markers
+    for (var marker in fetchAllMapResults) {
+      if (!markers.contains(marker)) {
+        markers.add(marker);
+      }
+    }
+  }
   
 
   Future<void> _loadMarkers() async {
-    for(var item in await fetchAllOnMap()) {
-      markers.add(Marker(
-        point: item.coordinates,
-        width: 80,
-        height: 80,
-        child: GestureDetector(
-          onTap: () {
-            showDecodModalBottomSheet(
-              context,
-              (context) => GeolocatedSummaryWidget(item: item, key: modalKey)
-              );
-            _moveMap(item);
-          },
-          child: Column(
-            children: [
-              CircleAvatar(
-                //backgroundImage: NetworkImage(item.image.path), // Utilisez item.image pour l'URL de l'image
-                radius: 30, // Ajustez la taille du cercle selon vos besoins
-                backgroundColor: Colors.white, // Bordure blanche
-                child: ClipOval(
-                  child: CachedNetworkImage(
-                    imageUrl: item.image.path,
-                    fit: BoxFit.cover,
-                    width: 56,
-                    height: 56)
-                ),
-              ),
-              const SizedBox(height: 4), // Espace entre l'image et le texte
-              Text(
-                item.name,
-                style: const TextStyle(
-                  fontSize: 10,
-                  color: Color.fromARGB(255, 99, 98, 98), // Couleur du texte
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ],
-          ),
-        )
-      ));
+    // The function is a bit complex
+    // because it must not reconstruct markers that were already available.
+    // To avoid blinking effects
+    final visibleRegion = mapController.mapController.camera.visibleBounds;
+    final newItems = await fetchAllOnMap(
+      minLatitude: visibleRegion.south,
+      maxLatitude: visibleRegion.north,
+      minLongitude: visibleRegion.west,
+      maxLongitude: visibleRegion.east
+    );
+    final newUids = newItems.map((item) => item.uid).toSet();
+    List<Marker> updatedMarkers = [];
+    for (int i = 0; i < markers.length; i++) {
+      if (newUids.contains(items[i].uid)) {
+        updatedMarkers.add(markers[i]);
+      }
     }
+    markers = updatedMarkers;
+
+    for (var item in newItems) {
+      if (!items.any((existingItem) => existingItem.uid == item.uid)) {
+        markers.add(Marker(
+          point: item.coordinates,
+          width: 80,
+          height: 80,
+          child: GestureDetector(
+            onTap: () {
+              showDecodModalBottomSheet(
+                context,
+                (context) => GeolocatedSummaryWidget(item: item, key: modalKey)
+                );
+              _moveMap(item);
+            },
+            child: Column(
+              children: [
+                CircleAvatar(
+                  //backgroundImage: NetworkImage(item.image.path), // Utilisez item.image pour l'URL de l'image
+                  radius: 30, // Ajustez la taille du cercle selon vos besoins
+                  backgroundColor: Colors.white, // Bordure blanche
+                  child: ClipOval(
+                    child: CachedNetworkImage(
+                      imageUrl: item.image.path,
+                      fit: BoxFit.cover,
+                      width: 56,
+                      height: 56)
+                  ),
+                ),
+                const SizedBox(height: 4), // Espace entre l'image et le texte
+                Text(
+                  item.name,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color.fromARGB(255, 99, 98, 98), // Couleur du texte
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ],
+            ),
+          )
+        ));
+      }
+    }
+    items = newItems;
     setState(() {});
   }
 

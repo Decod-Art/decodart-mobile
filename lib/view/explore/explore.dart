@@ -4,19 +4,15 @@ import 'package:decodart/api/museum.dart' show fetchAllMuseums, fetchMuseumById;
 import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
 import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/list/lazy_list.dart' show SliverLazyListView;
-import 'package:decodart/view/list/list.dart' show SliverListViewPage;
 import 'package:decodart/view/museum/full_screen_future.dart' show FullScreenFutureMuseumView;
 import 'package:decodart/view/tour/full_screen_future.dart' show FullScreenFutureTourView;
 import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart';
-import 'package:decodart/widgets/set_block.dart' show SetBlock;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {
@@ -27,29 +23,16 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
-  List<GeolocatedListItem> aroundMe = [];
-  List<MuseumListItem> museums = [];
-  List<TourListItem> tours = [];
+  LazyList<TourListItem> tours = LazyList(fetch: fetchAllTours);
+  String? filter;
   @override
   void initState() {
     super.initState();
-    _fetchAroundMe();
-    _fetchMuseums();
     _fetchTours();
   }
 
-  Future<void> _fetchAroundMe() async {
-    aroundMe.addAll(await fetchAroundMe());
-    setState(() {});
-  }
-
-  Future<void> _fetchMuseums() async {
-    museums.addAll(await fetchAllMuseums());
-    setState(() {});
-  }
-
   Future<void> _fetchTours() async {
-    tours.addAll(await fetchAllTours());
+    await tours.fetchMore();
     setState(() {});
   }
 
@@ -121,7 +104,11 @@ class _ExploreViewState extends State<ExploreView> {
               child: CupertinoSearchTextField(
                 placeholder: 'Rechercher',
                 onChanged: (String value) {
-                  // Action à effectuer lors de la saisie dans le champ de recherche
+                  filter = value;
+                  if (value.isEmpty) {
+                    filter = null;
+                  }
+                  setState(() {});
                 },
               ),
             ),
@@ -146,18 +133,18 @@ class _ExploreViewState extends State<ExploreView> {
             sliver: SliverList(
               delegate: SliverChildListDelegate(
                 [
-                  SetBlock(
+                  LazyHorizontalListWithHeader(
                     name: 'Autour de moi',
-                    items: aroundMe,
+                    fetch: ({int limit=10, int offset=0}) {return fetchAroundMe(limit: limit, offset: offset, query: filter);},
                     onPressed: _onAroundMePressed,
                     isMuseum: (item)=>(item as GeolocatedListItem).isMuseum,
                     onTitlePressed: (){
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
-                            builder: (context) => SliverListViewPage(
+                            builder: (context) => SliverLazyListView(
                               title: 'Autour de moi',
-                              items: aroundMe,
+                              fetch: fetchAroundMe,
                               onPress: _onAroundMePressed,),
                           ),
                         );
@@ -165,7 +152,7 @@ class _ExploreViewState extends State<ExploreView> {
                   ),
                   LazyHorizontalListWithHeader(
                     name: 'Œuvres',
-                    fetch: fetchAllArtworks,
+                    fetch: ({int limit=10, int offset=0}) {return fetchAllArtworks(limit: limit, offset: offset, query: filter);},
                     onPressed: _onArtworkPressed,
                     isMuseum: (item)=>false,
                     onTitlePressed: (){
@@ -180,18 +167,18 @@ class _ExploreViewState extends State<ExploreView> {
                         );
                     },
                   ),
-                  SetBlock(
+                  LazyHorizontalListWithHeader(
                     name: 'Musées',
-                    items: museums,
+                    fetch: ({int limit=10, int offset=0}) {return fetchAllMuseums(limit: limit, offset: offset, query: filter);},
                     onPressed: _onMuseumPressed,
                     isMuseum: (item)=>true,
                     onTitlePressed: (){
                       Navigator.push(
                           context,
                           CupertinoPageRoute(
-                            builder: (context) => SliverListViewPage(
-                              title: 'Musées',
-                              items: museums,
+                            builder: (context) => SliverLazyListView(
+                              title: 'Œuvres',
+                              fetch: fetchAllMuseums,
                               onPress: _onMuseumPressed,),
                           ),
                         );
@@ -213,7 +200,7 @@ class _ExploreViewState extends State<ExploreView> {
                           ),
                         )
                       ),
-                      ListWithThumbnail(items: tours, onPress: _onTourPressed,)
+                      ListWithThumbnail(items: tours.list, onPress: _onTourPressed,)
                     ],
                   )
                 ]

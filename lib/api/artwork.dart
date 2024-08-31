@@ -13,9 +13,21 @@ class FetchArtworkException implements Exception {
   String toString() => 'FetchArtworkException: $message';
 }
 
-Future<List<ArtworkListItem>> fetchAllArtworks({int limit=10, int offset=0}) async {
+Future<List<ArtworkListItem>> fetchAllArtworks(
+  {int limit=10,
+  int offset=0,
+  String? query,
+  int? museumId}) async {
   try {
-    final response = await http.get(Uri.parse('$hostName/artworks?limit=$limit&offset=$offset'));
+    final Uri uri = Uri.parse('$hostName/artworks').replace(
+      queryParameters: {
+        'limit': '$limit',
+        'offset': '$offset',
+        if (query != null) 'query': query,
+        if (museumId != null) 'museumId': '$museumId',
+      },
+    );
+    final response = await http.get(uri);
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body);
       List<ArtworkListItem> listItems = results['data'].map((item) => ArtworkListItem.fromJson(item))
@@ -43,23 +55,6 @@ Future<Artwork> fetchArtworkById(int uid) async {
     print(stackTrace);
     rethrow;
   }
-}
-
-Future<List<ArtworkListItem>> fetchArtworksByMuseum(int museumId, {int limit=10, int offset=0}) async {
-  try {
-    final response = await http.get(Uri.parse('$hostName/artworks?museumId=$museumId&offset=$offset&limit=$limit'));
-    if (response.statusCode == 200) {
-      final results = jsonDecode(response.body);
-      List<ArtworkListItem> listItems = results['data'].map((item) => ArtworkListItem.fromJson(item))
-                                                                 .toList()
-                                                                 .cast<ArtworkListItem>();
-      return listItems;
-    }
-  } catch (e, stackTrace) {
-    print(e);
-    print(stackTrace);
-  }
-  return [];
 }
 
 Future<List<ArtworkListItem>> fetchArtworkByImage(String imagePath) async {

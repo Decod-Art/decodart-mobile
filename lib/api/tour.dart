@@ -11,40 +11,27 @@ class FetchTourException implements Exception {
   String toString() => 'FetchTourException: $message';
 }
 
-Future<List<TourListItem>>  fetchAllTours() async {
-    try {
-    final response = await http.get(Uri.parse('$hostName/tours/'));
+Future<List<TourListItem>>  fetchAllTours({
+  int limit=10,
+  int offset=0,
+  int? museumId,
+  bool isExhibition=false
+}) async {
+  try {
+    final Uri uri = Uri.parse('$hostName/tours').replace(
+      queryParameters: {
+        'limit': '$limit',
+        'offset': '$offset',
+        if (museumId != null) 'museumId': '$museumId',
+        'isExhibition': '$isExhibition',
+      },
+    );
+    final response = await http.get(uri);
     if (response.statusCode == 200) {
-      List<dynamic> tours = jsonDecode(response.body);
-      return tours.map((tour) => TourListItem.fromJson(tour)).toList();
-    }
-  } catch (e, stackTrace) {
-    print(e);
-    print(stackTrace);
-  }
-  return [];
-}
-
-Future<List<TourListItem>>  fetchExhibitionByMuseum(int museumId) async {
-    try {
-    final response = await http.get(Uri.parse('$hostName/tours/exhibition/museum/$museumId'));
-    if (response.statusCode == 200) {
-      List<dynamic> tours = jsonDecode(response.body);
-      return tours.map((tour) => TourListItem.fromJson(tour)).toList();
-    }
-  } catch (e, stackTrace) {
-    print(e);
-    print(stackTrace);
-  }
-  return [];
-}
-
-Future<List<TourListItem>>  fetchTourByMuseum(int museumId) async {
-    try {
-    final response = await http.get(Uri.parse('$hostName/tours/museum/$museumId'));
-    if (response.statusCode == 200) {
-      List<dynamic> tours = jsonDecode(response.body);
-      return tours.map((tour) => TourListItem.fromJson(tour)).toList();
+      final tours = jsonDecode(response.body);
+      return tours['data'].map((tour) => TourListItem.fromJson(tour))
+                          .toList()
+                          .cast<TourListItem>();
     }
   } catch (e, stackTrace) {
     print(e);

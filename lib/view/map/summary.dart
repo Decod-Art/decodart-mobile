@@ -11,6 +11,8 @@ import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 
 import 'package:flutter/cupertino.dart';
 
+// TODO if this widget becomes statefull, it will not query the API
+// each time it must be rendered.
 class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
   final GeolocatedListItem item;
   late final Future<AbstractItem> itemDetailed;

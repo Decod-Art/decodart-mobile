@@ -11,12 +11,19 @@ class FetchMuseumException implements Exception {
   String toString() => 'FetchMuseumException: $message';
 }
 
-Future<List<MuseumListItem>>  fetchAllMuseums() async {
-    try {
-    final response = await http.get(Uri.parse('$hostName/museums/'));
+Future<List<MuseumListItem>>  fetchAllMuseums({
+  int limit=10,
+  int offset=0,
+  String? query
+}) async {
+  try {
+    final url = '$hostName/museums?limit=$limit&offset=$offset${query!=null?"&query=$query":""}';
+    final response = await http.get(Uri.parse(url));
     if (response.statusCode == 200) {
-      List<dynamic> museums = jsonDecode(response.body);
-      List<MuseumListItem> listItems = museums.map((museum) => MuseumListItem.fromJson(museum)).toList();
+      final museums = jsonDecode(response.body);
+      List<MuseumListItem> listItems = museums['data'].map((museum) => MuseumListItem.fromJson(museum))
+                                                      .toList()
+                                                      .cast<MuseumListItem>();
       return listItems;
     }
   } catch (e, stackTrace) {
