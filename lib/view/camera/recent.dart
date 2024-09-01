@@ -85,10 +85,9 @@ class RecentScanState extends State<RecentScan> with ShowModal {
                       fontWeight: FontWeight.w500)),
                   ),
                 ListWithThumbnail(items: recent, onPress: (item) async {
-                  final futureArtwork = fetchArtworkById(item.uid!);
                   showDecodModalBottomSheet(
                     context,
-                    (context) => FutureArtworkView(artwork: futureArtwork),
+                    (context) => FutureArtworkView(artworkId: item.uid!),
                     expand: true,
                     useRootNavigator: true);
                 },)

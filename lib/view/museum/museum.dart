@@ -1,7 +1,10 @@
 import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchAllArtworks;
 import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
+import 'package:decodart/api/util.dart';
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/model/artwork.dart';
 import 'package:decodart/model/museum.dart' show Museum;
+import 'package:decodart/model/tour.dart';
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
@@ -25,6 +28,25 @@ class MuseumView extends StatefulWidget {
 
 class _MuseumViewState extends State<MuseumView>  with ShowModal {
   final ScrollController _scrollController = ScrollController();
+  late final DataFetcher<ArtworkListItem> _fetchCollection;
+  late final DataFetcher<TourListItem> _fetchExhibition;
+  late final DataFetcher<TourListItem> _fetchTour;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCollection = ({int limit=10, int offset=0}) {
+      return fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid);
+    };
+    _fetchExhibition = ({int limit=10, int offset=0}) {
+      return fetchAllTours(
+        limit: limit, offset: offset, museumId: widget.museum.uid, isExhibition: true
+      );
+    };
+    _fetchTour = ({int limit=10, int offset=0}) {
+      return fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid);
+    };
+  }
 
   @override
   void dispose() {
@@ -33,10 +55,9 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
   }
 
   void _onArtworkPressed(AbstractListItem item){
-    final futureArtwork = fetchArtworkById(item.uid!);
     showDecodModalBottomSheet(
       context,
-      (context) => FutureArtworkView(artwork: futureArtwork),
+      (context) => FutureArtworkView(artworkId: item.uid!),
       expand: true,
       useRootNavigator: true);
   }
@@ -137,20 +158,18 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
           )
         ),
         const SizedBox(height: 15),
-        if (widget.museum.hasExhibitions||true)
+        if (widget.museum.hasExhibitions)
           LazyHorizontalListWithHeader(
-            name: 'Visites',
-            fetch: ({int limit=10, int offset=0}) {
-              return fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid, isExhibition: true);
-            },
-            onPressed: _onArtworkPressed,
+            name: 'Expositions',
+            fetch: _fetchExhibition,
+            onPressed: _onTourPressed,
             isMuseum: (item)=>false,
             onTitlePressed: (){
               showDecodModalBottomSheet(
                 context,
                 (context) => LazyListWidget(
                   fetch: ({int limit=10,int offset=0}) => fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid, isExhibition: true),
-                  onPress: _onArtworkPressed,
+                  onPress: _onTourPressed,
                 ),
                 expand: true,
                 useRootNavigator: true,
@@ -158,11 +177,9 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
             },
           ),
         if (widget.museum.hasCollection)
-          LazyHorizontalListWithHeader(
+          LazyHorizontalListWithHeader<ArtworkListItem>(
             name: 'Collection',
-            fetch: ({int limit=10, int offset=0}) {
-              return fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid);
-            },
+            fetch: _fetchCollection,
             onPressed: _onArtworkPressed,
             isMuseum: (item)=>false,
             onTitlePressed: (){
@@ -180,17 +197,15 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
         if (widget.museum.hasTours)
           LazyHorizontalListWithHeader(
             name: 'Visites',
-            fetch: ({int limit=10, int offset=0}) {
-              return fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid);
-            },
-            onPressed: _onArtworkPressed,
+            fetch: _fetchTour,
+            onPressed: _onTourPressed,
             isMuseum: (item)=>false,
             onTitlePressed: (){
               showDecodModalBottomSheet(
                 context,
                 (context) => LazyListWidget(
                   fetch: ({int limit=10,int offset=0}) => fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid),
-                  onPress: _onArtworkPressed,
+                  onPress: _onTourPressed,
                 ),
                 expand: true,
                 useRootNavigator: true,

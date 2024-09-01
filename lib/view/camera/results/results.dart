@@ -44,10 +44,9 @@ class ResultsView extends StatelessWidget with ShowModal {
           ),
           const SizedBox(height: 20),
           ListWithThumbnail(items: results, onPress: (item) async {
-            final futureArtwork = fetchArtworkById(item.uid!);
             showDecodModalBottomSheet(
               context,
-              (context) => FutureArtworkView(artwork: futureArtwork),
+              (context) => FutureArtworkView(artworkId: item.uid!),
               expand: true,
               useRootNavigator: true);
           },)

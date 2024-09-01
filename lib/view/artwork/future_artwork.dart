@@ -1,16 +1,31 @@
+import 'package:decodart/api/artwork.dart' show fetchArtworkById;
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/view/artwork/artwork.dart' show ArtworkView;
 import 'package:decodart/widgets/new_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
 
-class FutureArtworkView extends StatelessWidget {
-  final Future<Artwork> artwork;
+class FutureArtworkView extends StatefulWidget {
+  final int artworkId;
   final bool fullScreen;
   const FutureArtworkView({
     super.key,
-    required this.artwork,
+    required this.artworkId,
     this.fullScreen=false
   });
+  
+  @override
+  State<FutureArtworkView> createState() => _FutureArtworkViewState();
+}
+
+class _FutureArtworkViewState extends State<FutureArtworkView> {
+
+  late Future<Artwork> artwork;
+  
+  @override
+  void initState(){
+    super.initState();
+    artwork = fetchArtworkById(widget.artworkId);
+  }
 
   Widget _pageView(BuildContext context, FutureBuilder builder) {
     return CupertinoPageScaffold(
@@ -58,7 +73,7 @@ class FutureArtworkView extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           final artwork = snapshot.data!;
-          return fullScreen
+          return widget.fullScreen
             ?  SingleChildScrollView(child: ArtworkView(artwork: artwork))
             : ArtworkView(artwork: artwork);
         } else {
@@ -72,7 +87,7 @@ class FutureArtworkView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (fullScreen) {
+    if (widget.fullScreen) {
       return _pageView(context, _builder(context));
     }
     return _builder(context);

@@ -29,10 +29,9 @@ class TourView extends StatelessWidget with ShowModal {
           ListWithThumbnail<ArtworkForeignKey>(
             items: tour.artworks,
             onPress: (artwork){
-              final futureArtwork = fetchArtworkById(artwork.uid!);
               showDecodModalBottomSheet(
                 context,
-                (context) => FutureArtworkView(artwork: futureArtwork),
+                (context) => FutureArtworkView(artworkId: artwork.uid!),
                 expand: true,
                 useRootNavigator: true);
             },),
@@ -45,10 +44,9 @@ class TourView extends StatelessWidget with ShowModal {
           ContentWidget(
             items: tour.description,
             onButtonPressed: (uid){
-              final futureArtwork = fetchArtworkById(uid);
               showDecodModalBottomSheet(
                 context,
-                (context) => FutureArtworkView(artwork: futureArtwork),
+                (context) => FutureArtworkView(artworkId: uid),
                 expand: true,
                 useRootNavigator: true);
             },

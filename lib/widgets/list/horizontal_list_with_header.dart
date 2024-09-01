@@ -66,7 +66,6 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
   }
 
   Future<void> _loadMoreItems() async {
-    print('loading...');
     setState(() {
       isLoading = true;
     });

@@ -154,10 +154,9 @@ class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPro
                               child: ResultsWidget(
                                 artwork: results[0],
                                 onPressed: () {
-                                  final futureArtwork = fetchArtworkById(results[0].uid!);
                                   showDecodModalBottomSheet(
                                     context,
-                                    (context) => FutureArtworkView(artwork: futureArtwork),
+                                    (context) => FutureArtworkView(artworkId: results[0].uid!),
                                     expand: true,
                                     useRootNavigator: true);
                                 },

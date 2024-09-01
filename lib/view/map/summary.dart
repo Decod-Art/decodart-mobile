@@ -1,7 +1,4 @@
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
-import 'package:decodart/api/artwork.dart' show fetchArtworkById;
-import 'package:decodart/api/museum.dart' show fetchMuseumById;
-import 'package:decodart/model/abstract_item.dart' show AbstractItem;
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show Museum;
@@ -11,21 +8,12 @@ import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 
 import 'package:flutter/cupertino.dart';
 
-// TODO if this widget becomes statefull, it will not query the API
-// each time it must be rendered.
 class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
   final GeolocatedListItem item;
-  late final Future<AbstractItem> itemDetailed;
   GeolocatedSummaryWidget({
     super.key,
     required this.item
-  }) {
-    if (item.isMuseum) {
-      itemDetailed = fetchMuseumById(item.uid);
-    } else {
-      itemDetailed = fetchArtworkById(item.uid);
-    }
-  }
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -115,13 +103,13 @@ class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
                 if (item.isMuseum) {
                   showDecodModalBottomSheet(
                     context,
-                    (context) => FutureMuseumView(museum: itemDetailed as Future<Museum>),
+                    (context) => FutureMuseumView(museumId: item.uid),
                     expand: true,
                     useRootNavigator: true);
                 } else {
                   showDecodModalBottomSheet(
                     context,
-                    (context) => FutureArtworkView(artwork: itemDetailed as Future<Artwork>),
+                    (context) => FutureArtworkView(artworkId: item.uid),
                     expand: true,
                     useRootNavigator: true);
                 }

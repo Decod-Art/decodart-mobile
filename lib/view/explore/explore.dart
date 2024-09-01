@@ -38,22 +38,19 @@ class _ExploreViewState extends State<ExploreView> {
 
   void _onAroundMePressed(AbstractListItem item) {
     final geoItem = item as GeolocatedListItem;
-    if (geoItem.isMuseum) {
-      final futureMuseum = fetchMuseumById(item.uid);
-      
+    if (geoItem.isMuseum) {      
       Navigator.push(
         context,
         CupertinoPageRoute(
-          builder: (context) => FullScreenFutureMuseumView(museum: futureMuseum),
+          builder: (context) => FullScreenFutureMuseumView(museumId: item.uid),
         ),
       );
     } else {
-      final futureArtwork = fetchArtworkById(item.uid);
       Navigator.push(
         context,
         CupertinoPageRoute(
           builder: (context) => FutureArtworkView(
-            artwork: futureArtwork,
+            artworkId: item.uid,
             fullScreen: true,),
         ),
       );
@@ -61,23 +58,21 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   void _onArtworkPressed(AbstractListItem item) {
-    final futureArtwork = fetchArtworkById(item.uid!);
     Navigator.push(
       context,
       CupertinoPageRoute(
         builder: (context) => FutureArtworkView(
-          artwork: futureArtwork,
+          artworkId: item.uid!,
           fullScreen: true,),
       ),
     );
   }
 
   void _onMuseumPressed(AbstractListItem item) {
-    final futureMuseum = fetchMuseumById(item.uid!);
     Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => FullScreenFutureMuseumView(museum: futureMuseum),
+        builder: (context) => FullScreenFutureMuseumView(museumId: item.uid!),
       ),
     );
   }

@@ -1,15 +1,29 @@
+import 'package:decodart/api/museum.dart' show fetchMuseumById;
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/view/museum/museum.dart' show MuseumView;
 import 'package:flutter/cupertino.dart';
 
-class FutureMuseumView extends StatelessWidget {
-  final Future<Museum> museum;
+class FutureMuseumView extends StatefulWidget {
+  final int museumId;
+
   const FutureMuseumView({
     super.key,
-    required this.museum
+    required this.museumId
     });
+    
+    @override
+    State<FutureMuseumView> createState() => _FutureMuseumViewState();
 
-  
+}
+
+class _FutureMuseumViewState extends State<FutureMuseumView> {
+  late Future<Museum> museum;
+
+  @override
+  void initState(){
+    super.initState();
+    museum = fetchMuseumById(widget.museumId);
+  }
 
   @override
   Widget build(BuildContext context) {
