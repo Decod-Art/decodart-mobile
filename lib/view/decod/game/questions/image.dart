@@ -54,9 +54,13 @@ class _ImageQuestionState extends State<ImageQuestion> {
                 child: Center(
                   child: Stack(
                     children: [
-                      Image.network(
-                        widget.question.answers[0].image!.path,
-                        fit: BoxFit.contain,
+                      Positioned.fill(
+                        child: FittedBox(
+                          fit: BoxFit.contain,
+                          child: Image.network(
+                            widget.question.answers[0].image!.path,
+                          )
+                        )
                       ),
                       Positioned.fill(
                         child: Container(

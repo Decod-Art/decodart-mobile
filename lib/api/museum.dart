@@ -37,7 +37,7 @@ Future<Museum> fetchMuseumById(int id) async {
   try {
       final response = await http.get(Uri.parse('$hostName/museums/$id'));
       if (response.statusCode == 200) {
-        Map<String, dynamic> json = jsonDecode(response.body);
+        Map<String, dynamic> json = jsonDecode(response.body)['data'];
         return Museum.fromJson(json);
       } else {
         throw FetchMuseumException('Failed to load museum: ${response.statusCode}');

@@ -41,8 +41,6 @@ class _TextQuestionState extends State<TextQuestion> {
           itemBuilder: (context, index) {
             return GestureDetector(
               onTap: () {
-                // Action à effectuer lors du clic sur l'élément
-                print('Element $index cliqué');
                 _click(index);
               },
               child: Container(
@@ -73,6 +71,7 @@ class _TextQuestionState extends State<TextQuestion> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
+            textAlign: TextAlign.center,
             widget.question.question, // Remplacez par le contenu de votre question
             style: const TextStyle(fontSize: 24),
           ),

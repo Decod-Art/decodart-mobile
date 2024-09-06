@@ -44,7 +44,7 @@ Future<Tour> fetchTourById(int id) async {
   try {
       final response = await http.get(Uri.parse('$hostName/tours/$id'));
       if (response.statusCode == 200) {
-        Map<String, dynamic> json = jsonDecode(response.body);
+        Map<String, dynamic> json = jsonDecode(response.body)['data'];
         return Tour.fromJson(json);
       } else {
         throw FetchTourException('Failed to load tour: ${response.statusCode}');

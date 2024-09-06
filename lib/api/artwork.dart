@@ -75,7 +75,7 @@ Future<List<ArtworkListItem>> fetchArtworkByImage(String imagePath) async {
                     );
     final response = await request.send();
     if (response.statusCode == 200) {
-      List<dynamic> results = jsonDecode(await response.stream.bytesToString());
+      List<dynamic> results = jsonDecode(await response.stream.bytesToString())['data'];
       return results.map((item) => ArtworkListItem.fromJson(item)).toList();
     }
   } catch(e, stackTrace){
