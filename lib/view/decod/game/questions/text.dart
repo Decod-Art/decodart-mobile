@@ -53,6 +53,7 @@ class _TextQuestionState extends State<TextQuestion> {
                 ),
                 child: Center(
                   child: Text(
+                    textAlign: TextAlign.center,
                     widget.question.answers[index].text!, // Remplacez par le texte de votre élément
                     style: const TextStyle(color: Colors.black),
                   ),

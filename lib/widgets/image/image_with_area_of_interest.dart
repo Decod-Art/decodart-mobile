@@ -26,6 +26,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   bool showBoundingBox = true;
   bool manuallyHideBoundingBox = false;
   bool isZoomed = false;
+  bool isZooming = false;
   late TransformationController _transformationController;
   late AnimationController _animationController;
   late Animation<Matrix4> _animation;
@@ -64,6 +65,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   }
 
   void _zoomIn(double scale, double translateX, double translateY) {
+    isZooming = true;
     final double maxTranslateX = - _imageWidth * scale + _imageWidth;
     final double maxTranslateY = - _imageHeight * scale + _imageHeight;
     translateX = translateX<maxTranslateX?-_imageWidth*scale+_imageWidth:translateX;
@@ -89,7 +91,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     
     _animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        // Code à exécuter lorsque l'animation est terminée
+        isZooming = false;
         if (selectedBox == null&&!isZoomed) {
           setState(() {
             showBoundingBox = true;
@@ -143,15 +145,17 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
       children: [
         GestureDetector(
           onTap: () {
-            if (selectedBox!=null || isZoomed){
-              isZoomed = false;
-              _zoomToBoundingBox();
-            } else {
-              setState(() {
-                final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
-                showBoundingBox = !isVisible;
-                manuallyHideBoundingBox = isVisible;
-              });
+            if (!isZooming){
+              if (selectedBox!=null || isZoomed){
+                isZoomed = false;
+                _zoomToBoundingBox();
+              } else {
+                setState(() {
+                  final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
+                  showBoundingBox = !isVisible;
+                  manuallyHideBoundingBox = isVisible;
+                });
+              }
             }
           },
           onDoubleTapDown: selectedBox!=null || isZoomed?null:(details) {

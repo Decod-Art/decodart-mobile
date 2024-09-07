@@ -2,6 +2,7 @@ import 'package:decodart/view/decod/game/questions/colorize/image_drawing.dart' 
 import 'package:flutter/cupertino.dart';
 
 import 'package:decodart/view/decod/game/questions/abstract_question.dart' show AbstractQuestionWidget;
+import 'package:flutter/services.dart';
 
 class ColorizeQuestion extends AbstractQuestionWidget {
 
@@ -46,6 +47,7 @@ class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
   }
 
   void foundCorrect(int index) {
+    HapticFeedback.mediumImpact();
     if (found[index]) {
       // already true
     } else {
@@ -67,6 +69,7 @@ class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
   }
 
   void foundIncorrect() {
+    HapticFeedback.mediumImpact();
     tries -= 1;
     print('tries:$tries');
     if (tries <= 0){

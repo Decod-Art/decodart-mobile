@@ -46,7 +46,7 @@ Future<Artwork> fetchArtworkById(int uid) async {
     try {
     final response = await http.get(Uri.parse('$hostName/artworks/$uid'));
     if (response.statusCode == 200) {
-      return Artwork.fromJson(jsonDecode(response.body));
+      return Artwork.fromJson(jsonDecode(response.body)['data']);
     } else {
       throw FetchArtworkException('Artwork not found');
     }

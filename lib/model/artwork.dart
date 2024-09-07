@@ -3,6 +3,7 @@ import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey, Artis
 import 'package:decodart/model/hive/artwork.dart' as hive;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
+import 'package:decodart/model/room.dart';
 import 'package:decodart/model/style.dart' show StyleForeignKey;
 import 'package:decodart/model/technique.dart' show TechniqueForeignKey;
 import 'package:decodart/model/context.dart' show Context;
@@ -68,7 +69,7 @@ class Artwork extends AbstractItem {
   final double? width;
   final double? height;
   final double? depth;
-  final String? room;
+  final RoomForeignKey? room;
   final String description;
   final double? latitude;
   final double? longitude;
@@ -115,7 +116,7 @@ class Artwork extends AbstractItem {
       depth: json['depth'],
       title: json['title'],
       museum: (json['museum']!=null)?MuseumForeignKey.fromJson(json['museum']):null,
-      room: json['room'],
+      room: json['room']!=null?RoomForeignKey.fromJson(json['room']):null,
       artist: Artist.fromJson(json['artist']),
       context: Context.fromJson(json['context']),
       style: StyleForeignKey.fromJson(json['style']),
@@ -142,7 +143,7 @@ class Artwork extends AbstractItem {
       'depth': depth,
       'title': title,
       'museum': museum?.toJson(),
-      'room': room,
+      'room': room?.toJson(),
       'artist': artist.toJson(),
       'context': context.toJson(),
       'style': style.toJson(),

@@ -3,6 +3,7 @@ import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/hive/decod.dart' show GameData;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:decodart/view/decod/game/end.dart' show EndingWidget;
@@ -12,6 +13,7 @@ import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fet
 import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
 import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
 import 'package:decodart/view/decod/game/questions/image.dart' show ImageQuestion;
+import 'package:vibration/vibration.dart' show Vibration;
 
 class DecodView extends StatefulWidget {
   final Artwork? artwork;
@@ -36,6 +38,24 @@ class _DecodViewState extends State<DecodView> {
     super.initState();
     _fetchQuestions();
     _openBox();
+  }
+
+  void _correctAnswer() async {
+    // if (await Vibration.hasVibrator() ?? false) {
+    //   Vibration.vibrate(duration: 100);  // Short vibration (100 ms)
+    // }
+    HapticFeedback.heavyImpact();
+  }
+
+  void _incorrectAnswer() async {
+    // if (await Vibration.hasVibrator() ?? false) {
+    //   Vibration.vibrate(duration: 500);  // Short vibration (100 ms)
+    // }
+    HapticFeedback.heavyImpact();
+    await Future.delayed(const Duration(milliseconds: 200));
+    HapticFeedback.heavyImpact();
+    await Future.delayed(const Duration(milliseconds: 200));
+    HapticFeedback.heavyImpact();
   }
 
   Future<void> _openBox() async {
@@ -78,9 +98,11 @@ class _DecodViewState extends State<DecodView> {
   }
 
   void _validateQuestion(double points, {int duration=1}) {
-    // TODO raise exception if points > 1 or points < 0
     if (points >= 1) {
+      _correctAnswer();
       results[currentQuestionIndex] = true;
+    } else {
+      _incorrectAnswer();
     }
     totalPoints += points;
     _saveScore(points);
@@ -92,6 +114,7 @@ class _DecodViewState extends State<DecodView> {
   Widget _showQuestion() {
     if (currentQuestionIndex >= questions.length) {
       _addArtwork();
+
       return EndingWidget(
         totalPoints: totalPoints,
         questions: questions,
