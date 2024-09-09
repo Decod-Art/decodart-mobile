@@ -56,31 +56,47 @@ class ImageDrawingWidget extends StatefulWidget {
 }
 
 class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
+  final TransformationController _transformationController = TransformationController();
   late double _width;
-  bool shouldRepaint = true;
-  bool isDrawing = false;
   late double _height;
+  bool scaling = false;
+  
+  bool isDrawing = false;
   List<List<Offset>> points = [];
   List<bool> isCorrect = [];
   final GlobalKey _imageKey = GlobalKey();
   final GlobalKey _containerKey = GlobalKey();
+  late Offset offset;
+  Offset _startFocalPoint = Offset.zero;
+  
+  Matrix4 lastTransformation = Matrix4.identity();
+  late Matrix4 currentTransformation;
+
+  final double _zoomMax = 4, _zoomMin = 1;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _getImageDimensions();
+      _setOffsetAndDimension();
+      setState(() {});
     });
   }
+  @override
+  void dispose() {
+    _transformationController.dispose();
+    super.dispose();
+  }
 
-  void _getImageDimensions() {
+  void _setOffsetAndDimension() {
     final renderBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
     final containerBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null && containerBox != null) {
-      setState(() {
-        _width = renderBox.size.width;
-        _height = renderBox.size.height;
-      });
+      _width = renderBox.size.width;
+      _height = renderBox.size.height;
+      final imagePosition = renderBox.localToGlobal(Offset.zero);
+      final containerPosition = containerBox.localToGlobal(Offset.zero);
+      offset = imagePosition - containerPosition;
     }
   }
 
@@ -90,8 +106,8 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
     if (oldWidget.image != widget.image) {
       points.clear();
       isCorrect.clear();
-      shouldRepaint = true;
-      
+      lastTransformation = Matrix4.identity();
+      _transformationController.value = Matrix4.identity();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {});
       });
@@ -126,18 +142,93 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
     }
   }
 
+  double _clipScale(double currentScale, double newScale){
+    final double finalScale = currentScale*newScale;
+    return finalScale<_zoomMin
+      ? _zoomMin/currentScale
+      : (finalScale>_zoomMax
+          ? _zoomMax/currentScale
+          : newScale);
+  }
 
-
-  Offset _getRelativePosition(Offset localPosition) {
-    final renderBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
-    final containerBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null && containerBox != null) {
-      final imagePosition = renderBox.localToGlobal(Offset.zero);
-      final containerPosition = containerBox.localToGlobal(Offset.zero);
-      final offset = imagePosition - containerPosition;
-      return localPosition-offset;
+  double _clipOffset(double size, double maxSize, double scale, double offset) {
+    if (size * scale > maxSize) {
+      return offset > -(maxSize - size) * scale /2
+        ? - (maxSize - size) * scale /2
+        : offset < -(maxSize-size)*scale/2-size*scale+maxSize
+          ? -(maxSize-size)*scale/2-size*scale+maxSize
+          : offset;
+    } else {
+      return -maxSize*(scale-1)/2;
     }
-    return localPosition;
+  }
+
+  Matrix4 _appendTransformation(
+    Matrix4 currentTransformation,
+    double newScale,
+    Offset translation,
+    BoxConstraints constraints,
+    Offset startPoint) {
+    final Matrix4 newTransformation;
+    if (newScale == 1) {
+      // Only translate
+      newTransformation = currentTransformation * Matrix4.identity()
+        ..translate(
+          (translation.dx-startPoint.dx)/currentTransformation.getMaxScaleOnAxis(), 
+          (translation.dy-startPoint.dy)/currentTransformation.getMaxScaleOnAxis());
+    } else {
+      // zoom in/out
+      final double currentScale = currentTransformation.getMaxScaleOnAxis();
+      double finalScale = _clipScale(currentScale, newScale);
+      final Offset imageFocalPoint = _transformationController.toScene(startPoint);
+      newTransformation = currentTransformation * Matrix4.identity()
+        ..translate(imageFocalPoint.dx, imageFocalPoint.dy)
+        ..scale(finalScale)
+        ..translate(-imageFocalPoint.dx, -imageFocalPoint.dy);
+    }
+    final imageBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    return Matrix4.identity()
+      ..translate(
+        _clipOffset(
+          imageBox!.size.width,
+          constraints.maxWidth,
+          newTransformation.getMaxScaleOnAxis(),
+          newTransformation.getTranslation()[0]),
+        _clipOffset(
+          imageBox.size.height,
+          constraints.maxHeight,
+          newTransformation.getMaxScaleOnAxis(),
+          newTransformation.getTranslation()[1]))
+      ..scale(newTransformation.getMaxScaleOnAxis());
+  }
+
+  void _onScaleStart(ScaleStartDetails details) {
+    final containerBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
+    final containerPosition = containerBox!.localToGlobal(Offset.zero);
+    _startFocalPoint = details.focalPoint-containerPosition;
+  }
+
+  void _onScaleUpdate(ScaleUpdateDetails details, BoxConstraints constraints) {
+    setState(() {
+      final containerBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
+      final containerPosition = containerBox!.localToGlobal(Offset.zero);
+      final Offset currentFocalPoint = details.focalPoint - containerPosition;
+      currentTransformation = _appendTransformation(
+        lastTransformation,
+        details.scale,
+        currentFocalPoint,
+        constraints,
+        _startFocalPoint
+      );
+      _transformationController.value = currentTransformation;
+    });
+  }
+
+  void _onScaleEnd(ScaleEndDetails details, BoxConstraints constraints) {
+      lastTransformation = currentTransformation;
+  }
+  Offset _getRelativePosition(Offset localPosition) {
+    return localPosition-offset;
   }
 
   @override
@@ -152,41 +243,45 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
             color: Colors.grey[300],
             borderRadius: BorderRadius.circular(12.0),
           ),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Image.network(
-                widget.image.path,
-                key: _imageKey),
-              for(int i = 0; i < points.length;i++)
-                CustomPaint(
-                  size: Size(constraints.maxWidth, constraints.maxHeight),
-                  painter: ImagePainter(
-                    points[i],
-                    isCorrect[i],
-                    i==points.length-1&&isDrawing),
-                ),
-              Positioned.fill(
-                  child: GestureDetector(
-                    onPanStart: widget.isOver?null:(details) {
-                      points.add([details.localPosition]);
-                      isCorrect.add(false);
-                      isDrawing = true;
-                    },
-                    onPanUpdate: widget.isOver?null:(details) {
-                      setState(() {
-                        points.last.add(details.localPosition);
-                      });
-                    },
-                    onPanEnd: widget.isOver?null:(details) {
-                      setState(() {
-                        isDrawing = false;
-                        _isLastIn();
-                      });
-                    },
-                  ),
-                ),
-              ],
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12.0),
+            child: InteractiveViewer(
+              transformationController: _transformationController,
+              panEnabled: false,
+              scaleEnabled: false,
+              child:GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTapUp: (details){
+                  if (!scaling){
+                    points.add([details.localPosition]);
+                    isCorrect.add(false);
+                    setState(() {
+                      isDrawing = false;
+                      _isLastIn();
+                    });
+                  }
+                },
+                onScaleStart: (details){scaling = true;_onScaleStart(details);},
+                onScaleUpdate: (details) {_onScaleUpdate(details, constraints);},
+                onScaleEnd: (details){scaling = false;_onScaleEnd(details, constraints);},
+                child:  Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.network(
+                      widget.image.path,
+                      key: _imageKey),
+                    for(int i = 0; i < points.length;i++)
+                      CustomPaint(
+                        size: Size(constraints.maxWidth, constraints.maxHeight),
+                        painter: ImagePainter(
+                          points[i],
+                          isCorrect[i],
+                          i==points.length-1&&isDrawing),
+                      ),
+                    ],
+                )
+              )
+            )
           )
         );
       }
