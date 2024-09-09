@@ -3,11 +3,11 @@ import 'package:flutter/material.dart' show Colors, LayoutBuilder;
 import 'package:flutter/cupertino.dart';
 
 class ImagePainter extends CustomPainter {
-  final List<Offset> points;
+  final Offset point;
   final bool isIn;
   final bool isDrawing;
 
-  ImagePainter(this.points, this.isIn, this.isDrawing);
+  ImagePainter(this.point, this.isIn, this.isDrawing);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -15,17 +15,12 @@ class ImagePainter extends CustomPainter {
       ..color = isDrawing
         ?Colors.blue.withOpacity(0.2)
         :isIn
-          ?Colors.green.withOpacity(0.2)
-          :Colors.red.withOpacity(0.2)
+          ?Colors.green.withOpacity(0.4)
+          :Colors.red.withOpacity(0.4)
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 20.0;
-    if (points.length > 1) {
-      for (int i = 0; i < points.length - 1; i++) {
-        canvas.drawLine(points[i], points[i + 1], paint);
-      }
-    } else if (points.isNotEmpty){
-      canvas.drawCircle(points[0], 15, paint);
-    }
+
+    canvas.drawCircle(point, 15, paint);
   }
 
   @override
@@ -57,12 +52,11 @@ class ImageDrawingWidget extends StatefulWidget {
 
 class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   final TransformationController _transformationController = TransformationController();
-  late double _width;
-  late double _height;
+
   bool scaling = false;
   
   bool isDrawing = false;
-  List<List<Offset>> points = [];
+  List<Offset> points = [];
   List<bool> isCorrect = [];
   final GlobalKey _imageKey = GlobalKey();
   final GlobalKey _containerKey = GlobalKey();
@@ -77,27 +71,11 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _setOffsetAndDimension();
-      setState(() {});
-    });
   }
   @override
   void dispose() {
     _transformationController.dispose();
     super.dispose();
-  }
-
-  void _setOffsetAndDimension() {
-    final renderBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
-    final containerBox = _containerKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox != null && containerBox != null) {
-      _width = renderBox.size.width;
-      _height = renderBox.size.height;
-      final imagePosition = renderBox.localToGlobal(Offset.zero);
-      final containerPosition = containerBox.localToGlobal(Offset.zero);
-      offset = imagePosition - containerPosition;
-    }
   }
 
   @override
@@ -114,25 +92,24 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
     }
   }
 
-  void _isLastIn() {
+  void _isLastIn(BoxConstraints constraints) {
+    final renderBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    
+    final double width = renderBox?.size.width??1;
+    final double height = renderBox?.size.height??1;
     // calls the callbacks with respect to the last drawing done
     bool isIn = false;
     int i = 0;
+    final offset = Offset((constraints.maxWidth-width)/2,(constraints.maxHeight-height)/2);
     while (i < (widget.image.boundingBoxes?.length??0) && !isIn) {
-      int nbCorrect = 0;
       final bb = widget.image.boundingBoxes![i];
-      for(var o in points.last) {
-        final pos = _getRelativePosition(o);
-        final dx = pos.dx/_width;
-        final dy = pos.dy/_height;
+      final pos = points.last - offset;
+      final dx = pos.dx/width;
+      final dy = pos.dy/height;
         if (bb.x+bb.width > dx && dx >bb.x && bb.y+bb.height > dy && dy >bb.y){
-          nbCorrect += 1;
-        }
-        if (nbCorrect / points.last.length > 0.4) {
           isIn = true;
           isCorrect.last = true;
         }
-      }
       i++;
     }
     if (!isIn) {
@@ -227,9 +204,6 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   void _onScaleEnd(ScaleEndDetails details, BoxConstraints constraints) {
       lastTransformation = currentTransformation;
   }
-  Offset _getRelativePosition(Offset localPosition) {
-    return localPosition-offset;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -249,22 +223,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
               transformationController: _transformationController,
               panEnabled: false,
               scaleEnabled: false,
-              child:GestureDetector(
-                behavior: HitTestBehavior.translucent,
-                onTapUp: (details){
-                  if (!scaling){
-                    points.add([details.localPosition]);
-                    isCorrect.add(false);
-                    setState(() {
-                      isDrawing = false;
-                      _isLastIn();
-                    });
-                  }
-                },
-                onScaleStart: (details){scaling = true;_onScaleStart(details);},
-                onScaleUpdate: (details) {_onScaleUpdate(details, constraints);},
-                onScaleEnd: (details){scaling = false;_onScaleEnd(details, constraints);},
-                child:  Stack(
+              child: Stack(
                   alignment: Alignment.center,
                   children: [
                     Image.network(
@@ -278,11 +237,33 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
                           isCorrect[i],
                           i==points.length-1&&isDrawing),
                       ),
-                    ],
+                    GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTapUp: !widget.isOver
+                        ?( details){
+                          if (!scaling){
+                            points.add(details.localPosition);
+                            isCorrect.add(false);
+                            setState(() {
+                              isDrawing = false;
+                              _isLastIn(constraints);
+                            });
+                          }
+                        }
+                        : null,
+                      onScaleStart: (details){scaling = true;_onScaleStart(details);},
+                      onScaleUpdate: (details) {_onScaleUpdate(details, constraints);},
+                      onScaleEnd: (details){scaling = false;_onScaleEnd(details, constraints);},
+                      child: Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        color: Colors.transparent
+                      )
+                    )
+                  ],
                 )
               )
             )
-          )
         );
       }
     );

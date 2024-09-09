@@ -29,7 +29,7 @@ Future<List<DecodQuestion>> fetchDecodQuestionByArtworkId(int id) async {
 
 Future<List<DecodQuestion>> fetchDecodQuestionRandomly() async {
   try {
-      final response = await http.get(Uri.parse('$hostName/decods/detailed?random=true&limit=5'));
+      final response = await http.get(Uri.parse('$hostName/decods/detailed?random=true&limit=50'));
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body)['data'];
         return list.map((json) => DecodQuestion.fromJson(json)).toList();

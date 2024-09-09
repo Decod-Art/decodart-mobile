@@ -71,7 +71,6 @@ class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
   void foundIncorrect() {
     HapticFeedback.mediumImpact();
     tries -= 1;
-    print('tries:$tries');
     if (tries <= 0){
       isOver = true;
       computePoints();

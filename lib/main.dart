@@ -9,7 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:decodart/view/home/home.dart' show HomePage;
 
 void main() async {
-  debugPaintSizeEnabled=true;
+  //debugPaintSizeEnabled=true;
   // configure DB
   await Hive.initFlutter();
   Hive.registerAdapter(GameDataAdapter());
