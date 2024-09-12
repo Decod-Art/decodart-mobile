@@ -23,6 +23,7 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
 class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {
   late ScrollController _scrollController;
   bool isLoading = false;
+  bool _queryChanged = false;
   late LazyList<T> items;
 
   @override
@@ -44,7 +45,8 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
   }
 
   Future<void> _checkIfNeedsLoading() async {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !isLoading && items.hasMore) {
+    if ((_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30||_queryChanged) && !isLoading && items.hasMore) {
+      _queryChanged = false;
       _loadMoreItems();
     }
   }
@@ -80,6 +82,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
               child: CupertinoSearchTextField(
                 placeholder: 'Rechercher',
                 onChanged: (String value) {
+                  _queryChanged = true;
                   items = LazyList<T>(fetch: ({limit=10, offset=0}){return widget.fetch(limit: limit, offset: offset, query: value.isEmpty?null:value);});
                   _checkIfNeedsLoading();
                 },

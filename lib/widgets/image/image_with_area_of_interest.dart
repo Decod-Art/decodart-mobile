@@ -5,14 +5,10 @@ import 'package:flutter/material.dart';
 
 class ImageWithAreaOfInterest extends StatefulWidget {
   final AbstractImage image;
-  final double x;
-  final double y;
 
   const ImageWithAreaOfInterest({
     super.key,
     required this.image,
-    this.x = 0.25,
-    this.y = 0.25,
   });
 
   @override
@@ -25,17 +21,21 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   double _imageHeight = 0;
   bool showBoundingBox = true;
   bool manuallyHideBoundingBox = false;
-  bool isZoomed = false;
   bool isZooming = false;
-  late TransformationController _transformationController;
   late AnimationController _animationController;
   late Animation<Matrix4> _animation;
   BoundingBox? selectedBox;
 
+  Matrix4 currentTransformation = Matrix4.identity();
+  Matrix4 lastTransformation = Matrix4.identity();
+
+  late Offset _startFocalPoint;
+
+  final double _zoomMax = 4, _zoomMin = 1;
+
   @override
   void initState() {
     super.initState();
-    _transformationController = TransformationController();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 500),
@@ -44,41 +44,23 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
 
   @override
   void dispose() {
-    _transformationController.dispose();
     _animationController.dispose();
     super.dispose();
   }
 
-  void _zoomToBoundingBox([BoundingBox? b, double lambda=0.5]) {
+  void _resetZoom() {
     setState(() {
-      selectedBox = b;
-      if (b!=null) {
-        showBoundingBox = false;
-      }
+      showBoundingBox = true;
+      selectedBox = null;
     });
-    final double scaleX = b!=null?1 / b.width:1;
-    final double scaleY = b!=null?1 / b.height:1;
-    final double scale = (b!=null)?(scaleX < scaleY ? scaleX : scaleY)*lambda+1-lambda:1;
-    double translateX = b != null ? -b.center.dx * _imageWidth * scale + (_imageWidth / 2) : 0;
-    double translateY = b != null ? -b.center.dy * _imageHeight * scale + (_imageHeight / 2) : 0;
-    _zoomIn(scale, translateX, translateY);
+    _animate(Matrix4.identity());
   }
 
-  void _zoomIn(double scale, double translateX, double translateY) {
+  void _animate(Matrix4 destination){
     isZooming = true;
-    final double maxTranslateX = - _imageWidth * scale + _imageWidth;
-    final double maxTranslateY = - _imageHeight * scale + _imageHeight;
-    translateX = translateX<maxTranslateX?-_imageWidth*scale+_imageWidth:translateX;
-    translateX = translateX>0?0:translateX;
-    translateY = translateY<maxTranslateY?-_imageHeight*scale+_imageHeight:translateY;
-    translateY = translateY>0?0:translateY;
-    final Matrix4 endMatrix = Matrix4.identity()
-      ..translate(translateX, translateY)
-      ..scale(scale);
-
     _animation = Matrix4Tween(
-      begin: _transformationController.value,
-      end: endMatrix,
+      begin: currentTransformation,
+      end: destination,
     ).animate(CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
@@ -86,13 +68,15 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
 
     _animationController.forward(from: 0);
     _animation.addListener(() {
-      _transformationController.value = _animation.value;
+      setState(() {
+        currentTransformation = _animation.value;
+      });
     });
     
     _animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         isZooming = false;
-        if (selectedBox == null&&!isZoomed) {
+        if (selectedBox == null&&!_isZoomed()) {
           setState(() {
             showBoundingBox = true;
           });
@@ -101,10 +85,67 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     });
   }
 
+  void _zoomToBoundingBox(BoundingBox b, [double lambda=0.5]) {
+    setState(() {
+      selectedBox = b;
+      showBoundingBox = false;
+    });
+    final double scaleX = 1/b.width;
+    final double scaleY = 1/b.height;
+    final double scale = (scaleX < scaleY ? scaleX : scaleY)*lambda+1-lambda;
+    double translateX = -b.center.dx * _imageWidth * scale + (MediaQuery.of(context).size.width / 2);
+    double translateY = -b.center.dy * _imageHeight * scale + (MediaQuery.of(context).size.height / 2);
+    _zoomIn(scale, translateX, translateY);
+  }
+
+
+  void _zoomIn(double scale, double translateX, double translateY) {
+    final Offset offset = Offset(
+      (MediaQuery.of(context).size.width - _imageWidth)/2,
+      (MediaQuery.of(context).size.height - _imageHeight)/2
+    );
+    translateX -= offset.dx*scale;
+    translateY -= offset.dy*scale;
+
+    if (_imageWidth * scale >= MediaQuery.of(context).size.width) {
+      translateX = translateX < -offset.dx*scale
+        ? translateX
+        : -offset.dx*scale;
+      translateX = translateX - MediaQuery.of(context).size.width > -_imageWidth*scale-offset.dx*scale
+        ? translateX
+        : MediaQuery.of(context).size.width-(_imageWidth+offset.dx)*scale;
+    }
+
+    if (_imageHeight * scale >= MediaQuery.of(context).size.height) {
+      translateY = translateY < -offset.dy*scale
+        ? translateY
+        : -offset.dy*scale;
+      translateY = translateY - MediaQuery.of(context).size.height > -_imageHeight*scale-offset.dy*scale
+        ? translateY
+        : MediaQuery.of(context).size.height-(_imageHeight+offset.dy)*scale;
+    }
+
+    final Matrix4 endMatrix = Matrix4.identity()
+      ..translate(translateX, translateY)
+      ..scale(scale);
+
+    _animate(endMatrix);
+  }
+
   Widget _areaOfInterest(BoundingBox b){
-    final Matrix4 matrix = _transformationController.value;
+    final Matrix4 matrix = currentTransformation;
+
+    final Offset offset = Offset(
+      (MediaQuery.of(context).size.width - _imageWidth)/2,
+      (MediaQuery.of(context).size.height - _imageHeight)/2);
+
     final Offset transformedOffset = MatrixUtils.transformPoint(
-      matrix, Offset(_imageWidth * b.center.dx, _imageHeight * b.center.dy));
+      matrix,
+      Offset(
+        _imageWidth * b.center.dx+offset.dx,
+        _imageHeight * b.center.dy+offset.dy
+      )
+    );
     return Positioned(
       left: transformedOffset.dx-32,
       top: transformedOffset.dy-32,
@@ -127,130 +168,197 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     );
   }
 
-  void _postFrameCallback([bool updatedZoom=false]){
-     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final RenderBox renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
-      if (_imageWidth != renderBox.size.width || _imageHeight != renderBox.size.height || updatedZoom){
-        setState(() {
-          _imageWidth = renderBox.size.width;
-          _imageHeight = renderBox.size.height;
-        });
-      }
+  void _onImageLoaded(){
+    final RenderBox renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
+    _imageWidth = renderBox.size.width;
+    _imageHeight = renderBox.size.height;
+    setState(() {});
+  }
+
+  bool _isZoomed() {
+    return currentTransformation.getMaxScaleOnAxis() > 1+1e-9;
+  }
+
+  double _clipScale(double currentScale, double newScale){
+    final double finalScale = currentScale*newScale;
+    return finalScale<_zoomMin
+      ? _zoomMin/currentScale
+      : (finalScale>_zoomMax
+          ? _zoomMax/currentScale
+          : newScale);
+  }
+
+  double _clipOffset(double size, double maxSize, double scale, double offset) {
+    if (size * scale > maxSize) {
+      return offset > -(maxSize - size) * scale /2
+        ? - (maxSize - size) * scale /2
+        : offset < -(maxSize-size)*scale/2-size*scale+maxSize
+          ? -(maxSize-size)*scale/2-size*scale+maxSize
+          : offset;
+    } else {
+      return -maxSize*(scale-1)/2;
+    }
+  }
+
+  Matrix4 _appendTransformation(
+    Matrix4 currentTransformation,
+    double newScale,
+    Offset translation,
+    Offset startPoint) {
+    final Matrix4 newTransformation;
+    final imageBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    if (newScale == 1) {
+      // Only translate
+      newTransformation = currentTransformation * Matrix4.identity()
+        ..translate(
+          (translation.dx-startPoint.dx)/currentTransformation.getMaxScaleOnAxis(), 
+          (translation.dy-startPoint.dy)/currentTransformation.getMaxScaleOnAxis());
+    } else {
+      final double currentScale = currentTransformation.getMaxScaleOnAxis();
+      double finalScale = _clipScale(currentScale, newScale);
+      
+      final Offset focalPoint = (startPoint - Offset(
+        currentTransformation.getTranslation().x,
+        currentTransformation.getTranslation().y
+      )) / currentScale;
+      newTransformation = currentTransformation * Matrix4.identity()
+        ..translate(focalPoint.dx, focalPoint.dy)
+        ..scale(finalScale)
+        ..translate(-focalPoint.dx, -focalPoint.dy);
+    }
+
+    return Matrix4.identity()
+      ..translate(
+        _clipOffset(
+          imageBox!.size.width,
+          screenWidth,
+          newTransformation.getMaxScaleOnAxis(),
+          newTransformation.getTranslation()[0]),
+        _clipOffset(
+          imageBox.size.height,
+          screenHeight,
+          newTransformation.getMaxScaleOnAxis(),
+          newTransformation.getTranslation()[1]))
+      ..scale(newTransformation.getMaxScaleOnAxis());
+  }
+
+  void _onScaleStart(ScaleStartDetails details) {
+    _startFocalPoint = details.focalPoint;
+    lastTransformation = currentTransformation;
+  }
+
+  void _onScaleUpdate(ScaleUpdateDetails details) {
+    setState(() {
+      currentTransformation = _appendTransformation(
+        lastTransformation,
+        details.scale,
+        details.focalPoint,
+        _startFocalPoint
+      );
     });
+  }
+
+  void _onScaleEnd(ScaleEndDetails details) {
+      lastTransformation = currentTransformation;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        GestureDetector(
-          onTap: () {
-            if (!isZooming){
-              if (selectedBox!=null || isZoomed){
-                isZoomed = false;
-                _zoomToBoundingBox();
-              } else {
-                setState(() {
-                  final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
-                  showBoundingBox = !isVisible;
-                  manuallyHideBoundingBox = isVisible;
-                });
-              }
-            }
-          },
-          onDoubleTapDown: selectedBox!=null || isZoomed?null:(details) {
-            if (selectedBox!=null||isZoomed){
-              isZoomed = false;
-              _zoomToBoundingBox();
-            } else {
-              isZoomed = true;
-              setState(() {
-                showBoundingBox = false;
-              });
-              _zoomIn(4,
-              -details.localPosition.dx * 4 + (_imageWidth / 2),
-              -details.localPosition.dy * 4 + (_imageHeight / 2));
-            }
-          },
-          child: InteractiveViewer(
-            scaleEnabled: false,
-            transformationController: _transformationController,
-            child: CachedNetworkImage(
-              key: _imageKey,
-              imageUrl: widget.image.path,
-              placeholder: (context, url) => const CupertinoActivityIndicator(),
-              errorWidget: (context, url, error) => const Icon(CupertinoIcons.exclamationmark_circle),
-              fit: BoxFit.contain,
-              imageBuilder: (context, imageProvider) {
-                _postFrameCallback();
-                return Image(
-                  image: imageProvider,
-                  fit: BoxFit.contain,
-                );
-              },
-            ),
-            onInteractionUpdate: (details){
-              _postFrameCallback(true);
-            },
+    return GestureDetector(
+      onTap: () {
+        if (!isZooming){
+          if (selectedBox!=null || _isZoomed()){
+            _resetZoom();
+          } else {
+            setState(() {
+              final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
+              showBoundingBox = !isVisible;
+              manuallyHideBoundingBox = isVisible;
+            });
+          }
+        }
+      },
+      onScaleStart: _onScaleStart,
+      onScaleUpdate: _onScaleUpdate,
+      onScaleEnd: _onScaleEnd,
+      child: Stack(
+        children: [
+          Transform(
+            transform: currentTransformation,
+            child: Center(
+              child: Image.network(
+                widget.image.path,
+                key: _imageKey,
+                fit: BoxFit.contain,
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if (_imageWidth == 0 && _imageHeight == 0) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) => _onImageLoaded());
+                  }
+                  return child;
+                },
+              )
+            )
           ),
-        ),
-        if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox && !manuallyHideBoundingBox)
-          for (var b in widget.image.boundingBoxes!) ...[
-            _areaOfInterest(b),
-          ],
-        AnimatedPositioned(
-          duration: const Duration(milliseconds: 500),
-          bottom: selectedBox!=null ? 0 : -200, // Adjust the height as needed
-          left: 0,
-          right: 0,
-          child: Container(
-            height: 200, // Adjust the height as needed
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
+          if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox && !manuallyHideBoundingBox && !_isZoomed())
+            for (var b in widget.image.boundingBoxes!) ...[
+              _areaOfInterest(b),
+            ],
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 500),
+            bottom: selectedBox!=null ? 0 : -200, // Adjust the height as needed
+            left: 0,
+            right: 0,
+            child: Container(
+              height: 200, // Adjust the height as needed
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
               ),
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IntrinsicWidth(
-                  child: CupertinoButton(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Ajustez les marges internes si nécessaire
-                    onPressed: () {
-                      _zoomToBoundingBox();
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(0.5), // Fond noir transparent
-                        borderRadius: BorderRadius.circular(30), // Extrémités arrondies
-                      ),
-                      padding: const EdgeInsets.only(left: 10, right: 15, top: 5, bottom: 5), // Ajustez les marges internes si nécessaire
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Icon(CupertinoIcons.arrow_left, color: Colors.white, size: 16,),
-                          SizedBox(width: 10,),
-                          Text("Retour", style: TextStyle(color: Colors.white, fontSize: 16)),
-                        ],
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  IntrinsicWidth(
+                    child: CupertinoButton(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Ajustez les marges internes si nécessaire
+                      onPressed: () {
+                        _resetZoom();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.5), // Fond noir transparent
+                          borderRadius: BorderRadius.circular(30), // Extrémités arrondies
+                        ),
+                        padding: const EdgeInsets.only(left: 10, right: 15, top: 5, bottom: 5), // Ajustez les marges internes si nécessaire
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(CupertinoIcons.arrow_left, color: Colors.white, size: 16,),
+                            SizedBox(width: 10,),
+                            Text("Retour", style: TextStyle(color: Colors.white, fontSize: 16)),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    selectedBox?.description??"",
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(
+                      selectedBox?.description??"",
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      )
     );
   }
 }

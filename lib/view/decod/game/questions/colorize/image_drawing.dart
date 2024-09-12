@@ -51,7 +51,7 @@ class ImageDrawingWidget extends StatefulWidget {
 }
 
 class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
-  final TransformationController _transformationController = TransformationController();
+  
 
   bool scaling = false;
   
@@ -64,18 +64,13 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   Offset _startFocalPoint = Offset.zero;
   
   Matrix4 lastTransformation = Matrix4.identity();
-  late Matrix4 currentTransformation;
+  Matrix4 currentTransformation = Matrix4.identity();
 
   final double _zoomMax = 4, _zoomMin = 1;
 
   @override
   void initState() {
     super.initState();
-  }
-  @override
-  void dispose() {
-    _transformationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -85,7 +80,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
       points.clear();
       isCorrect.clear();
       lastTransformation = Matrix4.identity();
-      _transformationController.value = Matrix4.identity();
+      currentTransformation = Matrix4.identity();
       WidgetsBinding.instance.addPostFrameCallback((_) {
         setState(() {});
       });
@@ -147,6 +142,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
     BoxConstraints constraints,
     Offset startPoint) {
     final Matrix4 newTransformation;
+    final imageBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
     if (newScale == 1) {
       // Only translate
       newTransformation = currentTransformation * Matrix4.identity()
@@ -157,13 +153,16 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
       // zoom in/out
       final double currentScale = currentTransformation.getMaxScaleOnAxis();
       double finalScale = _clipScale(currentScale, newScale);
-      final Offset imageFocalPoint = _transformationController.toScene(startPoint);
+      final offset = Offset((constraints.maxWidth-imageBox!.size.width)/2,(constraints.maxHeight-imageBox.size.height)/2);
+      final Offset imageFocalPoint = (startPoint - Offset(
+          currentTransformation.getTranslation().x,
+          currentTransformation.getTranslation().y
+        )) / currentScale;
       newTransformation = currentTransformation * Matrix4.identity()
         ..translate(imageFocalPoint.dx, imageFocalPoint.dy)
         ..scale(finalScale)
         ..translate(-imageFocalPoint.dx, -imageFocalPoint.dy);
     }
-    final imageBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
     return Matrix4.identity()
       ..translate(
         _clipOffset(
@@ -197,7 +196,6 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
         constraints,
         _startFocalPoint
       );
-      _transformationController.value = currentTransformation;
     });
   }
 
@@ -219,10 +217,8 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12.0),
-            child: InteractiveViewer(
-              transformationController: _transformationController,
-              panEnabled: false,
-              scaleEnabled: false,
+            child: Transform(
+              transform: currentTransformation,
               child: Stack(
                   alignment: Alignment.center,
                   children: [

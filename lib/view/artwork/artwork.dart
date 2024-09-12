@@ -8,7 +8,7 @@ import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
 import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
 import 'package:flutter/cupertino.dart';
 
-class ArtworkView extends StatelessWidget with ShowModal{
+class ArtworkView extends StatelessWidget with ShowModal {
   final Artwork artwork;
   const ArtworkView({
     super.key,
