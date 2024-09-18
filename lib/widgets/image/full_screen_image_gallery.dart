@@ -45,8 +45,17 @@ class _FullScreenImageGalleryState extends State<FullScreenImageGallery> {
             builder: (context, index) {
               return PhotoViewGalleryPageOptions.customChild(
                 disableGestures: true,
-                child: ImageWithAreaOfInterest(
-                  image: widget.images[index]
+                child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: CupertinoColors.black,
+                  child: SafeArea(
+                    child: ClipRect(
+                      child: ImageWithAreaOfInterest(
+                        image: widget.images[index]
+                      )
+                    )
+                  )
                 ),
                 minScale: PhotoViewComputedScale.contained,
                 maxScale: PhotoViewComputedScale.covered * 2,

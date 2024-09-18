@@ -58,5 +58,10 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
 
   LatLng get coordinates {
     return LatLng(latitude, longitude);
-  }  
+  }
+
+  @override
+  String toString() {
+    return "[UID: $uid], [title: $title], [coordinates: $coordinates]";
+  }
 }

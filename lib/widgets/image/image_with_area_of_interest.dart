@@ -85,7 +85,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     });
   }
 
-  void _zoomToBoundingBox(BoundingBox b, [double lambda=0.5]) {
+  void _zoomToBoundingBox(BoundingBox b, BoxConstraints constraints, [double lambda=0.5]) {
     setState(() {
       selectedBox = b;
       showBoundingBox = false;
@@ -93,36 +93,36 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     final double scaleX = 1/b.width;
     final double scaleY = 1/b.height;
     final double scale = (scaleX < scaleY ? scaleX : scaleY)*lambda+1-lambda;
-    double translateX = -b.center.dx * _imageWidth * scale + (MediaQuery.of(context).size.width / 2);
-    double translateY = -b.center.dy * _imageHeight * scale + (MediaQuery.of(context).size.height / 2);
-    _zoomIn(scale, translateX, translateY);
+    double translateX = -b.center.dx * _imageWidth * scale + (constraints.maxWidth / 2);
+    double translateY = -b.center.dy * _imageHeight * scale + (constraints.maxHeight / 2);
+    _zoomIn(scale, translateX, translateY, constraints);
   }
 
 
-  void _zoomIn(double scale, double translateX, double translateY) {
+  void _zoomIn(double scale, double translateX, double translateY, BoxConstraints constraints) {
     final Offset offset = Offset(
-      (MediaQuery.of(context).size.width - _imageWidth)/2,
-      (MediaQuery.of(context).size.height - _imageHeight)/2
+      (constraints.maxWidth - _imageWidth)/2,
+      (constraints.maxHeight - _imageHeight)/2
     );
     translateX -= offset.dx*scale;
     translateY -= offset.dy*scale;
 
-    if (_imageWidth * scale >= MediaQuery.of(context).size.width) {
+    if (_imageWidth * scale >= constraints.maxWidth) {
       translateX = translateX < -offset.dx*scale
         ? translateX
         : -offset.dx*scale;
-      translateX = translateX - MediaQuery.of(context).size.width > -_imageWidth*scale-offset.dx*scale
+      translateX = translateX - constraints.maxWidth > -_imageWidth*scale-offset.dx*scale
         ? translateX
-        : MediaQuery.of(context).size.width-(_imageWidth+offset.dx)*scale;
+        : constraints.maxWidth-(_imageWidth+offset.dx)*scale;
     }
 
-    if (_imageHeight * scale >= MediaQuery.of(context).size.height) {
+    if (_imageHeight * scale >= constraints.maxHeight) {
       translateY = translateY < -offset.dy*scale
         ? translateY
         : -offset.dy*scale;
-      translateY = translateY - MediaQuery.of(context).size.height > -_imageHeight*scale-offset.dy*scale
+      translateY = translateY - constraints.maxHeight > -_imageHeight*scale-offset.dy*scale
         ? translateY
-        : MediaQuery.of(context).size.height-(_imageHeight+offset.dy)*scale;
+        : constraints.maxHeight-(_imageHeight+offset.dy)*scale;
     }
 
     final Matrix4 endMatrix = Matrix4.identity()
@@ -132,12 +132,12 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     _animate(endMatrix);
   }
 
-  Widget _areaOfInterest(BoundingBox b){
+  Widget _areaOfInterest(BoundingBox b, BoxConstraints constraints){
     final Matrix4 matrix = currentTransformation;
 
     final Offset offset = Offset(
-      (MediaQuery.of(context).size.width - _imageWidth)/2,
-      (MediaQuery.of(context).size.height - _imageHeight)/2);
+      (constraints.maxWidth - _imageWidth)/2,
+      (constraints.maxHeight - _imageHeight)/2);
 
     final Offset transformedOffset = MatrixUtils.transformPoint(
       matrix,
@@ -151,7 +151,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
       top: transformedOffset.dy-32,
       child: CupertinoButton(
         onPressed: () {
-          _zoomToBoundingBox(b);
+          _zoomToBoundingBox(b, constraints);
         },
         child: Container(
           decoration: BoxDecoration(
@@ -204,11 +204,12 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     Matrix4 currentTransformation,
     double newScale,
     Offset translation,
-    Offset startPoint) {
+    Offset startPoint,
+    BoxConstraints constraints) {
     final Matrix4 newTransformation;
     final imageBox = _imageKey.currentContext?.findRenderObject() as RenderBox?;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = constraints.maxWidth;
+    final screenHeight = constraints.maxHeight;
     if (newScale == 1) {
       // Only translate
       newTransformation = currentTransformation * Matrix4.identity()
@@ -249,13 +250,14 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     lastTransformation = currentTransformation;
   }
 
-  void _onScaleUpdate(ScaleUpdateDetails details) {
+  void _onScaleUpdate(ScaleUpdateDetails details, BoxConstraints constraints) {
     setState(() {
       currentTransformation = _appendTransformation(
         lastTransformation,
         details.scale,
         details.focalPoint,
-        _startFocalPoint
+        _startFocalPoint,
+        constraints
       );
     });
   }
@@ -266,99 +268,103 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (!isZooming){
-          if (selectedBox!=null || _isZoomed()){
-            _resetZoom();
-          } else {
-            setState(() {
-              final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
-              showBoundingBox = !isVisible;
-              manuallyHideBoundingBox = isVisible;
-            });
-          }
-        }
-      },
-      onScaleStart: _onScaleStart,
-      onScaleUpdate: _onScaleUpdate,
-      onScaleEnd: _onScaleEnd,
-      child: Stack(
-        children: [
-          Transform(
-            transform: currentTransformation,
-            child: Center(
-              child: Image.network(
-                widget.image.path,
-                key: _imageKey,
-                fit: BoxFit.contain,
-                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                  if (_imageWidth == 0 && _imageHeight == 0) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) => _onImageLoaded());
-                  }
-                  return child;
-                },
-              )
-            )
-          ),
-          if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox && !manuallyHideBoundingBox && !_isZoomed())
-            for (var b in widget.image.boundingBoxes!) ...[
-              _areaOfInterest(b),
-            ],
-          AnimatedPositioned(
-            duration: const Duration(milliseconds: 500),
-            bottom: selectedBox!=null ? 0 : -200, // Adjust the height as needed
-            left: 0,
-            right: 0,
-            child: Container(
-              height: 200, // Adjust the height as needed
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onTap: () {
+            if (!isZooming){
+              if (selectedBox!=null || _isZoomed()){
+                _resetZoom();
+              } else {
+                setState(() {
+                  final isVisible = (showBoundingBox&&!manuallyHideBoundingBox);
+                  showBoundingBox = !isVisible;
+                  manuallyHideBoundingBox = isVisible;
+                });
+              }
+            }
+          },
+          onScaleStart: _onScaleStart,
+          onScaleUpdate: (details){_onScaleUpdate(details, constraints);},
+          onScaleEnd: _onScaleEnd,
+          child: Stack(
+            children: [
+              Transform(
+                transform: currentTransformation,
+                child: Center(
+                  child: Image.network(
+                    widget.image.path,
+                    key: _imageKey,
+                    fit: BoxFit.contain,
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      if (_imageWidth == 0 && _imageHeight == 0) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) => _onImageLoaded());
+                      }
+                      return child;
+                    },
+                  )
+                )
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  IntrinsicWidth(
-                    child: CupertinoButton(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Ajustez les marges internes si nécessaire
-                      onPressed: () {
-                        _resetZoom();
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5), // Fond noir transparent
-                          borderRadius: BorderRadius.circular(30), // Extrémités arrondies
-                        ),
-                        padding: const EdgeInsets.only(left: 10, right: 15, top: 5, bottom: 5), // Ajustez les marges internes si nécessaire
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(CupertinoIcons.arrow_left, color: Colors.white, size: 16,),
-                            SizedBox(width: 10,),
-                            Text("Retour", style: TextStyle(color: Colors.white, fontSize: 16)),
-                          ],
+              if (_imageWidth > 0 && _imageHeight > 0 && widget.image.boundingBoxes!=null && showBoundingBox && !manuallyHideBoundingBox && !_isZoomed())
+                for (var b in widget.image.boundingBoxes!) ...[
+                  _areaOfInterest(b, constraints),
+                ],
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 500),
+                bottom: selectedBox!=null ? 0 : -200, // Adjust the height as needed
+                left: 0,
+                right: 0,
+                child: Container(
+                  height: 200, // Adjust the height as needed
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IntrinsicWidth(
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5), // Ajustez les marges internes si nécessaire
+                          onPressed: () {
+                            _resetZoom();
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.5), // Fond noir transparent
+                              borderRadius: BorderRadius.circular(30), // Extrémités arrondies
+                            ),
+                            padding: const EdgeInsets.only(left: 10, right: 15, top: 5, bottom: 5), // Ajustez les marges internes si nécessaire
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(CupertinoIcons.arrow_left, color: Colors.white, size: 16,),
+                                SizedBox(width: 10,),
+                                Text("Retour", style: TextStyle(color: Colors.white, fontSize: 16)),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          selectedBox?.description??"",
+                          style: const TextStyle(color: Colors.white, fontSize: 14),
+                        ),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(
-                      selectedBox?.description??"",
-                      style: const TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
-      )
+            ],
+          )
+        );
+      }
     );
   }
 }

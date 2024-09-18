@@ -19,6 +19,9 @@ void main() async {
 
   runApp(
     const CupertinoApp(
+      theme: CupertinoThemeData(
+        brightness: Brightness.light, // Forcer le mode clair
+      ),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

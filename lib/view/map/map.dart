@@ -1,4 +1,4 @@
-import 'dart:math' show Point;
+import 'dart:math' show Point, Random;
 
 import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
@@ -70,44 +70,35 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
       }
     });
   }
-
-  void _updateMarkers(List<Marker> fetchAllMapResults) {
-    final fetchAllMapSet = fetchAllMapResults.toSet();
-
-    // Conserver uniquement les marqueurs qui sont dans fetchAllMapResults
-    markers.retainWhere((marker) => fetchAllMapSet.contains(marker));
-
-    // Ajouter les nouveaux marqueurs de fetchAllMapResults qui ne sont pas déjà dans markers
-    for (var marker in fetchAllMapResults) {
-      if (!markers.contains(marker)) {
-        markers.add(marker);
-      }
-    }
-  }
-  
-
+ 
   Future<void> _loadMarkers() async {
+    const buffer = 0.5; 
     // The function is a bit complex
     // because it must not reconstruct markers that were already available.
     // To avoid blinking effects
     final visibleRegion = mapController.mapController.camera.visibleBounds;
     final newItems = await fetchAllOnMap(
-      minLatitude: visibleRegion.south,
-      maxLatitude: visibleRegion.north,
-      minLongitude: visibleRegion.west,
-      maxLongitude: visibleRegion.east
+      minLatitude: visibleRegion.south - buffer * (visibleRegion.north-visibleRegion.south),
+      maxLatitude: visibleRegion.north + buffer * (visibleRegion.north-visibleRegion.south),
+      minLongitude: visibleRegion.west - buffer * (visibleRegion.east-visibleRegion.west),
+      maxLongitude: visibleRegion.east + buffer * (visibleRegion.east-visibleRegion.west)
     );
     final newUids = newItems.map((item) => item.uid).toSet();
+
     List<Marker> updatedMarkers = [];
+    List<GeolocatedListItem> updatedItems = [];
     for (int i = 0; i < markers.length; i++) {
       if (newUids.contains(items[i].uid)) {
         updatedMarkers.add(markers[i]);
+        updatedItems.add(items[i]);
       }
     }
     markers = updatedMarkers;
+    items = updatedItems;
 
     for (var item in newItems) {
       if (!items.any((existingItem) => existingItem.uid == item.uid)) {
+        items.add(item);
         markers.add(Marker(
           point: item.coordinates,
           width: 80,
@@ -125,7 +116,7 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
                 CircleAvatar(
                   //backgroundImage: NetworkImage(item.image.path), // Utilisez item.image pour l'URL de l'image
                   radius: 30, // Ajustez la taille du cercle selon vos besoins
-                  backgroundColor: Colors.white, // Bordure blanche
+                  backgroundColor: CupertinoColors.white, // Bordure blanche
                   child: ClipOval(
                     child: CachedNetworkImage(
                       imageUrl: item.image.path,
@@ -150,7 +141,6 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
         ));
       }
     }
-    items = newItems;
     setState(() {});
   }
 
