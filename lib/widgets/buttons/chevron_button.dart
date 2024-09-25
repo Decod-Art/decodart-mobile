@@ -48,7 +48,8 @@ class ChevronButtonWidget extends StatelessWidget {
                 Icon(
                   CupertinoIcons.right_chevron,
                   color: chevronColor,
-                  size: 20
+                  size: 20,
+                  fill: 0,
                 ),
                 SizedBox(width: marginRight)
               ],

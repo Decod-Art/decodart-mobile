@@ -1,14 +1,14 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/view/decod/game/manager.dart' show DecodView;
+import 'package:decodart/view/artwork/decod_button.dart' show DecodButton;
 import 'package:decodart/widgets/buttons/button_list.dart' show ButtonListWidget;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
 import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
-import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show showModal;
 import 'package:flutter/cupertino.dart';
 
-class ArtworkView extends StatelessWidget with ShowModal {
+class ArtworkView extends StatelessWidget {
   final Artwork artwork;
   const ArtworkView({
     super.key,
@@ -36,9 +36,7 @@ class ArtworkView extends StatelessWidget with ShowModal {
           padding: const EdgeInsets.only(left: 15, right: 15, top: 5),
           child: Text(
             "${artwork.artist.name}, ${artwork.year}",
-            style: const TextStyle(
-              fontSize: 20
-            )
+            style: const TextStyle(fontSize: 20)
           )
         ),
         const SizedBox(height: 20),
@@ -51,89 +49,40 @@ class ArtworkView extends StatelessWidget with ShowModal {
                 color: CupertinoColors.activeBlue,
               ),
               onPressed: (){
-                showDecodModalBottomSheet(
+                showModal(
                   context,
                   (context) => ContentScrolling(
                     text: artwork.artist.biography,
-                    edges: const EdgeInsets.all(15)),
-                  expand: true,
-                  useRootNavigator: true);
-                
+                    edges: const EdgeInsets.all(15)
+                  )
+                );
               },
             ),
-            ChevronButtonWidget(
-              text: "Contexte historique",
-              icon: Image.asset(
-                'images/icons/text_book_closed.png',
-                width: 24,
-                height: 24,
-                color: CupertinoColors.activeBlue, // Optionnel : pour colorer l'icône
-              ),
-              onPressed: (){
-                showDecodModalBottomSheet(
-                  context,
-                  (context) => ContentScrolling(
-                    text: artwork.context.description,
-                    edges: const EdgeInsets.all(15)),
-                  expand: true,
-                  useRootNavigator: true);
-              },
-            )
+            for(final tag in artwork.tags) ... [
+              ChevronButtonWidget(
+                text: tag.name,
+                icon: Image.asset(
+                  _tagIconPath(tag.category.name),
+                  width: 24,
+                  height: 24,
+                  color: CupertinoColors.activeBlue, // Optionnel : pour colorer l'icône
+                ),
+                onPressed: (){
+                  showModal(
+                    context,
+                    (context) => ContentScrolling(
+                      text: tag.description,
+                      edges: const EdgeInsets.all(15)
+                    )
+                  );
+                },
+              )
+            ]
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 5),
         if(artwork.hasDecodQuestion)
-          Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 15, right: 15),
-                  child: CupertinoButton.filled(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    onPressed: () {
-                      Navigator.of(
-                      context, rootNavigator: true).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => DecodView(artwork: artwork,),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          var begin = const Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
-
-                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                          var offsetAnimation = animation.drive(tween);
-
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'images/icons/plus_magnifyingglass.png',
-                          width: 24,
-                          height: 24,
-                          color: CupertinoColors.white, // Optionnel : pour colorer l'icône
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          "Décoder l'œuvre",
-                          style: TextStyle(
-                            color: CupertinoColors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                )
-              ),
-            ]
-          ),
+          DecodButton(artwork: artwork),
         const SizedBox(height: 20),
         ImageGallery(
           images: artwork.images
@@ -144,8 +93,20 @@ class ArtworkView extends StatelessWidget with ShowModal {
               items: artwork.description,
             )
           ),
-        // Ajoutez d'autres widgets pour afficher les autres propriétés de l'artwork
       ],
     );
+  }
+}
+
+String _tagIconPath(String name){
+  switch (name) {
+    case "Technique artistique":
+      return "images/icons/paintbrush_pointed.png";
+    case "Sujet":
+      return "images/icons/photo_artframe.png";
+    case "Mouvement artistique":
+      return "person_crop_square";
+    default:
+      return "images/icons/text_book_closed.png";
   }
 }

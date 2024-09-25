@@ -137,7 +137,7 @@ class _ImageQuestionState extends State<ImageQuestion> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              flex: 1,
+              flex: 3,
               child: Padding(
                 padding: const EdgeInsets.all(15),
                 child: Center(
@@ -154,9 +154,9 @@ class _ImageQuestionState extends State<ImageQuestion> {
               )
             ),
             Expanded(
-              flex: 5,
+              flex: 13,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.only(left:15, right: 15, bottom: 15),
                 child: getAnswers(context)
               )
             ),

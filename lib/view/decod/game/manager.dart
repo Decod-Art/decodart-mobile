@@ -8,16 +8,16 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:decodart/view/decod/game/end.dart' show EndingWidget;
 
-import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
+import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType, DecodTag;
 import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
 import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
 import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
 import 'package:decodart/view/decod/game/questions/image.dart' show ImageQuestion;
-import 'package:vibration/vibration.dart' show Vibration;
 
 class DecodView extends StatefulWidget {
   final Artwork? artwork;
-  const DecodView({super.key, this.artwork});
+  final DecodTag? tag;
+  const DecodView({super.key, this.artwork, this.tag});
 
   @override
   State<DecodView> createState() => _DecodViewState();
@@ -86,7 +86,7 @@ class _DecodViewState extends State<DecodView> {
     if (widget.artwork != null){
       questions.addAll(await fetchDecodQuestionByArtworkId(widget.artwork!.uid!));
     } else {
-      questions.addAll(await fetchDecodQuestionRandomly());
+      questions.addAll(await fetchDecodQuestionRandomly(tag: widget.tag));
     }
     results.addAll(List.generate(questions.length, (_)=>false));
     setState(() {});

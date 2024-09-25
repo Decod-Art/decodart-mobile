@@ -1,16 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
-import 'package:decodart/model/artwork.dart' show Artwork;
+import 'package:decodart/model/artwork.dart';
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
-import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show showModal;
 
 import 'package:flutter/cupertino.dart';
 
-class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
+class GeolocatedSummaryWidget extends StatelessWidget {
   final GeolocatedListItem item;
-  GeolocatedSummaryWidget({
+  const GeolocatedSummaryWidget({
     super.key,
     required this.item
   });
@@ -25,7 +24,6 @@ class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
             item.name,
             style: const TextStyle(
               fontSize: 18,
-              //fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
@@ -37,7 +35,7 @@ class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
                   child: CachedNetworkImage(
                     imageUrl: item.image.path,
                     fit: BoxFit.cover,
-                    height: 110, // Hauteur maximale
+                    height: 110,
                   ),
                 ),
               ),
@@ -101,17 +99,15 @@ class GeolocatedSummaryWidget extends StatelessWidget with ShowModal {
             child: CupertinoButton.filled(
               onPressed: () {
                 if (item.isMuseum) {
-                  showDecodModalBottomSheet(
+                  showModal(
                     context,
-                    (context) => FutureMuseumView(museumId: item.uid),
-                    expand: true,
-                    useRootNavigator: true);
+                    (context) => FutureMuseumView(museum: item)
+                  );
                 } else {
-                  showDecodModalBottomSheet(
+                  showModal(
                     context,
-                    (context) => FutureArtworkView(artworkId: item.uid),
-                    expand: true,
-                    useRootNavigator: true);
+                    (context) => FutureArtworkView(artwork: ArtworkListItem.fromGeolocatedListItem(item))
+                  );
                 }
               },
               child: const Row(

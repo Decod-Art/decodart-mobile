@@ -119,3 +119,20 @@ class DecodAnswer extends UnnamedAbstractItem {
     };
   }
 }
+
+class DecodTag extends UnnamedAbstractItem {
+  final String name;
+  const DecodTag({
+    super.uid,
+    required this.name,
+  });
+
+  factory DecodTag.fromJson(Map<String, dynamic> json) {
+    return DecodTag(
+      uid: json['uid'],
+      name: json['name']
+    );
+  }
+
+
+}

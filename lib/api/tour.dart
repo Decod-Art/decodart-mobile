@@ -15,7 +15,8 @@ Future<List<TourListItem>>  fetchAllTours({
   int limit=10,
   int offset=0,
   int? museumId,
-  bool isExhibition=false
+  bool isExhibition=false,
+  String? query
 }) async {
   try {
     final Uri uri = Uri.parse('$hostName/tours').replace(
@@ -24,6 +25,7 @@ Future<List<TourListItem>>  fetchAllTours({
         'offset': '$offset',
         if (museumId != null) 'museumId': '$museumId',
         'isExhibition': '$isExhibition',
+        if (query != null) 'query': query
       },
     );
     final response = await http.get(uri);

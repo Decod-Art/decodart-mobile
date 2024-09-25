@@ -1,8 +1,9 @@
+import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 
-class GeolocatedListItem extends AbstractItem implements AbstractListItem {
+class GeolocatedListItem extends AbstractItem implements AbstractListItem, MuseumListItem{
   final double latitude;
   final double longitude;
   @override
@@ -25,6 +26,9 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
 
   @override
   String get title => name;
+
+  @override
+  String get city => subtitle;
 
   String get descriptionText {
     final lines = description.split('\n');

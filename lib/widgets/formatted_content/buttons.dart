@@ -1,17 +1,15 @@
+import 'package:decodart/model/image.dart';
+import 'package:decodart/widgets/formatted_content/content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
 
 class ArtworkButton extends StatelessWidget {
-  final String title;
-  final String subtitle;
-  final String imagePath;
+  final ArtworkButtonContent content;
   final VoidCallback onTap;
 
   const ArtworkButton({
     super.key,
-    required this.title,
-    required this.subtitle,
-    required this.imagePath,
+    required this.content,
     required this.onTap,
   });
 
@@ -29,7 +27,7 @@ class ArtworkButton extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15.0),
                 image: DecorationImage(
-                  image: NetworkImage(imagePath),
+                  image: NetworkImage(content.image.path),
                   fit: BoxFit.cover,
                   alignment: FractionalOffset.center,
                 ),
@@ -59,7 +57,7 @@ class ArtworkButton extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  title,
+                                  content.title,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 24,
@@ -68,7 +66,7 @@ class ArtworkButton extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 Text(
-                                  subtitle,
+                                  content.subtitle,
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 16,

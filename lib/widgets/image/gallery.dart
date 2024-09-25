@@ -52,18 +52,6 @@ class _ImageGalleryState extends State<ImageGallery> {
     setState(() {});
   }
 
-  String _multipleImages() {
-    return widget.images.length>1?" Déplacez-vous latéralement pour voir les autres images.":"";
-  }
-
-  String _areaOfInterest() {
-    bool hasAreaOfInterest = false;
-    for(int i = 0 ; i < widget.images.length && !hasAreaOfInterest;i++) {
-      hasAreaOfInterest |= widget.images[i].boundingBoxes!=null?widget.images[i].boundingBoxes!.isNotEmpty:false;
-    }
-    return hasAreaOfInterest?" Touchez sur les zones d'intérêts pour voir leur description. Tapez une fois sur l'image pour masquer les zones d'intérêts":"";
-  }
-
   double _maxImageHeight(){
     if (widget.images.length != sizes.length){
       return double.infinity;
@@ -86,7 +74,7 @@ class _ImageGalleryState extends State<ImageGallery> {
         Center(
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: min(MediaQuery.of(context).size.height * 0.7, _maxImageHeight()),
+              maxHeight: min(MediaQuery.of(context).size.height * 0.75, _maxImageHeight()),
             ),
             child: PageView.builder(
               controller: _pageController,

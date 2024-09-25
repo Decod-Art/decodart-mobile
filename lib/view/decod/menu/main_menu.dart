@@ -1,10 +1,11 @@
+import 'package:decodart/api/decod.dart' show fetchTags;
+import 'package:decodart/model/decod.dart' show DecodTag;
 import 'package:decodart/view/decod/menu/history.dart' show DecodedHistory, DecodedHistoryState;
 import 'package:decodart/view/decod/menu/stats.dart' show StatsWidget, StatsWidgetState;
-import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/view/decod/menu/train_to_decod.dart' show TrainToDecod;
+import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
 import 'package:decodart/widgets/new_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
-
-import 'package:decodart/view/decod/game/manager.dart' show DecodView;
 
 class DecodMainMenuView extends StatefulWidget {
   const DecodMainMenuView({super.key});
@@ -16,8 +17,13 @@ class DecodMainMenuView extends StatefulWidget {
 class DecodMainMenuViewState extends State<DecodMainMenuView> with ShowModal {
   final GlobalKey<DecodedHistoryState> decodedHistoryKey = GlobalKey<DecodedHistoryState>();
   final GlobalKey<StatsWidgetState> statsWidgetKey = GlobalKey<StatsWidgetState>();
+  late final Future<List<DecodTag>> tags;
 
-  
+  @override
+  void initState(){
+    super.initState();
+    tags = fetchTags();
+  }
 
   Future<void> reset() async {
     await statsWidgetKey.currentState?.reset();
@@ -46,46 +52,8 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> with ShowModal {
               height: 100,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.of(
-                      context, rootNavigator: true).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) => const DecodView(),
-                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                          var begin = const Offset(0.0, 1.0);
-                          var end = Offset.zero;
-                          var curve = Curves.ease;
-
-                          var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-                          var offsetAnimation = animation.drive(tween);
-
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  child: Column(
-                    children: [
-                      Container(
-                        height: 60,
-                        margin: const EdgeInsets.all(5.0),
-                        decoration: BoxDecoration(
-                          color: CupertinoColors.activeBlue,
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: const Center(
-                          child: Text(
-                            "S'entraîner à décoder",
-                            style: TextStyle(color: CupertinoColors.white),
-                          ),
-                        ),
-                      ),
-                    ]
-                  )
+                child: TrainToDecod(
+                  tags: tags
                 )
               )
             )

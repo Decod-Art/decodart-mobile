@@ -1,3 +1,5 @@
+import 'package:decodart/model/abstract_item.dart';
+import 'package:decodart/model/artwork.dart';
 import 'package:decodart/widgets/formatted_content/buttons.dart' show ArtworkButton;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -8,7 +10,7 @@ class ContentWidget extends StatelessWidget {
   final String items;
   final WrapAlignment alignment;
   final EdgeInsets edges;
-  final void Function(int) onButtonPressed;
+  final void Function(AbstractListItem) onButtonPressed;
 
   const ContentWidget({
     super.key,
@@ -17,7 +19,7 @@ class ContentWidget extends StatelessWidget {
     this.edges=const EdgeInsets.only(bottom: 0, top: 0, right: 0, left: 0),
     this.onButtonPressed=_defaultOnButtonPressed});
   
-  static void _defaultOnButtonPressed(int uid) {
+  static void _defaultOnButtonPressed(AbstractListItem item) {
   }
 
   List<Widget> buildContentWidgets(BuildContext context) {
@@ -35,10 +37,8 @@ class ContentWidget extends StatelessWidget {
         case ArtworkButtonContent button:
           contentWidgets.add(
             ArtworkButton(
-              imagePath: button.image.path,
-              title: button.title,
-              subtitle: button.subtitle,
-              onTap: ()=>onButtonPressed(button.uid)));
+              content: button,
+              onTap: () => onButtonPressed(ArtworkListItem.fromButton(button))));// Button are restricted to artworks for now
         case _:break;
       }
     }

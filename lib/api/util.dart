@@ -14,6 +14,7 @@ String? checkUrlForCdn(String? url) {
 }
 
 typedef DataFetcher<T> = Future<List<T>> Function({int limit, int offset});
+typedef SearchableDataFetcher<T> = Future<List<T>> Function({int limit, int offset, String? query});
 
 class LazyList<T extends AbstractListItem> extends Iterable<T> {
   final List<T> _list = [];

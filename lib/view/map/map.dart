@@ -1,14 +1,14 @@
-import 'dart:math' show Point, Random;
+import 'dart:math' show Point;
 
 import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/view/map/summary.dart' show GeolocatedSummaryWidget;
-import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/small_modal.dart' show showSmallModal;
 import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
 
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter/material.dart' show CircleAvatar;
 import 'package:flutter_map_animations/flutter_map_animations.dart' show AnimatedMapController;
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
@@ -20,9 +20,21 @@ class MapView extends StatefulWidget{
   State<MapView> createState() => _MapViewState();
 }
 
-class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMixin {
-  List<Marker> markers = [];
-  List<GeolocatedListItem> items = [];
+
+class MarkerWithUID extends Marker {
+  final int uid;
+  const MarkerWithUID({
+    required super.point,
+    required super.child,
+    required this.uid,
+    super.width,
+    super.height
+  });
+  
+}
+
+class _MapViewState extends State<MapView> with TickerProviderStateMixin {
+  List<MarkerWithUID> markers = [];
   late final mapController = AnimatedMapController(vsync: this);
 
   // position of the modal window
@@ -85,27 +97,24 @@ class _MapViewState extends State<MapView> with ShowModal, TickerProviderStateMi
     );
     final newUids = newItems.map((item) => item.uid).toSet();
 
-    List<Marker> updatedMarkers = [];
-    List<GeolocatedListItem> updatedItems = [];
+    List<MarkerWithUID> updatedMarkers = [];
     for (int i = 0; i < markers.length; i++) {
-      if (newUids.contains(items[i].uid)) {
+      if (newUids.contains(markers[i].uid)) {
         updatedMarkers.add(markers[i]);
-        updatedItems.add(items[i]);
       }
     }
     markers = updatedMarkers;
-    items = updatedItems;
 
     for (var item in newItems) {
-      if (!items.any((existingItem) => existingItem.uid == item.uid)) {
-        items.add(item);
-        markers.add(Marker(
+      if (!markers.any((existingItem) => existingItem.uid == item.uid)) {
+        markers.add(MarkerWithUID(
+          uid: item.uid,
           point: item.coordinates,
           width: 80,
           height: 80,
           child: GestureDetector(
             onTap: () {
-              showDecodModalBottomSheet(
+              showSmallModal(
                 context,
                 (context) => GeolocatedSummaryWidget(item: item, key: modalKey)
                 );

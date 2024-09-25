@@ -1,4 +1,4 @@
-import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchAllArtworks;
+import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
 import 'package:decodart/api/util.dart';
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
@@ -6,20 +6,22 @@ import 'package:decodart/model/artwork.dart';
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/model/tour.dart';
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
+import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
-import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
-import 'package:decodart/widgets/list/lazy_list.dart' show LazyListWidget;
-import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
 class MuseumView extends StatefulWidget {
   final Museum museum;
+  final bool useModal;
 
   const MuseumView({
     super.key,
     required this.museum,
+    this.useModal=true
   });
 
   @override
@@ -28,23 +30,23 @@ class MuseumView extends StatefulWidget {
 
 class _MuseumViewState extends State<MuseumView>  with ShowModal {
   final ScrollController _scrollController = ScrollController();
-  late final DataFetcher<ArtworkListItem> _fetchCollection;
-  late final DataFetcher<TourListItem> _fetchExhibition;
-  late final DataFetcher<TourListItem> _fetchTour;
+  late final SearchableDataFetcher<ArtworkListItem> _fetchCollection;
+  late final SearchableDataFetcher<TourListItem> _fetchExhibition;
+  late final SearchableDataFetcher<TourListItem> _fetchTour;
 
   @override
   void initState() {
     super.initState();
-    _fetchCollection = ({int limit=10, int offset=0}) {
-      return fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid);
+    _fetchCollection = ({int limit=10, int offset=0, String? query}) {
+      return fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid, query: query);
     };
-    _fetchExhibition = ({int limit=10, int offset=0}) {
+    _fetchExhibition = ({int limit=10, int offset=0, String? query}) {
       return fetchAllTours(
-        limit: limit, offset: offset, museumId: widget.museum.uid, isExhibition: true
+        limit: limit, offset: offset, museumId: widget.museum.uid, isExhibition: true, query: query
       );
     };
-    _fetchTour = ({int limit=10, int offset=0}) {
-      return fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid);
+    _fetchTour = ({int limit=10, int offset=0, String? query}) {
+      return fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid, query: query);
     };
   }
 
@@ -55,20 +57,30 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
   }
 
   void _onArtworkPressed(AbstractListItem item){
-    showDecodModalBottomSheet(
-      context,
-      (context) => FutureArtworkView(artworkId: item.uid!),
-      expand: true,
-      useRootNavigator: true);
+    if (widget.useModal){
+      showModal(
+        context,
+        (context) => FutureArtworkView(artwork: item as ArtworkListItem));
+    } else {
+      navigateToWidget(
+        context,
+        (context) => FutureArtworkView(artwork: item as ArtworkListItem),
+      );
+    }
   }
 
   void _onTourPressed(AbstractListItem item){
     final futureFuture = fetchTourById(item.uid!);
-    showDecodModalBottomSheet(
-      context,
-      (context) => FutureTourView(tour: futureFuture),
-      expand: true,
-      useRootNavigator: true);
+    if (widget.useModal){
+      showModal(
+        context,
+        (context) => FutureTourView(tour: futureFuture));
+    } else {
+      navigateToWidget(
+        context,
+        (context) => FutureTourView(tour: futureFuture),
+      );
+    }
   }
 
   @override
@@ -99,15 +111,14 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
           child: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: (){
-              showDecodModalBottomSheet(
+              showModal(
                 context,
-                (context) => ContentScrolling(
-                  text: widget.museum.description,
-                  edges: const EdgeInsets.all(15)),
-                expand: true,
-                useRootNavigator: true);
-                
-              },
+                 (context) => ContentScrolling(
+                    text: widget.museum.description,
+                    edges: const EdgeInsets.all(15)
+                  )
+                );
+            },
             child: const Text(
               'Voir plus',
               style: TextStyle(
@@ -159,61 +170,27 @@ class _MuseumViewState extends State<MuseumView>  with ShowModal {
         ),
         const SizedBox(height: 15),
         if (widget.museum.hasExhibitions)
-          LazyHorizontalListWithHeader(
-            name: 'Expositions',
+          ContentBlock(
+            title: 'Expositions',
             fetch: _fetchExhibition,
             onPressed: _onTourPressed,
-            isMuseum: (item)=>false,
-            onTitlePressed: (){
-              showDecodModalBottomSheet(
-                context,
-                (context) => LazyListWidget(
-                  fetch: ({int limit=10,int offset=0}) => fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid, isExhibition: true),
-                  onPress: _onTourPressed,
-                ),
-                expand: true,
-                useRootNavigator: true,
-                scroll: false);
-            },
+            isModal: widget.useModal,
           ),
         if (widget.museum.hasCollection)
-          LazyHorizontalListWithHeader<ArtworkListItem>(
-            name: 'Collection',
+          ContentBlock(
+            title: 'Collection',
             fetch: _fetchCollection,
             onPressed: _onArtworkPressed,
-            isMuseum: (item)=>false,
-            onTitlePressed: (){
-              showDecodModalBottomSheet(
-                context,
-                (context) => LazyListWidget(
-                  fetch: ({int limit=10,int offset=0}) => fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid),
-                  onPress: _onArtworkPressed,
-                ),
-                expand: true,
-                useRootNavigator: true,
-                scroll: false);
-            },
+            isModal: widget.useModal,
           ),
         if (widget.museum.hasTours)
-          LazyHorizontalListWithHeader(
-            name: 'Visites',
+          ContentBlock(
+            title: 'Visites',
             fetch: _fetchTour,
             onPressed: _onTourPressed,
-            isMuseum: (item)=>false,
-            onTitlePressed: (){
-              showDecodModalBottomSheet(
-                context,
-                (context) => LazyListWidget(
-                  fetch: ({int limit=10,int offset=0}) => fetchAllTours(limit: limit, offset: offset, museumId: widget.museum.uid),
-                  onPress: _onTourPressed,
-                ),
-                expand: true,
-                useRootNavigator: true,
-                scroll: false);
-            },
+            isModal: widget.useModal,
           ),
         const SizedBox(height: 35)
-        // Ajoutez d'autres widgets pour afficher les autres propriétés de l'artwork
       ],
     );
   }

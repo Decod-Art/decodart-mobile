@@ -4,15 +4,20 @@ import 'package:decodart/api/museum.dart' show fetchAllMuseums, fetchMuseumById;
 import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
 import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/model/artwork.dart';
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
+import 'package:decodart/model/museum.dart';
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/list/lazy_list.dart' show SliverLazyListView;
+import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/museum/full_screen_future.dart' show FullScreenFutureMuseumView;
 import 'package:decodart/view/tour/full_screen_future.dart' show FullScreenFutureTourView;
 import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart';
+import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToWidget;
+import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {
@@ -23,8 +28,9 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
-  LazyList<TourListItem> tours = LazyList(fetch: fetchAllTours);
-  String? filter;
+  final LazyList<TourListItem> _tours = LazyList(fetch: fetchAllTours);
+  String? _filter;
+
   @override
   void initState() {
     super.initState();
@@ -32,39 +38,23 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   Future<void> _fetchTours() async {
-    await tours.fetchMore();
+    await _tours.fetchMore();
     setState(() {});
   }
 
   void _onAroundMePressed(AbstractListItem item) {
     final geoItem = item as GeolocatedListItem;
     if (geoItem.isMuseum) {      
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => FullScreenFutureMuseumView(museumId: item.uid),
-        ),
-      );
+      _onMuseumPressed(item);
     } else {
-      Navigator.push(
-        context,
-        CupertinoPageRoute(
-          builder: (context) => FutureArtworkView(
-            artworkId: item.uid,
-            fullScreen: true,),
-        ),
-      );
+      _onArtworkPressed(ArtworkListItem.fromGeolocatedListItem(item));
     }
   }
 
   void _onArtworkPressed(AbstractListItem item) {
-    Navigator.push(
+    navigateToWidget(
       context,
-      CupertinoPageRoute(
-        builder: (context) => FutureArtworkView(
-          artworkId: item.uid!,
-          fullScreen: true,),
-      ),
+      (context) => FutureArtworkView(artwork: item as ArtworkListItem),
     );
   }
 
@@ -72,11 +62,10 @@ class _ExploreViewState extends State<ExploreView> {
     Navigator.push(
       context,
       CupertinoPageRoute(
-        builder: (context) => FullScreenFutureMuseumView(museumId: item.uid!),
+        builder: (context) => FullScreenFutureMuseumView(museum: item as MuseumListItem),
       ),
     );
   }
-
 
   void _onTourPressed(AbstractListItem item) {
     final futureTour = fetchTourById(item.uid!);
@@ -90,120 +79,57 @@ class _ExploreViewState extends State<ExploreView> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: CustomScrollView(
-        slivers: [
-          CupertinoSliverNavigationBar(
-            largeTitle: Padding(
-              padding: const EdgeInsets.only(right: 25, left: 5),
-              child: CupertinoSearchTextField(
-                placeholder: 'Rechercher',
-                onChanged: (String value) {
-                  filter = value;
-                  if (value.isEmpty) {
-                    filter = null;
-                  }
-                  setState(() {});
-                },
-              ),
+    return DecodPageScaffold(
+      title: 'Explorer',
+      onSearch: (String value) {
+        _filter = value;
+        if (value.isEmpty) {
+          _filter = null;
+        }
+        setState(() {});
+      },
+      children: [
+        ContentBlock(
+          fetch: fetchAroundMe,
+          secondaryFetch: ({int limit=10, int offset=0}) {return fetchAroundMe(limit: limit, offset: offset, query: _filter);},
+          isModal: false,
+          onPressed: _onAroundMePressed,
+          title: 'Autour de moi',
+        ),
+        ContentBlock(
+          fetch: fetchAllArtworks,
+          secondaryFetch: ({int limit=10, int offset=0}) {return fetchAllArtworks(limit: limit, offset: offset, query: _filter);},
+          isModal: false,
+          onPressed: _onArtworkPressed,
+          title: 'Œuvres'
+        ),
+        ContentBlock(
+          fetch: fetchAllMuseums,
+          secondaryFetch: ({int limit=10, int offset=0}) {return fetchAllMuseums(limit: limit, offset: offset, query: _filter);},
+          isModal: false,
+          onPressed: _onMuseumPressed,
+          title: 'Musées'
+        ),
+        Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(15),
+              child: Text(
+                "Visites",
+                style: TextStyle(
+                  color: CupertinoColors.darkBackgroundGray,
+                  fontSize: 22,
+                  fontWeight: FontWeight.w500
+                ),
+              )
             ),
-            trailing: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  CupertinoPageRoute(builder: (context) => const AproposView()),
-                );
-              },
-              child: const Icon(
-                CupertinoIcons.person_circle,
-                color: CupertinoColors.activeBlue,
-                size: 24
-              ),
-            ),
-            middle: const Text('Explorer')
-          ),
-          SliverSafeArea(
-            top: false,
-            sliver: SliverList(
-              delegate: SliverChildListDelegate(
-                [
-                  LazyHorizontalListWithHeader(
-                    name: 'Autour de moi',
-                    fetch: ({int limit=10, int offset=0}) {return fetchAroundMe(limit: limit, offset: offset, query: filter);},
-                    onPressed: _onAroundMePressed,
-                    isMuseum: (item)=>(item as GeolocatedListItem).isMuseum,
-                    onTitlePressed: (){
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => SliverLazyListView(
-                              title: 'Autour de moi',
-                              fetch: fetchAroundMe,
-                              onPress: _onAroundMePressed,),
-                          ),
-                        );
-                    },
-                  ),
-                  LazyHorizontalListWithHeader(
-                    name: 'Œuvres',
-                    fetch: ({int limit=10, int offset=0}) {return fetchAllArtworks(limit: limit, offset: offset, query: filter);},
-                    onPressed: _onArtworkPressed,
-                    isMuseum: (item)=>false,
-                    onTitlePressed: (){
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => SliverLazyListView(
-                              title: 'Œuvres',
-                              fetch: fetchAllArtworks,
-                              onPress: _onArtworkPressed,),
-                          ),
-                        );
-                    },
-                  ),
-                  LazyHorizontalListWithHeader(
-                    name: 'Musées',
-                    fetch: ({int limit=10, int offset=0}) {return fetchAllMuseums(limit: limit, offset: offset, query: filter);},
-                    onPressed: _onMuseumPressed,
-                    isMuseum: (item)=>true,
-                    onTitlePressed: (){
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                            builder: (context) => SliverLazyListView(
-                              title: 'Œuvres',
-                              fetch: fetchAllMuseums,
-                              onPress: _onMuseumPressed,),
-                          ),
-                        );
-                    },
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(15),
-                        child: Text(
-                          "Visites",
-                          style: TextStyle(
-                            color: CupertinoColors.darkBackgroundGray,
-                            fontSize: 22,
-                            fontWeight: FontWeight.w500
-                          ),
-                        )
-                      ),
-                      ListWithThumbnail(items: tours.list, onPress: _onTourPressed,)
-                    ],
-                  )
-                ]
-              ),
-            ),
-          )
-        ],
-      ),
+            ListWithThumbnail(items: _tours.list, onPress: _onTourPressed,)
+          ],
+        )
+      ]
     );
   }
 }

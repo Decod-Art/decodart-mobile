@@ -1,14 +1,18 @@
 import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:decodart/widgets/list/list_tile.dart' show ListTile;
+import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
 
+
+typedef OnPressList<T> = void Function(T);
+typedef SearchableFetch<T> = Future<List<T>> Function({int limit, int offset, String? query});
+
 class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   final String title;
-  final void Function(T) onPress;
-  final Future<List<T>> Function({int limit, int offset, String? query}) fetch;
+  final OnPressList<T> onPress;
+  final SearchableFetch<T> fetch;
   const SliverLazyListView({
     super.key,
     required this.title,
@@ -52,7 +56,6 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
   }
 
   Future<void> _loadMoreItems() async {
-    print('loading...');
     setState(() {
       isLoading = true;
     });
@@ -72,66 +75,33 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          CupertinoSliverNavigationBar(
-            largeTitle: Padding(
-              padding: const EdgeInsets.only(right: 25, left: 5),
-              child: CupertinoSearchTextField(
-                placeholder: 'Rechercher',
-                onChanged: (String value) {
-                  _queryChanged = true;
-                  items = LazyList<T>(fetch: ({limit=10, offset=0}){return widget.fetch(limit: limit, offset: offset, query: value.isEmpty?null:value);});
-                  _checkIfNeedsLoading();
-                },
+    return DecodPageScaffold(
+      title: widget.title,
+      controller: _scrollController,
+      onSearch: (String value) {
+        _queryChanged = true;
+        items = LazyList<T>(fetch: ({limit=10, offset=0}){return widget.fetch(limit: limit, offset: offset, query: value.isEmpty?null:value);});
+        _checkIfNeedsLoading();
+      },
+      childCount: items.length + (isLoading ? 1 : 0),
+      builder: (context, index) {
+        if (index == items.length) {
+          return const Center(child: CupertinoActivityIndicator());
+        }
+        final item = items[index];
+        return Column(
+          children: [
+            if (index == 0) const SizedBox(height: 8),
+            ListTile(item: item, onPress: widget.onPress),
+            if (index != items.length - 1)
+              const Divider(
+                indent: 80.0,
+                color: CupertinoColors.separator,
               ),
-            ),
-            trailing: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                Navigator.push(
-                context,
-                CupertinoPageRoute(builder: (context) => const AproposView()),
-              );
-              },
-              child: const Icon(
-                CupertinoIcons.person_circle,
-                color: CupertinoColors.activeBlue,
-                size: 24
-              ),
-            ),
-            middle: const Text('Explorer')
-          ),
-          SliverSafeArea(
-            top: false,
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  if (index == items.length) {
-                    return const Center(child: CupertinoActivityIndicator());
-                  }
-                  final item = items[index];
-                  return Column(
-                    children: [
-                      if (index == 0) const SizedBox(height: 8),
-                      ListTile(item: item, onPress: widget.onPress),
-                      if (index != items.length - 1)
-                        const Divider(
-                          indent: 80.0,
-                          color: CupertinoColors.separator,
-                        ),
-                      if (index == items.length - 1) const SizedBox(height: 8),
-                    ],
-                  );
-                },
-                childCount: items.length + (isLoading ? 1 : 0),
-              ),
-            ),
-          )
-        ]
-      ),
+            if (index == items.length - 1) const SizedBox(height: 8),
+          ],
+        );
+      },
     );
   }
 }

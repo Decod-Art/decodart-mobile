@@ -24,6 +24,7 @@ mixin ShowModal {
   }
 }
 
+
 class ModalContentWidget extends StatefulWidget {
   final Widget content;
   final bool safeArea;

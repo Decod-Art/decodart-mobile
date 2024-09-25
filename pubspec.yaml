@@ -90,6 +90,11 @@ flutter:
     - images/icons/questionmark_bubble.png
     - images/icons/questionmark_bubble_fill.png
     - images/icons/square_split_bottomrightquarter.png
+    - images/icons/paintbrush_pointed_fill.png
+    - images/icons/paintbrush_pointed.png
+    - images/icons/photo_artframe.png
+    - images/icons/person_crop_square_fill.png
+    - images/icons/person_crop_square.png
     - images/icons/photo_on_rectangle_angled.png
     - images/icons/clock.png
     - images/icons/camera_viewfinder.png

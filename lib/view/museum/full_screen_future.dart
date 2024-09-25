@@ -1,12 +1,15 @@
+import 'package:decodart/model/museum.dart';
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
 import 'package:decodart/widgets/new_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
 
 class FullScreenFutureMuseumView extends StatelessWidget {
-  final int museumId;
+  final MuseumListItem museum;
+  final bool useModal;
   const FullScreenFutureMuseumView({
     super.key,
-    required this.museumId
+    required this.museum,
+    this.useModal=true
     });
 
   @override
@@ -29,7 +32,7 @@ class FullScreenFutureMuseumView extends StatelessWidget {
       ),
       child: SafeArea(
         child: SingleChildScrollView(
-            child: FutureMuseumView(museumId: museumId)
+            child: FutureMuseumView(museum: museum, useModal: false)
         )
       )
     );

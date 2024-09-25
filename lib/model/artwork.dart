@@ -1,12 +1,12 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
 import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey, ArtistListItem;
+import 'package:decodart/model/artwork_tag.dart';
+import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 import 'package:decodart/model/room.dart';
-import 'package:decodart/model/style.dart' show StyleForeignKey;
-import 'package:decodart/model/technique.dart' show TechniqueForeignKey;
-import 'package:decodart/model/context.dart' show Context;
+import 'package:decodart/widgets/formatted_content/content.dart';
 
 
 typedef ArtworkForeignKey = ArtworkListItem;
@@ -29,6 +29,27 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
       title: json['title'],
       artist: ArtistForeignKey.fromJson(json['artist']),
       image: ImageWithPath.fromJson(json['image'])
+    );
+  }
+
+  factory ArtworkListItem.fromGeolocatedListItem(GeolocatedListItem item) {
+    return ArtworkListItem(
+      uid: item.uid,
+      title: item.title,
+      artist: ArtistForeignKey(
+        name: item.subtitle
+      ),
+      image: item.image);
+  }
+
+  factory ArtworkListItem.fromButton(ArtworkButtonContent button) {
+    return ArtworkListItem(
+      uid: button.uid,
+      title: button.title,
+      artist: ArtistForeignKey(
+        name: button.subtitle
+      ),
+      image: button.image
     );
   }
 
@@ -77,12 +98,10 @@ class Artwork extends AbstractItem {
   final String country;
   final int sortYear;
   final Artist artist;
-  final Context context;
   final MuseumForeignKey? museum;
-  final StyleForeignKey style;
-  final TechniqueForeignKey technique;
   final List<AbstractImage> images;
   final bool hasDecodQuestion;
+  final List<ArtworkTag> tags;
 
   const Artwork({
     super.uid,
@@ -94,17 +113,15 @@ class Artwork extends AbstractItem {
     this.room,
     required this.description,
     required this.artist,
-    required this.context,
     this.museum,
-    required this.style,
-    required this.technique,
     this.latitude,
     this.longitude,
     required this.city,
     required this.country,
     required this.sortYear,
     required this.images,
-    required this.hasDecodQuestion
+    required this.hasDecodQuestion,
+    required this.tags
   }): super(name: title);
 
   factory Artwork.fromJson(Map<String, dynamic> json) {
@@ -118,9 +135,6 @@ class Artwork extends AbstractItem {
       museum: (json['museum']!=null)?MuseumForeignKey.fromJson(json['museum']):null,
       room: json['room']!=null?RoomForeignKey.fromJson(json['room']):null,
       artist: Artist.fromJson(json['artist']),
-      context: Context.fromJson(json['context']),
-      style: StyleForeignKey.fromJson(json['style']),
-      technique: TechniqueForeignKey.fromJson(json['technique']),
       latitude: json['latitude'],
       longitude: json['longitude'],
       city: json['city'],
@@ -129,7 +143,10 @@ class Artwork extends AbstractItem {
       description: json['description'],
       images: json['images'].map((imageJson) => ImageWithPath.fromJson(imageJson)).toList()
                                                                                   .cast<ImageWithPath>(),
-      hasDecodQuestion: json['hasdecodquestion']
+      hasDecodQuestion: json['hasdecodquestion'],
+      tags: json['tags'].map((item) => ArtworkTag.fromJson(item))
+                        .toList()
+                        .cast<ArtworkTag>()
     );
   }
 
@@ -145,9 +162,6 @@ class Artwork extends AbstractItem {
       'museum': museum?.toJson(),
       'room': room?.toJson(),
       'artist': artist.toJson(),
-      'context': context.toJson(),
-      'style': style.toJson(),
-      'technique': technique.toJson(),
       'latitude': latitude,
       'longitude': longitude,
       'city': city,

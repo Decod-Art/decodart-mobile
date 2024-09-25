@@ -10,7 +10,7 @@ import 'package:decodart/api/artwork.dart' show fetchArtworkById, fetchArtworkBy
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/results/result.dart' show ResultsWidget;
-import 'package:decodart/widgets/modal/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
 import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
 
 
@@ -156,7 +156,7 @@ class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPro
                                 onPressed: () {
                                   showDecodModalBottomSheet(
                                     context,
-                                    (context) => FutureArtworkView(artworkId: results[0].uid!),
+                                    (context) => FutureArtworkView(artwork: results[0]),
                                     expand: true,
                                     useRootNavigator: true);
                                 },
