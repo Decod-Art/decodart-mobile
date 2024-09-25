@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
+import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/image.dart' show ImageWithPath, AbstractImage;
 
 
@@ -19,20 +20,28 @@ class MuseumListItem extends MuseumForeignKey implements AbstractListItem{
   @override
   final AbstractImage image;
   final String city;
-    const MuseumListItem({
-      super.uid,
-      required super.name,
-      required this.image,
-      required this.city
-    });
-    factory MuseumListItem.fromJson(Map<String, dynamic> json) {
-      return MuseumListItem(
-        uid: json['uid'],
-        name: json['name'],
-        image: ImageWithPath.fromJson(json['image']),
-        city: json['city']
-      );
-    }
+  const MuseumListItem({
+    super.uid,
+    required super.name,
+    required this.image,
+    required this.city
+  });
+  factory MuseumListItem.fromJson(Map<String, dynamic> json) {
+    return MuseumListItem(
+      uid: json['uid'],
+      name: json['name'],
+      image: ImageWithPath.fromJson(json['image']),
+      city: json['city']
+    );
+  }
+  
+  factory MuseumListItem.fromGeolocatedListItem(GeolocatedListItem item) {
+    return MuseumListItem(
+      uid: item.uid,
+      name: item.title,
+      city: item.subtitle,
+      image: item.image);
+  }
 
   @override
   Map<String, dynamic> toJson() {

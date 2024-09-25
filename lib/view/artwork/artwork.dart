@@ -3,7 +3,6 @@ import 'package:decodart/view/artwork/decod_button.dart' show DecodButton;
 import 'package:decodart/widgets/buttons/button_list.dart' show ButtonListWidget;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
-import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
 import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
 import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show showModal;
 import 'package:flutter/cupertino.dart';
@@ -51,8 +50,8 @@ class ArtworkView extends StatelessWidget {
               onPressed: (){
                 showModal(
                   context,
-                  (context) => ContentScrolling(
-                    text: artwork.artist.biography,
+                  (context) => ContentWidget(
+                    items: artwork.artist.biography,
                     edges: const EdgeInsets.all(15)
                   )
                 );
@@ -70,8 +69,8 @@ class ArtworkView extends StatelessWidget {
                 onPressed: (){
                   showModal(
                     context,
-                    (context) => ContentScrolling(
-                      text: tag.description,
+                    (context) => ContentWidget(
+                      items: tag.description,
                       edges: const EdgeInsets.all(15)
                     )
                   );

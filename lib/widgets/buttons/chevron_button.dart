@@ -3,10 +3,14 @@ import 'package:flutter/cupertino.dart';
 class ChevronButtonWidget extends StatelessWidget {
   final Widget? icon;
   final String text;
+  final String? subtitle;
   final Color textColor;
+  final Color subtitleColor;
   final Color chevronColor;
   final FontWeight fontWeight;
+  final FontWeight subtitleFontWeight;
   final double fontSize;
+  final double subtitleFontSize;
   final double marginRight;
   final VoidCallback onPressed;
   const ChevronButtonWidget({
@@ -14,11 +18,15 @@ class ChevronButtonWidget extends StatelessWidget {
     this.icon,
     required this.text,
     this.textColor =CupertinoColors.darkBackgroundGray,
+    this.subtitleColor =CupertinoColors.systemGrey4,
     this.chevronColor=CupertinoColors.systemGrey4,
     this.fontWeight=FontWeight.w400,
+    this.subtitleFontWeight=FontWeight.w300,
     this.fontSize=17,
+    this.subtitleFontSize=15,
     this.marginRight=10,
-    required this.onPressed
+    required this.onPressed,
+    this.subtitle
     });
 
   @override
@@ -31,15 +39,30 @@ class ChevronButtonWidget extends StatelessWidget {
           const SizedBox(width: 15),
           if (icon!=null) ...[
             icon!,
-            const SizedBox(width: 8)
+            const SizedBox(width: 14)
           ],
-          Text(
-            text,
-            style: TextStyle(
-              color: textColor,
-              fontSize: fontSize,
-              fontWeight: fontWeight
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                text,
+                style: TextStyle(
+                  color: textColor,
+                  fontSize: fontSize,
+                  fontWeight: fontWeight
+                ),
+              ),
+              if (subtitle != null)
+                Text(
+                  subtitle!,
+                  style: TextStyle(
+                    color: subtitleColor,
+                    fontSize: subtitleFontSize,
+                    fontWeight: subtitleFontWeight,
+                  ),
+                  textAlign: TextAlign.start,
+                ),
+            ],
           ),
           Expanded(
             child: Row(

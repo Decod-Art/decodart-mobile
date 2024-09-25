@@ -31,6 +31,7 @@ Future<T?> navigateToWidget<T>(
   {
     String? title,
     void Function(String)? onSearch,
+    bool smallTitle=false
   }) {
   return Navigator.push(
       context,
@@ -38,6 +39,7 @@ Future<T?> navigateToWidget<T>(
         builder: (context) => ModalOrFullScreen(
           inModal: false,
           title: title,
+          smallTitle: smallTitle,
           onSearch: onSearch,
           builder: builder
         )
@@ -105,13 +107,15 @@ class ModalWithList extends _ModalOrFullscreen {
 class ModalOrFullScreen extends _ModalOrFullscreen {
   @override
   final WidgetBuilder builder;
+  final bool smallTitle;
 
   const ModalOrFullScreen({
     super.key,
     required super.inModal,
     super.title,
     super.onSearch,
-    required this.builder
+    required this.builder,
+    this.smallTitle=false
   });
 }
 
@@ -138,6 +142,7 @@ class _ModalOrFullscreenState extends State<_ModalOrFullscreen> {
   Widget _fullScreenView(BuildContext context) {
     return DecodPageScaffold(
       title: widget.title,
+      smallTitle: (widget as ModalOrFullScreen).smallTitle,
       onSearch: widget.onSearch,
       children: [
         widget.builder(context)
@@ -236,48 +241,3 @@ class _ModalOrFullscreenState extends State<_ModalOrFullscreen> {
     );
   }
 }
-/*
-
-widget.builder(context)
-      ]
-    );
-  }
-
-  Widget _modalView(BuildContext context){
-    return Stack(
-      children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Center(
-                child: Container(
-                  width: 40,
-                  height: 5,
-                  decoration: BoxDecoration(
-                    color: CupertinoColors.systemGrey,
-                    borderRadius: BorderRadius.circular(2.5),
-                  ),
-                ),
-              )
-            ),
-            const SizedBox(height: 35),
-            if (_showTopLine)
-              Container(
-                height: 1,
-                color: CupertinoColors.lightBackgroundGray,
-              ),
-            Expanded(
-              child: widget.builder is WidgetListBuilder
-                ? widget.builder(
-                    context,
-                    _scrollController,
-                  )
-                : SingleChildScrollView(
-                  controller: _scrollController,
-                  child: widget.builder(context)
-                )
-            )
-            */

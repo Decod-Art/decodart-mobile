@@ -1,32 +1,56 @@
+import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
+import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
+import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 
-typedef RoomForeignKey = RoomListItem;
+class RoomForeignKey extends AbstractItem {
 
-class RoomListItem extends AbstractItem {
-  const RoomListItem({
+  const RoomForeignKey({
     super.uid,
     required super.name
   });
 
-  factory RoomListItem.fromJson(Map<String, dynamic> json) {
-    return RoomListItem(
+  factory RoomForeignKey.fromJson(Map<String, dynamic> json) {
+    return RoomForeignKey(
       uid: json['uid'],
       name: json['name']);
   }
 }
 
-class Room extends RoomListItem {
+class RoomListItem extends AbstractItem {
   final String description;
+
+  const RoomListItem({
+    super.uid,
+    required super.name,
+    required this.description
+  });
+
+  factory RoomListItem.fromJson(Map<String, dynamic> json) {
+    return RoomListItem(
+      uid: json['uid'],
+      name: json['name'],
+      description: json['description']);
+  }
   @override
+  Map<String, dynamic> toJson() {
+    return {
+      ...super.toJson(),
+      'description': description
+    };
+  }
+}
+
+class Room extends RoomListItem {
   final AbstractImage? image;
   final MuseumForeignKey museum;
 
   const Room({
     super.uid,
     required super.name,
-    required this.description,
+    required super.description,
     this.image,
     required this.museum});
 
@@ -44,7 +68,6 @@ class Room extends RoomListItem {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      'description': description,
       if (image != null)
         'image': image!.toJson(),
       'museum': museum.toJson()

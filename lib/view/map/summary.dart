@@ -101,7 +101,7 @@ class GeolocatedSummaryWidget extends StatelessWidget {
                 if (item.isMuseum) {
                   showModal(
                     context,
-                    (context) => FutureMuseumView(museum: item)
+                    (context) => FutureMuseumView(museum: item, useModal: true)
                   );
                 } else {
                   showModal(

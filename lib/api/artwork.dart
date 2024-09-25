@@ -17,7 +17,8 @@ Future<List<ArtworkListItem>> fetchAllArtworks(
   {int limit=10,
   int offset=0,
   String? query,
-  int? museumId}) async {
+  int? museumId,
+  String? room}) async {
   try {
     final Uri uri = Uri.parse('$hostName/artworks').replace(
       queryParameters: {
@@ -25,8 +26,10 @@ Future<List<ArtworkListItem>> fetchAllArtworks(
         'offset': '$offset',
         if (query != null) 'query': query,
         if (museumId != null) 'museumId': '$museumId',
+        if (room != null) 'room': room
       },
     );
+    print(uri);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body);
