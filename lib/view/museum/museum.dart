@@ -11,7 +11,7 @@ import 'package:decodart/view/museum/museum_map_button.dart' show MuseumMapButto
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
-import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToWidget, showModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToWidget, showListInModal, showModal;
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
@@ -85,18 +85,9 @@ class _MuseumViewState extends State<MuseumView>  {
   }
 
   void _onMuseumMapPressed() {
-    if (widget.useModal){
-      showModal(
+      showListInModal(
         context,
-        (context) => MuseumMap(museum: widget.museum, isModal: widget.useModal));
-    } else {
-      navigateToWidget(
-        context,
-        title: 'Plan du musée',
-        smallTitle: true,
-        (context) => MuseumMap(museum: widget.museum, isModal: widget.useModal,)
-      );
-    }
+        (context, [sc]) => MuseumMap(museum: widget.museum, isModal: widget.useModal, controller: sc,));
   }
 
   @override

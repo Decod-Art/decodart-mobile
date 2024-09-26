@@ -13,14 +13,16 @@ abstract class UnnamedAbstractItem {
   }
 }
 
-abstract class AbstractListItem {
+abstract class AbstractItemBase {}
+
+abstract class AbstractListItem implements AbstractItemBase{
   int? get uid;
   String get title;
   String get subtitle;
   AbstractImage get image;
 }
 
-abstract class AbstractItem extends UnnamedAbstractItem {
+abstract class AbstractItem extends UnnamedAbstractItem implements AbstractItemBase {
   final String name;
   const AbstractItem({super.uid, required this.name});
   @override

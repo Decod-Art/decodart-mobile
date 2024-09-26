@@ -32,6 +32,8 @@ class NewDecodNavigationBar extends StatelessWidget implements ObstructingPrefer
           size: 24
         ),
       ),
+      backgroundColor: CupertinoColors.white,
+      border: const Border(),
     );
   }
   

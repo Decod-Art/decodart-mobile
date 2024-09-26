@@ -1,5 +1,7 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/room.dart' show fetchRooms;
+import 'package:decodart/api/util.dart';
+import 'package:decodart/model/artwork.dart';
 import 'package:decodart/model/museum.dart' show Museum, MuseumForeignKey;
 import 'package:decodart/model/room.dart' show RoomListItem;
 import 'package:decodart/view/museum/map_viewer.dart' show FullScreenPDFViewer;
@@ -11,59 +13,111 @@ class MuseumMap extends StatefulWidget {
   final bool isModal;
   final Museum museum;
   final String? museumMapPath;
+  final ScrollController? controller;
 
-  const MuseumMap({super.key, this.museumMapPath, required this.museum, required this.isModal});
+  const MuseumMap({
+    super.key,
+    this.museumMapPath,
+    required this.museum,
+    required this.isModal,
+    this.controller
+  });
   
   @override
   State<MuseumMap> createState() => _MuseumMapState();
 }
 
 class _MuseumMapState extends State<MuseumMap> {
-  List<RoomListItem> rooms = [];
+  late ScrollController _scrollController;
+  late LazyList<RoomListItem> items;
+  List<SearchableDataFetcher<ArtworkListItem>> fetchers = [];
+
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchRooms();
+    items = LazyList<RoomListItem>(fetch: _fetchRooms, limit: 5);
+    _scrollController = widget.controller??ScrollController();
+    _scrollController.addListener(_checkIfNeedsLoading);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkIfNeedsLoading();
+    });
   }
-  void _fetchRooms() async {
-    rooms = await fetchRooms(museum: MuseumForeignKey(name: widget.museum.name, uid: widget.museum.uid));
-    setState(() {});
+
+  Future<void> _checkIfNeedsLoading() async {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !_isLoading && items.hasMore) {
+      _loadMoreItems();
+    }
+  }
+
+  Future<void> _loadMoreItems() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    // Simuler un délai de 2 secondes
+    await items.fetchMore();
+    for (int i = fetchers.length ; i < items.length ; i++) {
+      fetchers.add(
+        ({int limit=10, int offset=0, String? query}) {
+          return fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid, room: items[i].name, query: query);
+        }
+      );
+    }
+
+    // Appeler la fonction pour charger plus d'éléments
+    //await widget.loadMoreItems();
+    if (mounted){
+      setState(() {
+        _isLoading = false;
+      });
+      _checkIfNeedsLoading();
+    }
+  }
+
+  Future<List<RoomListItem>> _fetchRooms({int limit=5, int offset=0}) async {
+    return fetchRooms(museum: MuseumForeignKey(name: widget.museum.name, uid: widget.museum.uid), limit: limit, offset: offset);
   }
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const SizedBox(height: 15),
-        ChevronButtonWidget(
-          // https://museefabre-old.montpellier3m.fr/content/download/12182/92171/version/2/file/Musee_Fabre-Plans.pdf
-          text: "Voir le plan du musée",
-          subtitle: 'Document pdf',
-          icon: const Icon(
-            CupertinoIcons.doc,
-            color: CupertinoColors.activeBlue,
-          ),
-          onPressed: (){
-            Navigator.of(context, rootNavigator: true).push(
-              CupertinoPageRoute(
-                builder: (context) => FullScreenPDFViewer(
-                  pdfUrl: widget.museumMapPath ?? 'https://api-www.louvre.fr/sites/default/files/2022-03/LOUVRE_PlanG-2022-FR_0.pdf',
-                ),
+    return ListView.builder(
+      controller: _scrollController,
+      itemCount: items.length + (_isLoading ? 2 : 1),
+      itemBuilder: (context, index) {
+        if (index == 0) {
+          return Column(children: [
+            const SizedBox(height: 15),
+            ChevronButtonWidget(
+              // https://museefabre-old.montpellier3m.fr/content/download/12182/92171/version/2/file/Musee_Fabre-Plans.pdf
+              text: "Voir le plan du musée",
+              subtitle: 'Document pdf',
+              icon: const Icon(
+                CupertinoIcons.doc,
+                color: CupertinoColors.activeBlue,
               ),
-            );
-          },
-        ),
-        for (final room in rooms) ... [
-          ContentBlock(
-            title: "Salle ${room.name}",
-            fetch: ({int limit=10, int offset=0, String? query}) {
-              return fetchAllArtworks(limit: limit, offset: offset, museumId: widget.museum.uid, room: room.name, query: query);
-            },
+              onPressed: (){
+                Navigator.of(context, rootNavigator: true).push(
+                  CupertinoPageRoute(
+                    builder: (context) => FullScreenPDFViewer(
+                      pdfUrl: widget.museumMapPath ?? 'https://api-www.louvre.fr/sites/default/files/2022-03/LOUVRE_PlanG-2022-FR_0.pdf',
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],);
+        } else if (index == items.length+1) {
+          return const Center(child: CupertinoActivityIndicator());
+        } else {
+          return ContentBlock(
+            title: "Salle ${items[index-1].name}",
+            fetch: fetchers[index-1],
             onPressed: (a){},
-            isModal: widget.isModal,
-          )
-        ]
-      ],
+            isModal: true,
+          );
+        }
+      }
     );
-  } 
+  }
 }

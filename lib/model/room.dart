@@ -1,7 +1,4 @@
-import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
-import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
-import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 

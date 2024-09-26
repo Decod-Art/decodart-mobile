@@ -7,11 +7,13 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' show showCupertinoMo
 typedef WidgetBuilder = Widget Function(BuildContext);
 typedef WidgetListBuilder = Widget Function(BuildContext, [ScrollController?]);
 
+// TODO add navigate to customList
 Future<T?> navigateToList<T, C extends AbstractListItem>(
   BuildContext context,
   {
     required String title,
     required OnPressList<C> onPress,
+    hideSearch=false,
     required SearchableFetch<C> fetch
   }) {
     return Navigator.push(
@@ -20,6 +22,7 @@ Future<T?> navigateToList<T, C extends AbstractListItem>(
         builder: (context) => SliverLazyListView<C>(
           title: title,
           fetch: fetch,
+          smallTitle: hideSearch,
           onPress: onPress,),
       ),
     );

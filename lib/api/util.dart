@@ -1,4 +1,4 @@
-import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/model/abstract_item.dart' show AbstractItemBase;
 
 const String hostName = 'http://localhost:8000';
 const String cdn = 'http://localhost:8000/cdn_images';
@@ -16,7 +16,7 @@ String? checkUrlForCdn(String? url) {
 typedef DataFetcher<T> = Future<List<T>> Function({int limit, int offset});
 typedef SearchableDataFetcher<T> = Future<List<T>> Function({int limit, int offset, String? query});
 
-class LazyList<T extends AbstractListItem> extends Iterable<T> {
+class LazyList<T extends AbstractItemBase> extends Iterable<T> {
   final List<T> _list = [];
   final DataFetcher<T> fetch;
   final int limit;
@@ -25,8 +25,14 @@ class LazyList<T extends AbstractListItem> extends Iterable<T> {
 
   LazyList({
     required this.fetch,
-    this.limit=50
-  });
+    this.limit=10,
+    List<T>? initial
+  }) {
+    if (initial!=null){
+      _list.addAll(initial);
+      _offset += initial.length;
+    }
+  }
 
   Future<void> fetchMore () async {
     if (hasMore){

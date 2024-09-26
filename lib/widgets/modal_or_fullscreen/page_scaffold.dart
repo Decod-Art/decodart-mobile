@@ -1,7 +1,7 @@
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:flutter/cupertino.dart';
 
-class DecodPageScaffold extends StatelessWidget {
+class DecodPageScaffold extends StatefulWidget {
   final List<Widget>? children;
   final NullableIndexedWidgetBuilder? builder;
   final int? childCount;
@@ -20,12 +20,53 @@ class DecodPageScaffold extends StatelessWidget {
     this.controller,
     this.smallTitle=false,
     this.leadingBar});
+    
+      @override
+      State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
+
+}
+
+class _DecodPageScaffoldState extends State<DecodPageScaffold> {
+  late ScrollController _scrollController;
+  bool _showBorder = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = widget.controller??ScrollController();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  void _scrollListener() {
+    if (_scrollController.hasClients) {
+      final offset = _scrollController.offset;
+      if (offset > 50 && !_showBorder) {
+        setState(() {
+          _showBorder = true;
+        });
+      } else if (offset <= 50 && _showBorder) {
+        setState(() {
+          _showBorder = false;
+        });
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    if (widget.controller == null){
+      _scrollController.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: (title==null&&onSearch==null)||smallTitle
+      navigationBar: (widget.title==null&&widget.onSearch==null)||widget.smallTitle
         ? CupertinoNavigationBar(
-            leading: leadingBar?? (Navigator.of(context).canPop()
+            leading: widget.leadingBar?? (Navigator.of(context).canPop()
                   ? CupertinoNavigationBarBackButton(
                       onPressed: () {
                         Navigator.pop(context);
@@ -33,7 +74,7 @@ class DecodPageScaffold extends StatelessWidget {
                       previousPageTitle: 'Retour',
                     )
                   : null),
-            middle: title != null ? Text(title!) : null,
+            middle: widget.title != null ? Text(widget.title!) : null,
             trailing: CupertinoButton(
               padding: EdgeInsets.zero,
               onPressed: () {
@@ -49,13 +90,24 @@ class DecodPageScaffold extends StatelessWidget {
                 size: 24
               ),
             ),
+            border: _showBorder
+              ? const Border(
+                  bottom: BorderSide(
+                    color: CupertinoColors.separator,
+                    width: 0.0,
+                  ),
+                )
+              : const Border(),
+              backgroundColor: _showBorder
+                ? CupertinoColors.systemBackground.withOpacity(0.85)
+                : CupertinoColors.white,
         )
         : null,
       child: SafeArea(
         child: CustomScrollView(
-          controller: controller,
+          controller: _scrollController,
           slivers: [
-            if ((title != null || onSearch != null)&&!smallTitle)
+            if ((widget.title != null || widget.onSearch != null)&&!widget.smallTitle)
               CupertinoSliverNavigationBar(
                 leading: Navigator.of(context).canPop()
                   ? CupertinoNavigationBarBackButton(
@@ -65,15 +117,15 @@ class DecodPageScaffold extends StatelessWidget {
                       previousPageTitle: 'Retour',
                     )
                   : null,
-                largeTitle: onSearch!=null
+                largeTitle: widget.onSearch!=null
                   ? Padding(
                       padding: const EdgeInsets.only(right: 25, left: 5),
                       child: CupertinoSearchTextField(
                         placeholder: 'Rechercher',
-                        onChanged: onSearch,
+                        onChanged: widget.onSearch,
                       ),
                     )
-                  : Text(title??""),
+                  : Text(widget.title??""),
                 trailing: CupertinoButton(
                   padding: EdgeInsets.zero,
                   onPressed: () {
@@ -88,20 +140,31 @@ class DecodPageScaffold extends StatelessWidget {
                     size: 24
                   ),
                 ),
-                middle: onSearch!=null 
-                  ? Text(title??"")
-                  : const Text('')
+                middle: widget.onSearch!=null 
+                  ? Text(widget.title??"")
+                  : const Text(''),
+                border: _showBorder
+                ? const Border(
+                    bottom: BorderSide(
+                      color: CupertinoColors.separator,
+                      width: 0.0,
+                    ),
+                  )
+                : const Border(),
+                backgroundColor: _showBorder
+                  ? CupertinoColors.systemBackground.withOpacity(0.85)
+                  : CupertinoColors.white,
               ),
             SliverSafeArea(
               top: false,
               sliver: SliverList(
-                delegate: children!=null
+                delegate: widget.children!=null
                   ? SliverChildListDelegate(
-                      children!
+                      widget.children!
                     )
                   : SliverChildBuilderDelegate(
-                      builder!,
-                      childCount: childCount!
+                      widget.builder!,
+                      childCount: widget.childCount!
                     )
               ),
             )

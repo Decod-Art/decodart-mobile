@@ -14,21 +14,22 @@ class FetchRoomsException implements Exception {
 }
 
 Future<List<RoomListItem>> fetchRooms({
-    int limit=1000,
+    int limit=5,
     int offset=0,
     String? query,
     required MuseumForeignKey museum
   }) async {
-    print('fetch rooms');
+
   final url = Uri.parse('$hostName/rooms').replace(
     queryParameters: {
       'limit': limit.toString(),
       'offset': offset.toString(),
       'museumId': museum.uid!.toString(),
       if (query != null) 'query': query,
+      'detailed': 'true',
+      'keepRoomWithArtwork': 'true'
     },
   );
-  print(url);
   try {
     final response = await http.get(url);
 
