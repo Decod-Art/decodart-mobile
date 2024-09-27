@@ -42,7 +42,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
         } else {
           navigateToList(
             context, 
-            title: 'Expositions',
+            title: title,
             onPress: onPressed,
             fetch: (
               {int limit=10,int offset=0,String? query}
