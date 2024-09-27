@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 class DecodPageScaffold extends StatefulWidget {
   final List<Widget>? children;
   final NullableIndexedWidgetBuilder? builder;
+  final Widget? child;
   final int? childCount;
   final String? title;
   final bool smallTitle;
@@ -19,7 +20,8 @@ class DecodPageScaffold extends StatefulWidget {
     this.onSearch,
     this.controller,
     this.smallTitle=false,
-    this.leadingBar});
+    this.leadingBar,
+    this.child});
     
       @override
       State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
@@ -104,7 +106,7 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
         )
         : null,
       child: SafeArea(
-        child: CustomScrollView(
+        child: widget.child ?? CustomScrollView( // We use the widget in child if it exists. Otherwise CustomScrollView
           controller: _scrollController,
           slivers: [
             if ((widget.title != null || widget.onSearch != null)&&!widget.smallTitle)
