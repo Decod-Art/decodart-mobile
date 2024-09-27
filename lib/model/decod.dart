@@ -2,6 +2,8 @@ import 'package:decodart/model/abstract_item.dart' show AbstractItem, UnnamedAbs
 import 'package:decodart/model/artwork.dart' show ArtworkForeignKey;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 
+import 'dart:math';
+
 
 enum DecodQuestionType {
   image,
@@ -85,6 +87,21 @@ class DecodQuestion extends DecodQuestionListItem {
       if (artwork != null)
         'artwork': artwork!.toJson()
     };
+  }
+
+  DecodQuestion shuffleAnswers() {
+    List<DecodAnswer> shuffledAnswers = List.from(answers);
+    shuffledAnswers.shuffle(Random());
+    return DecodQuestion(
+      uid: uid,
+      name: name,
+      image: image,
+      question: question,
+      questionType: questionType,
+      answers: shuffledAnswers,
+      showImage: showImage,
+      artwork: artwork,
+    );
   }
 }
 

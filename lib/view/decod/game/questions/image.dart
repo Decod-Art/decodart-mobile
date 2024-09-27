@@ -136,21 +136,18 @@ class _ImageQuestionState extends State<ImageQuestion> {
         return Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        widget.question.question, // Remplacez par le contenu de votre question
-                        style: const TextStyle(fontSize: 24),
-                      ),
-                    ]
-                  ),
-                )
+            Padding(
+              padding: const EdgeInsets.all(15),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      widget.question.question, // Remplacez par le contenu de votre question
+                      style: const TextStyle(fontSize: 24),
+                    ),
+                  ]
+                ),
               )
             ),
             Expanded(

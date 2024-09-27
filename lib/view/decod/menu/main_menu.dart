@@ -4,6 +4,7 @@ import 'package:decodart/view/decod/menu/history.dart' show DecodedHistory, Deco
 import 'package:decodart/view/decod/menu/stats.dart' show StatsWidget, StatsWidgetState;
 import 'package:decodart/view/decod/menu/train_to_decod.dart' show TrainToDecod;
 import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
 import 'package:decodart/widgets/new_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -33,36 +34,30 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> with ShowModal {
 
   @override
   Widget build(BuildContext context) {
-    // return DecodPageScaffold(
-
-    // )
-    return CupertinoPageScaffold(
-      navigationBar: const NewDecodNavigationBar(
-        title: "Décoder"
-      ),
-      child: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            StatsWidget(key: statsWidgetKey, onReset: reset,),
-            Expanded(
-              flex: 3,
-              child: DecodedHistory(key: decodedHistoryKey),
-            ),
-            Container(
-              color: CupertinoColors.systemGrey6,
-              width: double.infinity,
-              height: 100,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-                child: TrainToDecod(
-                  tags: tags
-                )
+    return DecodPageScaffold(
+      title: 'Décoder',
+      smallTitle: true,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          StatsWidget(key: statsWidgetKey, onReset: reset,),
+          Expanded(
+            flex: 3,
+            child: DecodedHistory(key: decodedHistoryKey),
+          ),
+          Container(
+            color: CupertinoColors.systemGrey6,
+            width: double.infinity,
+            height: 100,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+              child: TrainToDecod(
+                tags: tags
               )
             )
-          ]
-        ),
-      )
+          )
+        ]
+      ),
     );
   }
 }

@@ -2,6 +2,7 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/hive/decod.dart' show GameData;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -83,11 +84,17 @@ class _DecodViewState extends State<DecodView> {
   }
 
   Future<void> _fetchQuestions() async {
+    late final List<DecodQuestion> questionsShuffled;
     if (widget.artwork != null){
-      questions.addAll(await fetchDecodQuestionByArtworkId(widget.artwork!.uid!));
+      questionsShuffled = (await fetchDecodQuestionByArtworkId(widget.artwork!.uid!))
+                    .map((item) => item.shuffleAnswers())
+                    .toList();
     } else {
-      questions.addAll(await fetchDecodQuestionRandomly(tag: widget.tag));
+      questionsShuffled = (await fetchDecodQuestionRandomly(tag: widget.tag))
+                    .map((item) => item.shuffleAnswers())
+                    .toList();
     }
+    questions.addAll(questionsShuffled);
     results.addAll(List.generate(questions.length, (_)=>false));
     setState(() {});
   }

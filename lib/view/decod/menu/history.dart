@@ -1,9 +1,9 @@
-import 'package:decodart/api/artwork.dart' show fetchArtworkById;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
-import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
+import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show showModal;
+
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,7 +14,7 @@ class DecodedHistory extends StatefulWidget{
   State<DecodedHistory> createState() => DecodedHistoryState();
 }
 
-class DecodedHistoryState extends State<DecodedHistory> with ShowModal {
+class DecodedHistoryState extends State<DecodedHistory> {
   Box<List>? artworkHistory;
   final List<ArtworkListItem> decoded = [];
 
@@ -72,13 +72,14 @@ class DecodedHistoryState extends State<DecodedHistory> with ShowModal {
                       fontSize: 22,
                       fontWeight: FontWeight.w500)),
                   ),
-                ListWithThumbnail(items: decoded, onPress: (item) async {
-                  showDecodModalBottomSheet(
+                ListWithThumbnail(
+                  items: decoded, 
+                  onPress: (item) async {
+                  showModal(
                     context,
-                    (context) => FutureArtworkView(artwork: item),
-                    expand: true,
-                    useRootNavigator: true);
-                },)
+                    (context) => FutureArtworkView(artwork: item));
+                  }
+                )
               ],
             );
           }

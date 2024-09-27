@@ -95,24 +95,21 @@ class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 4,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.question.question,
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ]
-                )
+            Padding(
+              padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.question.question,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ]
               )
             ),
-            Expanded(
-              flex: 3,
+            SizedBox(
+              height: 45,
               child: Center(
                 child: _finalMessage()
               )
@@ -120,7 +117,7 @@ class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
             Expanded(
               flex: 17,
               child: Padding(
-                padding: const EdgeInsets.all(15),
+                padding: const EdgeInsets.only(top: 5, bottom: 15, left: 15, right: 15),
                 child: ImageDrawingWidget(
                   image: widget.question.answers[0].image!,
                   foundCorrect: foundCorrect,

@@ -25,25 +25,21 @@ class EndingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          flex: 1,
-          child: Center(
-            child: Text("${totalPoints == totalPoints.toInt() ? totalPoints.toInt() : totalPoints}/${questions.length}", style: const TextStyle(fontSize: 55))
-          )
-        ),
-        Expanded(
-          flex: 1,
+        SizedBox(
+          height: 160,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              Center(
+                child: Text("${totalPoints == totalPoints.toInt() ? totalPoints.toInt() : totalPoints}/${questions.length}", style: const TextStyle(fontSize: 55))
+              ),
               Text(totalPoints>questions.length/2?"🎉":"❌", style: const TextStyle(fontSize: 40)),
               if (totalPoints > questions.length/2)
                 const Text('Bon score !', style: TextStyle(fontSize: 25))
             ]
-          )
+          ),
         ),
         Expanded(
           flex: 4,
