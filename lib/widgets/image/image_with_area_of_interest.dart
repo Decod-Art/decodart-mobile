@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 import 'package:decodart/model/image.dart' show AbstractImage, BoundingBox;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

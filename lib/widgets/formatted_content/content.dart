@@ -1,7 +1,7 @@
 import 'package:decodart/api/util.dart' show checkUrlForCdn;
 import 'package:decodart/model/image.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart' show Colors, Theme;
+import 'package:flutter/material.dart' show Theme;
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 class AbstractFormattedContent {

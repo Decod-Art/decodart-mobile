@@ -1,4 +1,3 @@
-import 'package:decodart/model/artwork_tag.dart' show ArtworkTag;
 import 'package:decodart/model/decod.dart' show DecodTag;
 import 'package:decodart/view/decod/game/manager.dart' show DecodView;
 import 'package:flutter/cupertino.dart';
@@ -135,7 +134,7 @@ class _PopUpDialogState extends State<PopUpDialog> with SingleTickerProviderStat
                 Navigator.of(context).pop();
                 _loadGame();
               },
-              child: const Text("Questions aléatoires"),
+              child: const Text("Questions aléatoires", textAlign: TextAlign.center,),
             ),
             for (final tag in widget.tags) ... [
               CupertinoButton(
@@ -143,7 +142,7 @@ class _PopUpDialogState extends State<PopUpDialog> with SingleTickerProviderStat
                    Navigator.of(context).pop();
                   _loadGame(tag);
                 },
-                child: Text(tag.name),
+                child: Text(tag.name, textAlign: TextAlign.center),
               ),
             ]
           ],

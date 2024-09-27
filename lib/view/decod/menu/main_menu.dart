@@ -5,7 +5,6 @@ import 'package:decodart/view/decod/menu/stats.dart' show StatsWidget, StatsWidg
 import 'package:decodart/view/decod/menu/train_to_decod.dart' show TrainToDecod;
 import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
 import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
-import 'package:decodart/widgets/new_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
 
 class DecodMainMenuView extends StatefulWidget {

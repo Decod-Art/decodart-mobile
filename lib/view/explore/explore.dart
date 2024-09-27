@@ -2,7 +2,7 @@ import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
 import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
-import 'package:decodart/api/util.dart' show LazyList;
+import 'package:decodart/api/util.dart' show Fetcher, LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
@@ -26,12 +26,39 @@ class ExploreView extends StatefulWidget {
 
 class _ExploreViewState extends State<ExploreView> {
   final LazyList<TourListItem> _tours = LazyList(fetch: fetchAllTours);
+  late Fetcher<GeolocatedListItem> _geolocatedListItemFetcher;
+  late Fetcher<ArtworkListItem> _artworkListItemFetcher;
+  late Fetcher<MuseumListItem> _museumListItemFetcher;
   String? _filter;
 
   @override
   void initState() {
     super.initState();
     _fetchTours();
+    _setGeoLocatedFetcher();
+    _setArtworkFetcher();
+    _setMuseumFetcher();
+  }
+
+  void _setGeoLocatedFetcher() {
+    _geolocatedListItemFetcher = Fetcher(
+      fetch: ({
+        int limit=10, int offset=0
+      }) => fetchAroundMe(limit: limit, offset: offset, query: _filter));
+  }
+
+  void _setArtworkFetcher() {
+    _artworkListItemFetcher = Fetcher(
+      fetch: ({
+        int limit=10, int offset=0
+      }) => fetchAllArtworks(limit: limit, offset: offset, query: _filter));
+  }
+
+  void _setMuseumFetcher() {
+    _museumListItemFetcher = Fetcher(
+      fetch: ({
+        int limit=10, int offset=0
+      }) => fetchAllMuseums(limit: limit, offset: offset, query: _filter));
   }
 
   Future<void> _fetchTours() async {
@@ -81,49 +108,54 @@ class _ExploreViewState extends State<ExploreView> {
         if (value.isEmpty) {
           _filter = null;
         }
+        _setGeoLocatedFetcher();
+        _setArtworkFetcher();
+        _setMuseumFetcher();
         setState(() {});
       },
       children: [
-        ContentBlock(
-          fetch: fetchAroundMe,
-          secondaryFetch: ({int limit=10, int offset=0}) {return fetchAroundMe(limit: limit, offset: offset, query: _filter);},
-          isModal: false,
-          onPressed: _onAroundMePressed,
-          title: 'Autour de moi',
-        ),
-        ContentBlock(
-          fetch: fetchAllArtworks,
-          secondaryFetch: ({int limit=10, int offset=0}) {return fetchAllArtworks(limit: limit, offset: offset, query: _filter);},
-          isModal: false,
-          onPressed: _onArtworkPressed,
-          title: 'Œuvres'
-        ),
-        ContentBlock(
-          fetch: fetchAllMuseums,
-          secondaryFetch: ({int limit=10, int offset=0}) {return fetchAllMuseums(limit: limit, offset: offset, query: _filter);},
-          isModal: false,
-          onPressed: _onMuseumPressed,
-          title: 'Musées'
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        Column(// Column so that it is a single widget in the scaffold.. And queries only done once.
           children: [
-            const Padding(
-              padding: EdgeInsets.all(15),
-              child: Text(
-                "Visites",
-                style: TextStyle(
-                  color: CupertinoColors.darkBackgroundGray,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500
-                ),
-              )
+            ContentBlock(
+              fetch: fetchAroundMe,
+              secondaryFetch: _geolocatedListItemFetcher.call,          
+              onPressed: _onAroundMePressed,
+              isMuseum: (item) => item.isMuseum,
+              title: 'Autour de moi',
             ),
-            ListWithThumbnail(items: _tours.list, onPress: _onTourPressed,)
+            ContentBlock(
+              fetch: fetchAllArtworks,
+              secondaryFetch: _artworkListItemFetcher.call,
+              onPressed: _onArtworkPressed,
+              title: 'Œuvres'
+            ),
+            ContentBlock(
+              fetch: fetchAllMuseums,
+              secondaryFetch: _museumListItemFetcher.call,
+              onPressed: _onMuseumPressed,
+              title: 'Musées'
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(15),
+                  child: Text(
+                    "Visites",
+                    style: TextStyle(
+                      color: CupertinoColors.darkBackgroundGray,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500
+                    ),
+                  )
+                ),
+                ListWithThumbnail(items: _tours.list, onPress: _onTourPressed,)
+              ],
+            )
           ],
-        )
+        ),
       ]
     );
   }

@@ -1,4 +1,3 @@
-import 'package:decodart/model/image.dart';
 import 'package:decodart/widgets/formatted_content/content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;

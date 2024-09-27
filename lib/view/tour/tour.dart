@@ -1,4 +1,3 @@
-import 'package:decodart/api/artwork.dart' show fetchArtworkById;
 import 'package:decodart/model/artwork.dart' show ArtworkForeignKey, ArtworkListItem;
 import 'package:decodart/model/tour.dart' show Tour;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;

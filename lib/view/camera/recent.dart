@@ -1,4 +1,4 @@
-import 'package:decodart/api/artwork.dart' show fetchArtworkById;
+
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;

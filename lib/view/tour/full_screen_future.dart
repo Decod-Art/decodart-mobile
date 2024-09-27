@@ -1,6 +1,5 @@
 import 'package:decodart/model/tour.dart' show Tour;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
-import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
 import 'package:flutter/cupertino.dart';
 
 class FullScreenFutureTourView extends StatelessWidget {

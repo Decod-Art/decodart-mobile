@@ -12,7 +12,6 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/results/result.dart' show ResultsWidget;
 import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
-import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
 
 
 class CameraView extends StatefulWidget {

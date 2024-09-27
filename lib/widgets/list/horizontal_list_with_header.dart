@@ -9,7 +9,7 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
   final DataFetcher<T> fetch;
   final AbstractListItemCallback onPressed;
   final VoidCallback onTitlePressed;
-  final bool Function(AbstractListItem) isMuseum;
+  final bool Function(T) isMuseum;
   const LazyHorizontalListWithHeader({
     super.key,
     required this.name,

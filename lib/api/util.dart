@@ -65,3 +65,13 @@ class LazyList<T extends AbstractItemBase> extends Iterable<T> {
   @override
   Iterator<T> get iterator => _list.iterator;
 }
+
+class Fetcher<T extends AbstractItemBase> {
+  final Future<List<T>> Function({int limit, int offset}) fetch;
+
+  Fetcher({required this.fetch});
+
+  Future<List<T>> call({int limit = 10, int offset = 0}) {
+    return fetch(limit: limit, offset: offset);
+  }
+}

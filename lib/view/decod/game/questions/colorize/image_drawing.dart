@@ -153,7 +153,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
       // zoom in/out
       final double currentScale = currentTransformation.getMaxScaleOnAxis();
       double finalScale = _clipScale(currentScale, newScale);
-      final offset = Offset((constraints.maxWidth-imageBox!.size.width)/2,(constraints.maxHeight-imageBox.size.height)/2);
+
       final Offset imageFocalPoint = (startPoint - Offset(
           currentTransformation.getTranslation().x,
           currentTransformation.getTranslation().y

@@ -11,13 +11,16 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final DataFetcher<T>? secondaryFetch;
   final AbstractListItemCallback onPressed;
   final bool isModal;
+  final bool Function(T)? isMuseum;
   const ContentBlock({
     super.key,
     required this.title,
     required this.fetch,
     required this.onPressed,
-    required this.isModal,
-    this.secondaryFetch});
+    this.isModal=false,
+    this.secondaryFetch,
+    this.isMuseum});
+
 
   @override
   Widget build(BuildContext context){
@@ -26,7 +29,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
       name: title,
       fetch: secondaryFetch??fetch,
       onPressed: onPressed,
-      isMuseum: (item)=>false,
+      isMuseum: isMuseum??(item)=>false,
       onTitlePressed: (){
         if (isModal) {
           showListInModal(
@@ -46,7 +49,8 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
             onPress: onPressed,
             fetch: (
               {int limit=10,int offset=0,String? query}
-            ) => fetch(limit: limit, offset: offset, query: query));
+            ) => fetch(limit: limit, offset: offset, query: query)
+          );
         }
       },
     );
