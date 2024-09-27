@@ -44,21 +44,24 @@ class _ExploreViewState extends State<ExploreView> {
     _geolocatedListItemFetcher = Fetcher(
       fetch: ({
         int limit=10, int offset=0
-      }) => fetchAroundMe(limit: limit, offset: offset, query: _filter));
+      }) => fetchAroundMe(limit: limit, offset: offset, query: _filter)
+    );
   }
 
   void _setArtworkFetcher() {
     _artworkListItemFetcher = Fetcher(
       fetch: ({
         int limit=10, int offset=0
-      }) => fetchAllArtworks(limit: limit, offset: offset, query: _filter));
+      }) => fetchAllArtworks(limit: limit, offset: offset, query: _filter)
+    );
   }
 
   void _setMuseumFetcher() {
     _museumListItemFetcher = Fetcher(
       fetch: ({
         int limit=10, int offset=0
-      }) => fetchAllMuseums(limit: limit, offset: offset, query: _filter));
+      }) => fetchAllMuseums(limit: limit, offset: offset, query: _filter)
+    );
   }
 
   Future<void> _fetchTours() async {
