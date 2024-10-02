@@ -1,7 +1,7 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
-import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
+import 'package:decodart/api/tour.dart' show fetchAllTours;
 import 'package:decodart/api/util.dart' show Fetcher, LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
@@ -10,8 +10,8 @@ import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
+import 'package:decodart/view/tour/future_tour.dart';
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
-import 'package:decodart/view/tour/full_screen_future.dart' show FullScreenFutureTourView;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToWidget;
 import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
@@ -93,12 +93,9 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   void _onTourPressed(AbstractListItem item) {
-    final futureTour = fetchTourById(item.uid!);
-    Navigator.push(
+    navigateToWidget(
       context,
-      CupertinoPageRoute(
-        builder: (context) => FullScreenFutureTourView(tour: futureTour),
-      ),
+      (context) => FutureTourView(tour: item as TourListItem),
     );
   }
 

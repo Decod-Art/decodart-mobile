@@ -1,5 +1,5 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
-import 'package:decodart/api/tour.dart' show fetchAllTours, fetchTourById;
+import 'package:decodart/api/tour.dart' show fetchAllTours;
 import 'package:decodart/api/util.dart' show SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
@@ -71,15 +71,15 @@ class _MuseumViewState extends State<MuseumView>  {
   }
 
   void _onTourPressed(AbstractListItem item){
-    final futureFuture = fetchTourById(item.uid!);
+
     if (widget.useModal){
       showModal(
         context,
-        (context) => FutureTourView(tour: futureFuture));
+        (context) => FutureTourView(tour: item as TourListItem));
     } else {
       navigateToWidget(
         context,
-        (context) => FutureTourView(tour: futureFuture),
+        (context) => FutureTourView(tour: item as TourListItem),
       );
     }
   }

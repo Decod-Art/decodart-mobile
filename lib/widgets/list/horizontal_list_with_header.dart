@@ -10,13 +10,15 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
   final AbstractListItemCallback onPressed;
   final VoidCallback onTitlePressed;
   final bool Function(T) isMuseum;
+  final List<T> initialValues;
   const LazyHorizontalListWithHeader({
     super.key,
     required this.name,
     required this.fetch,
     required this.onPressed,
     required this.isMuseum,
-    required this.onTitlePressed
+    required this.onTitlePressed,
+    this.initialValues = const []
     });
     
       @override
@@ -31,10 +33,10 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
   @override
   void initState() {
     super.initState();
-    items = LazyList<T>(fetch: widget.fetch);
+    items = LazyList<T>(fetch: widget.fetch, initial: widget.initialValues);
     _scrollController = ScrollController();
     _scrollController.addListener(_checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       _checkIfNeedsLoading();
     });
   }
@@ -44,7 +46,7 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
     super.didUpdateWidget(oldWidget);
     if (oldWidget.fetch != widget.fetch) {
       setState(() {
-        items = LazyList<T>(fetch: widget.fetch);
+        items = LazyList<T>(fetch: widget.fetch, initial: widget.initialValues);
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _checkIfNeedsLoading();
         });
@@ -60,7 +62,7 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
   }
 
   Future<void> _checkIfNeedsLoading() async {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !isLoading && items.hasMore) {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 5 && !isLoading && items.hasMore) {
       _loadMoreItems();
     }
   }

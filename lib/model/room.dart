@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
+import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 
@@ -18,18 +19,25 @@ class RoomForeignKey extends AbstractItem {
 
 class RoomListItem extends AbstractItem {
   final String description;
+  final List<ArtworkListItem> artworks;
 
   const RoomListItem({
     super.uid,
     required super.name,
-    required this.description
+    required this.description,
+    required this.artworks
   });
 
   factory RoomListItem.fromJson(Map<String, dynamic> json) {
     return RoomListItem(
       uid: json['uid'],
       name: json['name'],
-      description: json['description']);
+      description: json['description'],
+      artworks: json['artworkPreview']!=null
+        ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
+                                 .toList()
+                                 .cast<ArtworkListItem>()
+        : const[]);
   }
   @override
   Map<String, dynamic> toJson() {
@@ -49,7 +57,8 @@ class Room extends RoomListItem {
     required super.name,
     required super.description,
     this.image,
-    required this.museum});
+    required this.museum,
+    required super.artworks});
 
   factory Room.fromJson(Map<String, dynamic> json) {
     return Room(
@@ -58,6 +67,11 @@ class Room extends RoomListItem {
       description: json['description'],
       museum: MuseumForeignKey.fromJson(json['museum']),
       image: json['image'] != null?ImageWithPath.fromJson(json['image']):null,
+      artworks: json['artworkPreview']!=null
+        ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
+                                 .toList()
+                                 .cast<ArtworkListItem>()
+        : const[]
     );
   }
 

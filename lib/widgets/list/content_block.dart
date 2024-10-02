@@ -12,6 +12,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final AbstractListItemCallback onPressed;
   final bool isModal;
   final bool Function(T)? isMuseum;
+  final List<T> initialValues;
   const ContentBlock({
     super.key,
     required this.title,
@@ -19,7 +20,8 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
     required this.onPressed,
     this.isModal=false,
     this.secondaryFetch,
-    this.isMuseum});
+    this.isMuseum,
+    this.initialValues = const []});
 
 
   @override
@@ -30,6 +32,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
       fetch: secondaryFetch??fetch,
       onPressed: onPressed,
       isMuseum: isMuseum??(item)=>false,
+      initialValues: initialValues,
       onTitlePressed: (){
         if (isModal) {
           showListInModal(
