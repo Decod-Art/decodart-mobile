@@ -7,6 +7,14 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart' show showCupertinoMo
 typedef WidgetBuilder = Widget Function(BuildContext);
 typedef WidgetListBuilder = Widget Function(BuildContext, [ScrollController?]);
 
+void _waitForKeyboardToClose() {
+  final focusNode = FocusManager.instance.primaryFocus;
+  if (focusNode != null) {
+    focusNode.unfocus();
+    //await Future.delayed(const Duration(milliseconds: 100)); // Attendre 300ms pour que le clavier se ferme
+  }
+}
+
 // TODO add navigate to customList
 Future<T?> navigateToList<T, C extends AbstractListItem>(
   BuildContext context,
@@ -15,7 +23,8 @@ Future<T?> navigateToList<T, C extends AbstractListItem>(
     required OnPressList<C> onPress,
     hideSearch=false,
     required SearchableFetch<C> fetch
-  }) {
+  }) async {
+    _waitForKeyboardToClose();
     return Navigator.push(
       context,
       CupertinoPageRoute(
@@ -35,7 +44,8 @@ Future<T?> navigateToWidget<T>(
     String? title,
     void Function(String)? onSearch,
     bool smallTitle=false
-  }) {
+  }) async {
+  _waitForKeyboardToClose();
   return Navigator.push(
       context,
       CupertinoPageRoute(
@@ -237,10 +247,15 @@ class _ModalOrFullscreenState extends State<_ModalOrFullscreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: widget.inModal
-        ? _modalView(context)
-        : _fullScreenView(context)
+    return CupertinoPageScaffold(
+      child: Container(
+        color: CupertinoTheme.of(context).brightness == Brightness.light ? CupertinoColors.white : CupertinoColors.black,
+        child: SafeArea(
+          child: widget.inModal
+            ? _modalView(context)
+            : _fullScreenView(context),
+        ),
+      ),
     );
   }
 }

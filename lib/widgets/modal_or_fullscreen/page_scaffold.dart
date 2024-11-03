@@ -1,5 +1,6 @@
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart' show ScrollDirection;
 
 class DecodPageScaffold extends StatefulWidget {
   final List<Widget>? children;
@@ -31,15 +32,21 @@ class DecodPageScaffold extends StatefulWidget {
 class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   late ScrollController _scrollController;
   bool _showBorder = false;
+  //late final FocusNode _searchFocusNode;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    //_searchFocusNode = FocusNode();
     _scrollController = widget.controller??ScrollController();
     _scrollController.addListener(_scrollListener);
   }
 
   void _scrollListener() {
+    if (_scrollController.position.userScrollDirection != ScrollDirection.idle) {
+      FocusScope.of(context).focusedChild?.unfocus();
+    }
     if (_scrollController.hasClients) {
       final offset = _scrollController.offset;
       if (offset > 50 && !_showBorder) {
@@ -111,6 +118,7 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
           slivers: [
             if ((widget.title != null || widget.onSearch != null)&&!widget.smallTitle)
               CupertinoSliverNavigationBar(
+                transitionBetweenRoutes: false,
                 leading: Navigator.of(context).canPop()
                   ? CupertinoNavigationBarBackButton(
                       onPressed: () {
@@ -122,9 +130,18 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
                 largeTitle: widget.onSearch!=null
                   ? Padding(
                       padding: const EdgeInsets.only(right: 25, left: 5),
-                      child: CupertinoSearchTextField(
-                        placeholder: 'Rechercher',
-                        onChanged: widget.onSearch,
+                      child: SizedBox(
+                        height: 36,
+                        child: CupertinoSearchTextField(
+                          //focusNode: _searchFocusNode,
+                          placeholder: 'Rechercher',
+                          onSubmitted: widget.onSearch,
+                          onSuffixTap: (){
+                            setState((){_searchController.text = '';});
+                            widget.onSearch!('');
+                          },
+                          controller: _searchController,
+                        ),
                       ),
                     )
                   : Text(widget.title??""),
