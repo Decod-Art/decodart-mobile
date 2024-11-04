@@ -31,14 +31,16 @@ class _DecodNavigationBarState extends State<DecodNavigationBar> {
   @override
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
-      leading: widget.leadingBar?? (Navigator.of(context).canPop()
-            ? CupertinoNavigationBarBackButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                previousPageTitle: 'Retour',
-              )
-            : null),
+      leading: widget.leadingBar?? (
+        Navigator.of(context).canPop()
+          ? CupertinoNavigationBarBackButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              previousPageTitle: 'Retour',
+            )
+          : null
+      ),
       middle: widget.title != null ? Text(widget.title!) : null,
       trailing: CupertinoButton(
         padding: EdgeInsets.zero,
