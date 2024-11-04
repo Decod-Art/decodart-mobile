@@ -14,7 +14,7 @@ import 'package:decodart/view/tour/future_tour.dart';
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToWidget;
-import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
+import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {

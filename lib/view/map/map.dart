@@ -4,7 +4,7 @@ import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/view/map/summary.dart' show GeolocatedSummaryWidget;
 import 'package:decodart/widgets/modal_or_fullscreen/small_modal.dart' show showSmallModal;
-import 'package:decodart/widgets/new_decod_bar.dart' show NewDecodNavigationBar;
+import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -155,12 +155,11 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: const NewDecodNavigationBar(
-        title: "Carte"
-      ),
+    return DecodPageScaffold(
+      title: 'Carte',
+      smallTitle: true,
       child: SafeArea(
-          child: FlutterMap(
+        child: FlutterMap(
           mapController: mapController.mapController,
           options: const MapOptions(
             initialCenter: LatLng(43.611299, 3.875854),

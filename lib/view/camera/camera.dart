@@ -1,5 +1,5 @@
 import 'package:decodart/view/camera/camera/button.dart';
-import 'package:decodart/widgets/modal_or_fullscreen/page_scaffold.dart' show DecodPageScaffold;
+import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:decodart/view/camera/camera/core_camera.dart' show CoreCamera, CoreCameraState;
 import 'package:decodart/view/camera/help.dart' show HelpView;
