@@ -68,10 +68,12 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
     super.dispose();
   }
 
+  bool get isSmallNavigationBar => (widget.title==null&&widget.onSearch==null)||widget.smallTitle;
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      navigationBar: (widget.title==null&&widget.onSearch==null)||widget.smallTitle
+      navigationBar: isSmallNavigationBar
         ? DecodNavigationBar(
             title: widget.title,
             showBorder: _showBorder,
@@ -82,7 +84,7 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
         child: widget.child ?? CustomScrollView( // We use the widget in child if it exists. Otherwise CustomScrollView
           controller: _scrollController,
           slivers: [
-            if ((widget.title != null || widget.onSearch != null)&&!widget.smallTitle)
+            if (!isSmallNavigationBar)
               SliverDecodNavigationBar(
                 title: widget.title,
                 onSearch: widget.onSearch,
