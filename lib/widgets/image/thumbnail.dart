@@ -14,7 +14,7 @@ class ThumbnailWidget extends StatelessWidget {
     this.isMuseum=false
   });
 
-  Widget _icon(BuildContext context) {
+  Widget get icon {
     if(isMuseum) {
       return Image.asset(
         'images/icons/museum.png',
@@ -58,7 +58,7 @@ class ThumbnailWidget extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 padding: const EdgeInsets.all(8.0),
-                child: _icon(context)
+                child: icon
               ),
             ),
             // Titre en bas à gauche
