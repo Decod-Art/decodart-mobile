@@ -2,9 +2,10 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:decodart/model/image.dart' show AbstractImage;
-import 'package:decodart/widgets/image/full_screen_image_gallery.dart' show FullScreenImageGallery;
+import 'package:decodart/widgets/new/component/gallery/full_screen_gallery.dart' show FullScreenImageGallery;
+import 'package:decodart/widgets/new/component/gallery/util/info_gallery.dart' show InfoGallery;
+import 'package:decodart/widgets/new/component/gallery/util/page_indicator.dart' show PageIndicator;
 import 'package:flutter/cupertino.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart' show SmoothPageIndicator, WormEffect;
 
 class ImageGallery extends StatefulWidget {
   final List<AbstractImage> images;
@@ -20,7 +21,6 @@ class ImageGallery extends StatefulWidget {
 
 class _ImageGalleryState extends State<ImageGallery> {
   final PageController _pageController = PageController();
-
 
   final List<Size> sizes = [];
 
@@ -116,39 +116,11 @@ class _ImageGalleryState extends State<ImageGallery> {
             ),
           )
         ),
-        if (widget.images.length > 1)
-          Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: SmoothPageIndicator(
-              controller: _pageController,
-              count: widget.images.length,
-              effect: const WormEffect(
-                dotHeight: 8.0,
-                dotWidth: 8.0,
-                activeDotColor: CupertinoColors.systemBlue,
-                dotColor: CupertinoColors.systemGrey4,
-              ),
-            ),
-          ),
-        Padding(
-          padding: const EdgeInsets.only(top: 15, left: 15, right: 15),
-          child: Row(
-            children: [
-              Image.asset(
-                'images/icons/plus_magnifyingglass.png',
-                width: 15,
-                height: 15,
-                color: CupertinoColors.systemGrey4, // Optionnel : pour colorer l'icône
-              ),
-              const SizedBox(width: 5,),
-              const Expanded(
-                child: Text(
-                  'Touchez l\'image pour l\'ouvrir et obtenir les détails.',
-                  style: TextStyle(color: CupertinoColors.systemGrey4, fontSize: 15),)
-              )
-            ]
-          ),
-        )
+        PageIndicator(
+          length: widget.images.length,
+          controller: _pageController,
+        ),
+        const InfoGallery()
       ]
     );
   }

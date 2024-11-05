@@ -19,6 +19,8 @@ abstract class AbstractImage extends UnnamedAbstractItem {
     };
   }
   AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes);
+
+  bool get hasBoundingBox => boundingBoxes != null;
 }
 
 class ImageWithPath extends AbstractImage {

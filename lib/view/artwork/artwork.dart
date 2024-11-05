@@ -3,7 +3,7 @@ import 'package:decodart/view/artwork/decod_button.dart' show DecodButton;
 import 'package:decodart/widgets/buttons/button_list.dart' show ButtonListWidget;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
-import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
+import 'package:decodart/widgets/new/component/gallery/gallery.dart' show ImageGallery;
 import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
