@@ -8,7 +8,7 @@ import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/museum_map.dart';
 import 'package:decodart/view/museum/museum_map_button.dart' show MuseumMapButton;
-import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
+import 'package:decodart/widgets/new/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
 import 'package:decodart/widgets/new/navigation/modal.dart' show showListInModal, showWidgetInModal;

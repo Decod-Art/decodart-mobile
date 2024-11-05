@@ -7,7 +7,7 @@ import 'package:decodart/model/room.dart' show RoomListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/map_viewer.dart' show FullScreenPDFViewer;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
-import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
+import 'package:decodart/widgets/new/list/content_block.dart' show ContentBlock;
 import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 

@@ -1,5 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/list/sliver_lazy_list.dart' show OnPressList, SearchableFetch, SliverLazyListView;
+import 'package:decodart/widgets/new/list/sliver_lazy_list.dart' show OnPressList, SearchableFetch, SliverLazyListView;
 import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart';
 
 import 'package:flutter/cupertino.dart';
