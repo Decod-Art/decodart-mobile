@@ -1,4 +1,4 @@
-import 'package:decodart/widgets/buttons/chevron_button.dart';
+import 'package:decodart/widgets/new/component/button/chevron_button.dart';
 import 'package:flutter/cupertino.dart';
 
 class ButtonListWidget extends StatelessWidget {
@@ -10,7 +10,8 @@ class ButtonListWidget extends StatelessWidget {
     required this.buttons
   });
 
-  List<Widget> _buildButtonListWithSeparators() {
+  @override
+  Widget build(BuildContext context) {
     List<Widget> buttonListWithSeparators = [];
     for (int i = 0; i < buttons.length; i++) {
       buttonListWithSeparators.add(buttons[i]);
@@ -27,11 +28,7 @@ class ButtonListWidget extends StatelessWidget {
         );
       }
     }
-    return buttonListWithSeparators;
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(children: _buildButtonListWithSeparators());
+    return Column(children: buttonListWithSeparators);
   }
 }
