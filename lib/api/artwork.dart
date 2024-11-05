@@ -13,12 +13,13 @@ class FetchArtworkException implements Exception {
   String toString() => 'FetchArtworkException: $message';
 }
 
-Future<List<ArtworkListItem>> fetchAllArtworks(
-  {int limit=10,
-  int offset=0,
-  String? query,
-  int? museumId,
-  String? room}) async {
+Future<List<ArtworkListItem>> fetchAllArtworks({
+    int limit=10,
+    int offset=0,
+    String? query,
+    int? museumId,
+    String? room}) async {
+
   try {
     final Uri uri = Uri.parse('$hostName/artworks').replace(
       queryParameters: {
