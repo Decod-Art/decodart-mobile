@@ -16,8 +16,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final CupertinoTabController _tabController = CupertinoTabController();
-  
-
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
@@ -78,7 +76,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void changeTab(int index) {
+  set tab (int index) {
     _tabController.index = index; // Ou utilisez _tabController.animateTo(index);
   }
 
