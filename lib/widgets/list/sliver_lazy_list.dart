@@ -1,6 +1,6 @@
 import 'package:decodart/api/util.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/list/list_tile.dart' show ListTile;
+import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
@@ -29,6 +29,7 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
 class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {
   late ScrollController _scrollController;
   bool isLoading = false;
+  bool firstTimeLoading = true;
   bool _queryChanged = false;
   late LazyList<T> items;
 
@@ -38,7 +39,8 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
     items = LazyList<T>(fetch: widget.fetch);
     _scrollController = ScrollController();
     _scrollController.addListener(_checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 250));
       _checkIfNeedsLoading();
     });
   }
@@ -51,7 +53,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
   }
 
   Future<void> _checkIfNeedsLoading() async {
-    if ((_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30||_queryChanged) && !isLoading && items.hasMore) {
+    if (((_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30||_queryChanged) && !isLoading && items.hasMore)||firstTimeLoading) {
       _queryChanged = false;
       _loadMoreItems();
     }
@@ -61,15 +63,11 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
     setState(() {
       isLoading = true;
     });
-
-    // Simuler un délai de 2 secondes
     await items.fetchMore();
-
-    // Appeler la fonction pour charger plus d'éléments
-    //await widget.loadMoreItems();
     if (mounted){
       setState(() {
         isLoading = false;
+        firstTimeLoading = false;
       });
       _checkIfNeedsLoading();
     }

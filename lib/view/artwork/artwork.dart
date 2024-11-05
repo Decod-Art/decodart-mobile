@@ -4,7 +4,7 @@ import 'package:decodart/widgets/buttons/button_list.dart' show ButtonListWidget
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
 import 'package:decodart/widgets/image/gallery.dart' show ImageGallery;
-import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show showModal;
+import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
 class ArtworkView extends StatelessWidget {
@@ -48,7 +48,7 @@ class ArtworkView extends StatelessWidget {
                 color: CupertinoColors.activeBlue,
               ),
               onPressed: (){
-                showModal(
+                showWidgetInModal(
                   context,
                   (context) => ContentWidget(
                     items: artwork.artist.biography,
@@ -67,7 +67,7 @@ class ArtworkView extends StatelessWidget {
                   color: CupertinoColors.activeBlue, // Optionnel : pour colorer l'icône
                 ),
                 onPressed: (){
-                  showModal(
+                  showWidgetInModal(
                     context,
                     (context) => ContentWidget(
                       items: tag.description,

@@ -3,10 +3,10 @@ import 'package:decodart/model/tour.dart' show Tour;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
-import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
+import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
-class TourView extends StatelessWidget with ShowModal {
+class TourView extends StatelessWidget {
   final Tour tour;
   const TourView({
     super.key,
@@ -28,11 +28,7 @@ class TourView extends StatelessWidget with ShowModal {
           ListWithThumbnail<ArtworkForeignKey>(
             items: tour.artworks,
             onPress: (artwork){
-              showDecodModalBottomSheet(
-                context,
-                (context) => FutureArtworkView(artwork: artwork),
-                expand: true,
-                useRootNavigator: true);
+              showWidgetInModal(context, (context) => FutureArtworkView(artwork: artwork));
             },),
           const SizedBox(height: 5),
           Text(
@@ -43,11 +39,7 @@ class TourView extends StatelessWidget with ShowModal {
           ContentWidget(
             items: tour.description,
             onButtonPressed: (item){
-              showDecodModalBottomSheet(
-                context,
-                (context) => FutureArtworkView(artwork: item as ArtworkListItem),
-                expand: true,
-                useRootNavigator: true);
+              showWidgetInModal(context, (context) => FutureArtworkView(artwork: item as ArtworkListItem));
             },
           )
         ],

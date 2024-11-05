@@ -11,7 +11,8 @@ import 'package:decodart/view/museum/museum_map_button.dart' show MuseumMapButto
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
-import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToWidget, showListInModal, showModal;
+import 'package:decodart/widgets/new/navigation/modal.dart' show showListInModal, showWidgetInModal;
+import 'package:decodart/widgets/new/navigation/screen.dart' show navigateToWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
@@ -59,7 +60,7 @@ class _MuseumViewState extends State<MuseumView>  {
 
   void _onArtworkPressed(AbstractListItem item){
     if (widget.useModal){
-      showModal(
+      showWidgetInModal(
         context,
         (context) => FutureArtworkView(artwork: item as ArtworkListItem));
     } else {
@@ -71,9 +72,8 @@ class _MuseumViewState extends State<MuseumView>  {
   }
 
   void _onTourPressed(AbstractListItem item){
-
     if (widget.useModal){
-      showModal(
+      showWidgetInModal(
         context,
         (context) => FutureTourView(tour: item as TourListItem));
     } else {
@@ -118,7 +118,7 @@ class _MuseumViewState extends State<MuseumView>  {
           child: CupertinoButton(
             padding: EdgeInsets.zero,
             onPressed: (){
-              showModal(
+              showWidgetInModal(
                 context,
                  (context) => ContentScrolling(
                     text: widget.museum.description,

@@ -1,6 +1,6 @@
 import 'package:decodart/api/util.dart';
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/list/list_tile.dart' show ListTile;
+import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
 
@@ -23,7 +23,8 @@ class LazyListWidget<T extends AbstractListItem> extends StatefulWidget {
 
 class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWidget<T>> {
   late ScrollController _scrollController;
-  bool isLoading = false;
+  bool isLoading = true;
+  bool firstTimeLoading = true;
   late LazyList<T> items;
 
   @override
@@ -32,13 +33,14 @@ class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWid
     items = LazyList<T>(fetch: widget.fetch);
     _scrollController = widget.controller??ScrollController();
     _scrollController.addListener(_checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await Future.delayed(const Duration(milliseconds: 250));
       _checkIfNeedsLoading();
     });
   }
 
   Future<void> _checkIfNeedsLoading() async {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !isLoading && items.hasMore) {
+    if ((_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !isLoading && items.hasMore) || firstTimeLoading) {
       _loadMoreItems();
     }
   }
@@ -56,6 +58,7 @@ class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWid
     if (mounted){
       setState(() {
         isLoading = false;
+        firstTimeLoading = false;
       });
       _checkIfNeedsLoading();
     }

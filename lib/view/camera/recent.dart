@@ -3,7 +3,7 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
-import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
+import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
@@ -14,7 +14,7 @@ class RecentScan extends StatefulWidget{
   State<RecentScan> createState() => RecentScanState();
 }
 
-class RecentScanState extends State<RecentScan> with ShowModal {
+class RecentScanState extends State<RecentScan> {
   final int maxRecentSaved = 10;
   Box<List>? recentScanBox;
   final List<ArtworkListItem> recent = [];
@@ -85,11 +85,7 @@ class RecentScanState extends State<RecentScan> with ShowModal {
                       fontWeight: FontWeight.w500)),
                   ),
                 ListWithThumbnail(items: recent, onPress: (item) async {
-                  showDecodModalBottomSheet(
-                    context,
-                    (context) => FutureArtworkView(artwork: item),
-                    expand: true,
-                    useRootNavigator: true);
+                  showWidgetInModal(context,(context) => FutureArtworkView(artwork: item));
                 },)
               ],
             );

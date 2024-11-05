@@ -2,7 +2,8 @@ import 'package:decodart/api/util.dart' show DataFetcher, SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show AbstractListItemCallback, LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/lazy_list.dart' show LazyListWidget;
-import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show navigateToList, showListInModal;
+import 'package:decodart/widgets/new/navigation/modal.dart' show showListInModal;
+import 'package:decodart/widgets/new/navigation/screen.dart' show navigateToList;
 import 'package:flutter/cupertino.dart';
 
 class ContentBlock<T extends AbstractListItem> extends StatelessWidget {

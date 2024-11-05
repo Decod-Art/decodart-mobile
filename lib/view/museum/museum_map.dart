@@ -8,7 +8,7 @@ import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkVie
 import 'package:decodart/view/museum/map_viewer.dart' show FullScreenPDFViewer;
 import 'package:decodart/widgets/buttons/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
-import 'package:decodart/widgets/modal_or_fullscreen/modal_or_fullscreen.dart' show showModal;
+import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
 class MuseumMap extends StatefulWidget {
@@ -123,7 +123,7 @@ class _MuseumMapState extends State<MuseumMap> {
             fetch: fetchers[index-1],
             initialValues: initialValues[index-1],
             onPressed: (artwork){
-              showModal(
+              showWidgetInModal(
                 context,
                 (context) => FutureArtworkView(artwork: artwork as ArtworkListItem),
               );

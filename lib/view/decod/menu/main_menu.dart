@@ -3,7 +3,6 @@ import 'package:decodart/model/decod.dart' show DecodTag;
 import 'package:decodart/view/decod/menu/history.dart' show DecodedHistory, DecodedHistoryState;
 import 'package:decodart/view/decod/menu/stats.dart' show StatsWidget, StatsWidgetState;
 import 'package:decodart/view/decod/menu/train_to_decod.dart' show TrainToDecod;
-import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
 import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
@@ -14,7 +13,7 @@ class DecodMainMenuView extends StatefulWidget {
   State<DecodMainMenuView> createState() => DecodMainMenuViewState();
 }
 
-class DecodMainMenuViewState extends State<DecodMainMenuView> with ShowModal {
+class DecodMainMenuViewState extends State<DecodMainMenuView> {
   final GlobalKey<DecodedHistoryState> decodedHistoryKey = GlobalKey<DecodedHistoryState>();
   final GlobalKey<StatsWidgetState> statsWidgetKey = GlobalKey<StatsWidgetState>();
   late final Future<List<DecodTag>> tags;

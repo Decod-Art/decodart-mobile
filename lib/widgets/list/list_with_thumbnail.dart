@@ -1,5 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/list/list_tile.dart' show ListTile;
+import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
 

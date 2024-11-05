@@ -1,4 +1,5 @@
 import 'package:decodart/view/camera/camera/button.dart';
+import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
 import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:decodart/view/camera/camera/core_camera.dart' show CoreCamera, CoreCameraState;
@@ -11,7 +12,6 @@ import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/results/result.dart' show ResultsWidget;
-import 'package:decodart/widgets/modal_or_fullscreen/modal.dart' show ShowModal;
 
 
 class CameraView extends StatefulWidget {
@@ -21,7 +21,7 @@ class CameraView extends StatefulWidget {
   State<CameraView> createState() => CameraViewState();
 }
 
-class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+class CameraViewState extends State<CameraView>  with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool isLoading = false;  
 
   final List<ArtworkListItem> results = [];
@@ -66,11 +66,10 @@ class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPro
     if (results.length == 1) {
       _animationController.forward();
     } else if (results.isNotEmpty){
-      showDecodModalBottomSheet(
+      showWidgetInModal(
         context,
-        (context) => ResultsView(results: results),
-        expand: true,
-        useRootNavigator: true);
+        (context) => ResultsView(results: results)
+      );
     } else {
       noResult = true;
     }
@@ -106,11 +105,10 @@ class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPro
       leadingBar: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
-          showDecodModalBottomSheet(
+          showWidgetInModal(
             context,
-            (context) => const HelpView(),
-            expand: true,
-            useRootNavigator: true);
+            (context) => const HelpView()
+          );
         },
         child: const Icon(CupertinoIcons.info_circle, size: 24),
       ),
@@ -151,11 +149,10 @@ class CameraViewState extends State<CameraView>  with ShowModal, SingleTickerPro
                         child: ResultsWidget(
                           artwork: results[0],
                           onPressed: () {
-                            showDecodModalBottomSheet(
+                            showWidgetInModal(
                               context,
-                              (context) => FutureArtworkView(artwork: results[0]),
-                              expand: true,
-                              useRootNavigator: true);
+                              (context) => FutureArtworkView(artwork: results[0])
+                            );
                           },
                         ),
                       ),
