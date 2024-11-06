@@ -16,7 +16,7 @@ class MuseumForeignKey extends AbstractItem {
 }
 
 
-class MuseumListItem extends MuseumForeignKey implements AbstractListItem{
+class MuseumListItem extends MuseumForeignKey implements AbstractListItem {
   @override
   final AbstractImage image;
   final String city;
@@ -40,22 +40,23 @@ class MuseumListItem extends MuseumForeignKey implements AbstractListItem{
       uid: item.uid,
       name: item.title,
       city: item.subtitle,
-      image: item.image);
+      image: item.image
+    );
   }
 
   @override
   Map<String, dynamic> toJson() {
-      return {
-        ...super.toJson(),
-        'image': image.toJson(),
-        'city': city
-      };
-    }
-    @override
-    String get subtitle => city;
-  
-    @override
-    String get title => name;
+    return {
+      ...super.toJson(),
+      'image': image.toJson(),
+      'city': city
+    };
+  }
+  @override
+  String get subtitle => city;
+
+  @override
+  String get title => name;
 }
 
 class Museum extends MuseumListItem {

@@ -53,11 +53,6 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
       description: json['description']);
   }
 
-  @override
-  int get uid {
-    return super.uid!;
-  }
-
   LatLng get coordinates {
     return LatLng(latitude, longitude);
   }

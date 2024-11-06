@@ -66,11 +66,13 @@ class Room extends RoomListItem {
       name: json['name'],
       description: json['description'],
       museum: MuseumForeignKey.fromJson(json['museum']),
-      image: json['image'] != null?ImageWithPath.fromJson(json['image']):null,
+      image: json['image'] != null
+        ? ImageWithPath.fromJson(json['image'])
+        : null,
       artworks: json['artworkPreview']!=null
         ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
-                                 .toList()
-                                 .cast<ArtworkListItem>()
+                                .toList()
+                                .cast<ArtworkListItem>()
         : const[]
     );
   }
@@ -79,8 +81,7 @@ class Room extends RoomListItem {
   Map<String, dynamic> toJson() {
     return {
       ...super.toJson(),
-      if (image != null)
-        'image': image!.toJson(),
+      if (image != null) 'image': image!.toJson(),
       'museum': museum.toJson()
     };
   }

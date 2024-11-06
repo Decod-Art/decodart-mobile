@@ -1,7 +1,7 @@
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
 import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/hive/image.dart' as hive;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Offset;
 
 
 abstract class AbstractImage extends UnnamedAbstractItem {
@@ -10,7 +10,9 @@ abstract class AbstractImage extends UnnamedAbstractItem {
     super.uid,
     this.boundingBoxes
   });
+
   String get path;
+
   @override
   Map<String, dynamic> toJson() {
     return {
@@ -18,6 +20,7 @@ abstract class AbstractImage extends UnnamedAbstractItem {
       'boundingboxes': boundingBoxes?.map((item) => item.toJson()).toList()
     };
   }
+
   AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes);
 
   bool get hasBoundingBox => boundingBoxes != null;
@@ -42,7 +45,6 @@ class ImageWithPath extends AbstractImage {
       boundingBoxes: json['boundingboxes']?.map((boundingBoxesJson) => BoundingBox.fromJson(boundingBoxesJson))
                                            .toList()
                                            .cast<BoundingBox>()
-
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/view/artwork/decod_button.dart' show DecodButton;
+import 'package:decodart/view/artwork/util/decod_button.dart' show DecodButton;
 import 'package:decodart/widgets/component/button/button_list.dart' show ButtonListWidget;
 import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
@@ -12,7 +12,7 @@ class ArtworkView extends StatelessWidget {
   const ArtworkView({
     super.key,
     required this.artwork
-    });
+  });
 
   
   @override
@@ -57,7 +57,7 @@ class ArtworkView extends StatelessWidget {
                 );
               },
             ),
-            for(final tag in artwork.tags) ... [
+            for(final tag in artwork.sortedTags) ... [
               ChevronButtonWidget(
                 text: tag.name,
                 icon: Image.asset(

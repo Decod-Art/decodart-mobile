@@ -5,11 +5,13 @@ class SliverDecodNavigationBar extends StatefulWidget {
   final String? title;
   final void Function(String)? onSearch;
   final bool showBorder;
+  final bool showTrailing;
   const SliverDecodNavigationBar({
     super.key,
     this.onSearch,
     required this.title,
-    this.showBorder=false});
+    this.showBorder=false,
+    this.showTrailing=true});
 
   @override
   State<SliverDecodNavigationBar> createState() => _SliverDecodNavigationBarState();
@@ -54,20 +56,22 @@ class _SliverDecodNavigationBarState extends State<SliverDecodNavigationBar> {
             ),
           )
         : Text(widget.title??""),
-      trailing: CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: () {
-          Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => const AproposView()),
-          );
-        },
-        child: const Icon(
-          CupertinoIcons.person_circle,
-          color: CupertinoColors.activeBlue,
-          size: 24
-        ),
-      ),
+      trailing: widget.showTrailing 
+        ? CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => const AproposView()),
+              );
+            },
+            child: const Icon(
+              CupertinoIcons.person_circle,
+              color: CupertinoColors.activeBlue,
+              size: 24
+            ),
+          )
+        : null,
       middle: widget.onSearch!=null 
         ? Text(widget.title??"")
         : const Text(''),

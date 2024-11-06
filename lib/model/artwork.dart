@@ -186,4 +186,13 @@ class Artwork extends AbstractItem {
       image: images[0]
     );
   }
+
+  void sortTags() {
+    tags.sort((a, b) => a.category.name.compareTo(b.category.name));
+  }
+
+  List<ArtworkTag> get sortedTags {
+    sortTags();
+    return tags;
+  }
 }

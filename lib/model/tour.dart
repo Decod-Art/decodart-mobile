@@ -7,23 +7,27 @@ import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 class TourListItem extends AbstractItem implements AbstractListItem {
   @override
   final String subtitle;
+
   @override
   final AbstractImage image;
+
   const TourListItem({
       super.uid,
       required super.name,
       required this.subtitle,
       required this.image
-    });
-    factory TourListItem.fromJson(Map<String, dynamic> json) {
-      return TourListItem(
-        uid: json['uid'],
-        name: json['name'],
-        subtitle: json['subtitle'],
-        image: ImageWithPath.fromJson(json['image']));
-    }
-    @override
-    String get title => name;
+  });
+
+  factory TourListItem.fromJson(Map<String, dynamic> json) {
+    return TourListItem(
+      uid: json['uid'],
+      name: json['name'],
+      subtitle: json['subtitle'],
+      image: ImageWithPath.fromJson(json['image']));
+  }
+
+  @override
+  String get title => name;
 
   @override
   Map<String, dynamic> toJson() {
@@ -54,7 +58,7 @@ class Tour extends TourListItem {
     this.endDate,
     this.museum,
     required this.artworks
-    });
+  });
 
 
 
@@ -69,7 +73,7 @@ class Tour extends TourListItem {
       endDate: json['enddate'] != null ? DateTime.parse(json['enddate']) : null,
       museum: json['museum']!=null?MuseumForeignKey.fromJson(json['museum']):null,
       image: ImageWithPath.fromJson(json['image']),
-      artworks: (json['artworks'] as List).map((item)=>ArtworkForeignKey.fromJson(item)).toList()
+      artworks: (json['artworks'] as List).map((item) => ArtworkForeignKey.fromJson(item)).toList()
     );
   }
 

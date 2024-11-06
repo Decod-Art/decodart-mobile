@@ -13,6 +13,7 @@ class DecodPageScaffold extends StatefulWidget {
   final void Function(String)? onSearch;
   final ScrollController? controller;
   final Widget? leadingBar;
+  final bool showTrailing;
   const DecodPageScaffold({
     super.key,
     this.children,
@@ -23,7 +24,8 @@ class DecodPageScaffold extends StatefulWidget {
     this.controller,
     this.smallTitle=false,
     this.leadingBar,
-    this.child});
+    this.child,
+    this.showTrailing=true});
     
       @override
       State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
@@ -78,6 +80,7 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
             title: widget.title,
             showBorder: _showBorder,
             leadingBar: widget.leadingBar,
+            showTrailing: widget.showTrailing,
           )
         : null,
       child: SafeArea(

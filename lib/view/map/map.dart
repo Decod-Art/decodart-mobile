@@ -108,7 +108,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     for (var item in newItems) {
       if (!markers.any((existingItem) => existingItem.uid == item.uid)) {
         markers.add(MarkerWithUID(
-          uid: item.uid,
+          uid: item.uid!,
           point: item.coordinates,
           width: 80,
           height: 80,

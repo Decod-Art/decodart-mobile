@@ -7,11 +7,13 @@ class DecodNavigationBar extends StatefulWidget implements ObstructingPreferredS
   final String? title;
   final bool showBorder;
   final Widget? leadingBar;
+  final bool showTrailing;
   const DecodNavigationBar({
     super.key,
     required this.title,
     this.leadingBar,
-    this.showBorder=false});
+    this.showBorder=false,
+    this.showTrailing=true});
 
   @override
   State<DecodNavigationBar> createState() => _DecodNavigationBarState();
@@ -42,21 +44,22 @@ class _DecodNavigationBarState extends State<DecodNavigationBar> {
           : null
       ),
       middle: widget.title != null ? Text(widget.title!) : null,
-      trailing: CupertinoButton(
-        padding: EdgeInsets.zero,
-        onPressed: () {
-          Navigator.push(
-            context,
-            CupertinoPageRoute(builder: (context) => const AproposView()),
-          );
-        },
-
-        child: const Icon(
-          CupertinoIcons.person_circle,
-          color: CupertinoColors.activeBlue,
-          size: 24
-        ),
-      ),
+      trailing: widget.showTrailing
+        ? CupertinoButton(
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              Navigator.push(
+                context,
+                CupertinoPageRoute(builder: (context) => const AproposView()),
+              );
+            },
+            child: const Icon(
+              CupertinoIcons.person_circle,
+              color: CupertinoColors.activeBlue,
+              size: 24
+            ),
+          )
+        : null,
       border: widget.showBorder
         ? const Border(
             bottom: BorderSide(
