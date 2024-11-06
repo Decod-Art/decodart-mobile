@@ -5,7 +5,7 @@ import 'package:visibility_detector/visibility_detector.dart' show VisibilityDet
 import 'package:decodart/view/camera/util/camera/core_camera.dart' show CoreCamera, CoreCameraState;
 import 'package:decodart/view/camera/util/help.dart' show HelpView;
 import 'package:decodart/view/camera/util/recent.dart' show RecentScan, RecentScanState;
-import 'package:decodart/view/camera/util/results/no_result.dart';
+import 'package:decodart/view/camera/util/results/no_result.dart' show NoResultWidget;
 import 'package:decodart/view/camera/util/results/results.dart' show ResultsView;
 import 'package:flutter/cupertino.dart';
 import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
