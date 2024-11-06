@@ -8,11 +8,11 @@ import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/museum_map.dart';
 import 'package:decodart/view/museum/museum_map_button.dart' show MuseumMapButton;
-import 'package:decodart/widgets/new/list/content_block.dart' show ContentBlock;
+import 'package:decodart/widgets/component/formatted_content/content.dart';
+import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
-import 'package:decodart/widgets/formatted_content/formatted_content_scrolling.dart' show ContentScrolling;
-import 'package:decodart/widgets/new/navigation/modal.dart' show showListInModal, showWidgetInModal;
-import 'package:decodart/widgets/new/navigation/screen.dart' show navigateToWidget;
+import 'package:decodart/widgets/navigation/modal.dart' show showListInModal, showWidgetInModal;
+import 'package:decodart/widgets/navigation/screen.dart' show navigateToWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
@@ -120,8 +120,8 @@ class _MuseumViewState extends State<MuseumView>  {
             onPressed: (){
               showWidgetInModal(
                 context,
-                 (context) => ContentScrolling(
-                    text: widget.museum.description,
+                 (context) => ContentWidget(
+                    items: widget.museum.description,
                     edges: const EdgeInsets.all(15)
                   )
                 );

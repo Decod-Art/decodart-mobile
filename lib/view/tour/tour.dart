@@ -1,9 +1,9 @@
 import 'package:decodart/model/artwork.dart' show ArtworkForeignKey, ArtworkListItem;
 import 'package:decodart/model/tour.dart' show Tour;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
-import 'package:decodart/widgets/new/list/list_with_thumbnail.dart' show ListWithThumbnail;
-import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
+import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
+import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
+import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
 class TourView extends StatelessWidget {

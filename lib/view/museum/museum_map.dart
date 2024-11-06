@@ -6,9 +6,9 @@ import 'package:decodart/model/museum.dart' show Museum, MuseumForeignKey;
 import 'package:decodart/model/room.dart' show RoomListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/map_viewer.dart' show FullScreenPDFViewer;
-import 'package:decodart/widgets/new/component/button/chevron_button.dart' show ChevronButtonWidget;
-import 'package:decodart/widgets/new/list/content_block.dart' show ContentBlock;
-import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
+import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
+import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
+import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
 class MuseumMap extends StatefulWidget {

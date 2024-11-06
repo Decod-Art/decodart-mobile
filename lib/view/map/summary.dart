@@ -3,7 +3,7 @@ import 'package:decodart/model/artwork.dart';
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
-import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
+import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 
 import 'package:flutter/cupertino.dart';
 

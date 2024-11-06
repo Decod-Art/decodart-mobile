@@ -1,4 +1,4 @@
-import 'package:decodart/widgets/new/component/button/chevron_button.dart';
+import 'package:decodart/widgets/component/button/chevron_button.dart';
 import 'package:flutter/cupertino.dart';
 
 class ButtonListWidget extends StatelessWidget {

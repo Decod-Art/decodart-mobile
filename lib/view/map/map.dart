@@ -3,8 +3,8 @@ import 'dart:math' show Point;
 import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/view/map/summary.dart' show GeolocatedSummaryWidget;
-import 'package:decodart/widgets/new/navigation/small_modal.dart' show showSmallModal;
-import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart';
+import 'package:decodart/widgets/navigation/small_modal.dart' show showSmallModal;
+import 'package:decodart/widgets/scaffold/decod_scaffold.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_map/flutter_map.dart';

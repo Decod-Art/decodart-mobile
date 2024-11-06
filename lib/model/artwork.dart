@@ -6,7 +6,7 @@ import 'package:decodart/model/hive/artwork.dart' as hive;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 import 'package:decodart/model/room.dart';
-import 'package:decodart/widgets/formatted_content/content.dart';
+import 'package:decodart/widgets/component/formatted_content/_util.dart';
 
 
 typedef ArtworkForeignKey = ArtworkListItem;

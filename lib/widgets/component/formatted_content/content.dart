@@ -1,10 +1,10 @@
 import 'package:decodart/model/abstract_item.dart';
 import 'package:decodart/model/artwork.dart';
-import 'package:decodart/widgets/formatted_content/buttons.dart' show ArtworkButton;
+import 'package:decodart/widgets/component/button/artwork_button/button.dart' show ArtworkButton;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import 'content.dart';
+import '_util.dart';
 
 class ContentWidget extends StatelessWidget {
   final String items;

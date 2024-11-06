@@ -1,10 +1,10 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/view/artwork/decod_button.dart' show DecodButton;
-import 'package:decodart/widgets/new/component/button/button_list.dart' show ButtonListWidget;
-import 'package:decodart/widgets/new/component/button/chevron_button.dart' show ChevronButtonWidget;
-import 'package:decodart/widgets/formatted_content/formatted_content.dart' show ContentWidget;
-import 'package:decodart/widgets/new/component/gallery/gallery.dart' show ImageGallery;
-import 'package:decodart/widgets/new/navigation/modal.dart' show showWidgetInModal;
+import 'package:decodart/widgets/component/button/button_list.dart' show ButtonListWidget;
+import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
+import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
+import 'package:decodart/widgets/component/gallery/gallery.dart' show ImageGallery;
+import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
 class ArtworkView extends StatelessWidget {

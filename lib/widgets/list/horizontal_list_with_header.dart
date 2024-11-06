@@ -1,7 +1,7 @@
 import 'package:decodart/api/util.dart' show DataFetcher, LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/new/component/button/chevron_button.dart' show ChevronButtonWidget;
-import 'package:decodart/widgets/new/component/image/thumbnail.dart' show ThumbnailWidget;
+import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
+import 'package:decodart/widgets/component/image/thumbnail.dart' show ThumbnailWidget;
 import 'package:flutter/cupertino.dart';
 
 class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulWidget {

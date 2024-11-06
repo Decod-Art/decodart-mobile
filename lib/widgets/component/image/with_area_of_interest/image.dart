@@ -1,6 +1,6 @@
 import 'package:decodart/model/image.dart' show AbstractImage, BoundingBox;
-import 'package:decodart/widgets/new/component/image/with_area_of_interest/util/area_of_interest.dart';
-import 'package:decodart/widgets/new/component/image/with_area_of_interest/util/description.dart';
+import 'package:decodart/widgets/component/image/with_area_of_interest/util/area_of_interest.dart';
+import 'package:decodart/widgets/component/image/with_area_of_interest/util/description.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

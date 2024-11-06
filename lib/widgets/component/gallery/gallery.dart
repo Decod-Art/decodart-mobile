@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:decodart/model/image.dart' show AbstractImage;
-import 'package:decodart/widgets/new/component/gallery/full_screen_gallery.dart' show FullScreenImageGallery;
-import 'package:decodart/widgets/new/component/gallery/util/info_gallery.dart' show InfoGallery;
-import 'package:decodart/widgets/new/component/gallery/util/page_indicator.dart' show PageIndicator;
+import 'package:decodart/widgets/component/gallery/full_screen_gallery.dart' show FullScreenImageGallery;
+import 'package:decodart/widgets/component/gallery/util/info_gallery.dart' show InfoGallery;
+import 'package:decodart/widgets/component/gallery/util/page_indicator.dart' show PageIndicator;
 import 'package:flutter/cupertino.dart';
 
 class ImageGallery extends StatefulWidget {

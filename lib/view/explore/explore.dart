@@ -11,10 +11,10 @@ import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
 import 'package:decodart/view/tour/future_tour.dart';
-import 'package:decodart/widgets/new/list/content_block.dart' show ContentBlock;
-import 'package:decodart/widgets/new/list/list_with_thumbnail.dart' show ListWithThumbnail;
-import 'package:decodart/widgets/new/navigation/screen.dart' show navigateToWidget;
-import 'package:decodart/widgets/new/scaffold/decod_scaffold.dart' show DecodPageScaffold;
+import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
+import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
+import 'package:decodart/widgets/navigation/screen.dart' show navigateToWidget;
+import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {

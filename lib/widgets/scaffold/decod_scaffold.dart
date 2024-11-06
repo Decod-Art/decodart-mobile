@@ -1,5 +1,5 @@
-import 'package:decodart/widgets/new/scaffold/navigation_bar/decod_bar.dart';
-import 'package:decodart/widgets/new/scaffold/navigation_bar/sliver_decod_bar.dart';
+import 'package:decodart/widgets/scaffold/navigation_bar/decod_bar.dart';
+import 'package:decodart/widgets/scaffold/navigation_bar/sliver_decod_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 
