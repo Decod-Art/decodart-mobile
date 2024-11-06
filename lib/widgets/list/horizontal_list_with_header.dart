@@ -62,7 +62,6 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
   }
 
   Future<void> _checkIfNeedsLoading() async {
-    print('${_scrollController.position.pixels}, ${_scrollController.position.maxScrollExtent}, $isLoading, ${items.hasMore}');
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 5 && !isLoading && items.hasMore) {
       _loadMoreItems();
     }
