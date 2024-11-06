@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
-import 'package:decodart/model/artwork.dart';
+import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
+import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
@@ -101,7 +102,7 @@ class GeolocatedSummaryWidget extends StatelessWidget {
                 if (item.isMuseum) {
                   showWidgetInModal(
                     context,
-                    (context) => FutureMuseumView(museum: item, useModal: true)
+                    (context) => FutureMuseumView(museum: MuseumListItem.fromGeolocatedListItem(item), useModal: true)
                   );
                 } else {
                   showWidgetInModal(

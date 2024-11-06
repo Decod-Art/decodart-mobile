@@ -1,9 +1,12 @@
-import 'dart:convert';
+import 'dart:convert' show jsonDecode;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 import 'package:http/http.dart' as http;
 
-import 'package:decodart/api/util.dart' show hostName;
+import 'package:decodart/util/online.dart' show hostName;
+import 'package:decodart/util/logger.dart' show logger;
 import 'package:decodart/model/room.dart' show RoomListItem;
+
+// fetchRooms
 
 class FetchRoomsException implements Exception {
   final String message;
@@ -20,7 +23,7 @@ Future<List<RoomListItem>> fetchRooms({
     required MuseumForeignKey museum
   }) async {
 
-  final url = Uri.parse('$hostName/rooms').replace(
+  final uri = Uri.parse('$hostName/rooms').replace(
     queryParameters: {
       'limit': limit.toString(),
       'offset': offset.toString(),
@@ -30,8 +33,9 @@ Future<List<RoomListItem>> fetchRooms({
       'keepRoomWithArtwork': 'true'
     },
   );
+  logger.d(uri);
   try {
-    final response = await http.get(url);
+    final response = await http.get(uri);
 
     if (response.statusCode == 200) {
       // Si la requête a réussi, décodez le corps de la réponse
@@ -40,11 +44,11 @@ Future<List<RoomListItem>> fetchRooms({
                  .toList()
                  .cast<RoomListItem>();
     } else {
-      print('Erreur de requête: ${response.statusCode}');
       throw FetchRoomsException('Erreur de requête: ${response.statusCode}');
     }
-  } catch (e) {
-    print('Erreur: $e');
-    throw FetchRoomsException('Erreur: $e');
+  } catch (e, stackTrace) {
+    logger.e(e);
+    logger.d(stackTrace);
+    rethrow;
   }
 }

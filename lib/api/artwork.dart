@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' show MediaType; // MIME
 
 import 'package:decodart/model/artwork.dart' show ArtworkListItem, Artwork;
-import 'package:decodart/api/util.dart' show hostName;
+import 'package:decodart/util/online.dart' show hostName;
 import 'package:decodart/util/logger.dart' show logger;
 
 // fetchAllArtworks

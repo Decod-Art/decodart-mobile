@@ -1,6 +1,6 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
-import 'package:decodart/api/util.dart' show SearchableDataFetcher;
+import 'package:decodart/util/online.dart' show SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show Museum;

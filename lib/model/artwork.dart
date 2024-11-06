@@ -1,5 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
-import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey, ArtistListItem;
+import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey;
 import 'package:decodart/model/artwork_tag.dart';
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive;
@@ -179,9 +179,11 @@ class Artwork extends AbstractItem {
     return ArtworkListItem(
       uid: uid,
       title: title,
-      artist: ArtistListItem(
+      artist: ArtistForeignKey(
         uid: artist.uid,
         name: artist.name
-      ), image: images[0]);
+      ),
+      image: images[0]
+    );
   }
 }

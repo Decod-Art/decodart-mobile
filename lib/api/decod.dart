@@ -1,7 +1,12 @@
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodTag;
-import 'package:decodart/api/util.dart' show hostName;
+import 'package:decodart/util/online.dart' show hostName;
+import 'package:decodart/util/logger.dart' show logger;
 import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'dart:convert' show jsonDecode;
+
+// fetchDecodQuestionByArtworkId
+// fetchTags
+// fetchDecodQuestionRandomly
 
 class FetchDecodQuestionException implements Exception {
   final String message;
@@ -11,20 +16,28 @@ class FetchDecodQuestionException implements Exception {
   String toString() => 'FetchDecodQuestionException: $message';
 }
 
-Future<List<DecodQuestion>> fetchDecodQuestionByArtworkId(int id) async {
+Future<List<DecodQuestion>> fetchDecodQuestionByArtworkId(int id,{int limit=10, bool random=true}) async {
   try {
-      final response = await http.get(Uri.parse('$hostName/decods/detailed?artworkId=$id&limit=10&random=true'));
-      if (response.statusCode == 200) {
-        List<dynamic> list = jsonDecode(response.body)['data'];
-        return list.map((json) => DecodQuestion.fromJson(json)).toList();
-      } else {
-        throw FetchDecodQuestionException('Failed to load DecodQuestion: ${response.statusCode}');
-      }
-    } catch (e, stackTrace) {
-      print(e);
-      print(stackTrace);
-      rethrow;
+    final Uri uri = Uri.parse('$hostName/decods/detailed').replace(
+      queryParameters: {
+        'artworkId': '$id',
+        'limit': '$limit',
+        'random': '$random'
+      },
+    );
+    logger.d(uri);
+    final response = await http.get(uri);
+    if (response.statusCode == 200) {
+      List<dynamic> list = jsonDecode(response.body)['data'];
+      return list.map((json) => DecodQuestion.fromJson(json)).toList();
+    } else {
+      throw FetchDecodQuestionException('Failed to load DecodQuestion: ${response.statusCode}');
     }
+  } catch (e, stackTrace) {
+    logger.e('$e: ArtworkId: $id');
+    logger.d(stackTrace);
+    rethrow;
+  }
 }
 
 Future<List<DecodTag>> fetchTags({
@@ -42,6 +55,7 @@ Future<List<DecodTag>> fetchTags({
         if (hasQuestion !=null) 'hasQuestion': hasQuestion.toString()
       },
     );
+    logger.d(uri);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       List<dynamic> list = jsonDecode(response.body)['data'];
@@ -50,8 +64,8 @@ Future<List<DecodTag>> fetchTags({
       throw FetchDecodQuestionException('Failed to load DecodTag: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
-    print(e);
-    print(stackTrace);
+    logger.e(e);
+    logger.d(stackTrace);
     rethrow;
   }
 }
@@ -71,6 +85,7 @@ Future<List<DecodQuestion>> fetchDecodQuestionRandomly({
           if (tag !=null) 'tag': tag.uid.toString()
         },
       );
+      logger.d(uri);
       final response = await http.get(uri);
       if (response.statusCode == 200) {
         List<dynamic> list = jsonDecode(response.body)['data'];
@@ -79,8 +94,8 @@ Future<List<DecodQuestion>> fetchDecodQuestionRandomly({
         throw FetchDecodQuestionException('Failed to load DecodQuestion: ${response.statusCode}');
       }
     } catch (e, stackTrace) {
-      print(e);
-      print(stackTrace);
+      logger.e(e);
+      logger.d(stackTrace);
       rethrow;
     }
 }

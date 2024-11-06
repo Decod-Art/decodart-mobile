@@ -1,4 +1,4 @@
-import 'package:decodart/api/util.dart' show DataFetcher, SearchableDataFetcher;
+import 'package:decodart/util/online.dart' show DataFetcher, SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show AbstractListItemCallback, LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/lazy_list.dart' show LazyListWidget;

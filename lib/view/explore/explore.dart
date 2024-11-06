@@ -2,7 +2,7 @@ import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
-import 'package:decodart/api/util.dart' show Fetcher, LazyList;
+import 'package:decodart/util/online.dart' show Fetcher, LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;

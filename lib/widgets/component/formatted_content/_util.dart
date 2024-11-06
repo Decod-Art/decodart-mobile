@@ -1,4 +1,4 @@
-import 'package:decodart/api/util.dart' show checkUrlForCdn;
+import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Theme;

@@ -1,5 +1,5 @@
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
-import 'package:decodart/api/util.dart' show checkUrlForCdn;
+import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/hive/image.dart' as hive;
 import 'package:flutter/material.dart';
 

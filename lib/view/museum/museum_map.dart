@@ -1,6 +1,6 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/room.dart' show fetchRooms;
-import 'package:decodart/api/util.dart' show LazyList, SearchableDataFetcher;
+import 'package:decodart/util/online.dart' show LazyList, SearchableDataFetcher;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show Museum, MuseumForeignKey;
 import 'package:decodart/model/room.dart' show RoomListItem;

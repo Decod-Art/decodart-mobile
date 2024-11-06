@@ -2,21 +2,20 @@ import 'package:decodart/model/abstract_item.dart' show AbstractItem;
 import 'package:decodart/model/hive/artist.dart' as hive;
 import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
 
-typedef ArtistForeignKey = ArtistListItem;
 
-class ArtistListItem extends AbstractItem {
-  const ArtistListItem({
+class ArtistForeignKey extends AbstractItem {
+  const ArtistForeignKey({
     super.uid,
     required super.name
   });
-  factory ArtistListItem.fromJson(Map<String, dynamic> json) {
-    return ArtistListItem(
+  factory ArtistForeignKey.fromJson(Map<String, dynamic> json) {
+    return ArtistForeignKey(
       uid: json['uid'],
       name: json['name']);
   }
 
-  factory ArtistListItem.fromHive(hive.ArtistForeignKey artist) {
-    return ArtistListItem(
+  factory ArtistForeignKey.fromHive(hive.ArtistForeignKey artist) {
+    return ArtistForeignKey(
       uid: artist.uid,
       name: artist.name);
   }
@@ -28,7 +27,7 @@ class ArtistListItem extends AbstractItem {
   }
 }
 
-class Artist extends ArtistListItem {
+class Artist extends ArtistForeignKey {
   final String? birth;
   final String? death;
   final String biography;

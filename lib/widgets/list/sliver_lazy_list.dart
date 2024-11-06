@@ -1,4 +1,4 @@
-import 'package:decodart/api/util.dart' show LazyList;
+import 'package:decodart/util/online.dart' show LazyList;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;

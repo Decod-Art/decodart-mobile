@@ -11,6 +11,9 @@ enum DecodQuestionType {
   boundingbox
 }
 
+// DecodQuestion are handled separately for ListItems elements
+// Thus, it does not implements AbstractListItem as it does not
+// contain a subtitle getter/attribute
 class DecodQuestionListItem extends AbstractItem {
   final AbstractImage image;
   const DecodQuestionListItem({
@@ -40,6 +43,7 @@ class DecodQuestion extends DecodQuestionListItem {
   final List<DecodAnswer> answers;
   final bool showImage;
   final ArtworkForeignKey? artwork;
+  final List<DecodTag> tags;
   const DecodQuestion({
     super.uid,
     required super.name,
@@ -48,7 +52,8 @@ class DecodQuestion extends DecodQuestionListItem {
     required this.questionType,
     required this.answers,
     required this.showImage,
-    this.artwork
+    this.artwork,
+    required this.tags
   });
 
   factory DecodQuestion.fromJson(Map<String, dynamic>json) {
@@ -60,7 +65,8 @@ class DecodQuestion extends DecodQuestionListItem {
       questionType: DecodQuestionType.values.firstWhere((e) => e.toString().split('.').last == json['question_type']),
       answers: (json['answers'] as List).map((item)=>DecodAnswer.fromJson(item)).toList(),
       showImage: json['showimage'],
-      artwork: json['artwork']!=null?ArtworkForeignKey.fromJson(json['artwork']):null
+      artwork: json['artwork']!=null?ArtworkForeignKey.fromJson(json['artwork']):null,
+      tags: (json['tags'] as List).map((item) => DecodTag.fromJson(item)).toList()
     );
   }
 
@@ -85,7 +91,8 @@ class DecodQuestion extends DecodQuestionListItem {
       'answers': answers.map((item) => item.toJson()).toList(),
       'showimage': showImage,
       if (artwork != null)
-        'artwork': artwork!.toJson()
+        'artwork': artwork!.toJson(),
+      'tags': tags.map((item) => item.toJson()).toList()
     };
   }
 
@@ -101,6 +108,7 @@ class DecodQuestion extends DecodQuestionListItem {
       answers: shuffledAnswers,
       showImage: showImage,
       artwork: artwork,
+      tags: tags
     );
   }
 }
@@ -150,6 +158,4 @@ class DecodTag extends UnnamedAbstractItem {
       name: json['name']
     );
   }
-
-
 }
