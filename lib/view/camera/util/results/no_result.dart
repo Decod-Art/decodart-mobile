@@ -13,10 +13,14 @@ class NoResultWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        const Icon(
-          CupertinoIcons.clear_circled_solid,
-          color: CupertinoColors.systemGrey3,
-          size: 30.0, // Taille de l'icône
+        CupertinoButton(
+          padding: EdgeInsets.zero, // Pour s'assurer que le bouton n'a pas de padding supplémentaire
+          onPressed: onPressed,
+          child: const Icon(
+            CupertinoIcons.clear_circled_solid,
+            color: CupertinoColors.systemGrey3,
+            size: 30.0, // Taille de l'icône
+          ),
         ),
         const SizedBox(height: 5), // Espace entre l'icône et le texte
         const Text(

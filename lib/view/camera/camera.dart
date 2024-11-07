@@ -1,104 +1,18 @@
-import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
+import 'package:decodart/view/camera/util/camera/camera.dart' show Camera;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
-import 'package:visibility_detector/visibility_detector.dart' show VisibilityDetector, VisibilityInfo;
-import 'package:decodart/view/camera/util/camera/core_camera.dart' show CoreCamera, CoreCameraState;
 import 'package:decodart/view/camera/util/help.dart' show HelpView;
-import 'package:decodart/view/camera/util/recent.dart' show RecentScan, RecentScanState;
-import 'package:decodart/view/camera/util/results/no_result.dart' show NoResultWidget;
-import 'package:decodart/view/camera/util/results/results.dart' show ResultsView;
+import 'package:decodart/view/camera/util/recent.dart' show RecentScan;
 import 'package:flutter/cupertino.dart';
-import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
-import 'package:decodart/model/artwork.dart' show ArtworkListItem;
-import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/camera/util/results/result.dart' show ResultsWidget;
 
 
-class CameraView extends StatefulWidget {
+class CameraView extends StatelessWidget {
   const CameraView({super.key});
-
   @override
-  State<CameraView> createState() => CameraViewState();
-}
-
-class CameraViewState extends State<CameraView>  with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
-  bool isLoading = false;  
-
-  final List<ArtworkListItem> results = [];
-  bool noResult = false;
-  bool hideCamera=false;
-
-  late AnimationController _animationController;
-  late Animation<Offset> _offsetAnimation;
-
-  final GlobalKey<CoreCameraState> cameraViewKey = GlobalKey<CoreCameraState>();
-  final GlobalKey<RecentScanState> recentScanKey = GlobalKey<RecentScanState>();
-  
-
-  @override
-  void initState() {
-    super.initState();
-    print('init');
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _offsetAnimation = Tween<Offset>(
-      begin: const Offset(0.0, 1.0),
-      end: const Offset(0.0, 0.0),
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  bool get wantKeepAlive => false;
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  void _showResults() {
-    setState(() {isLoading = false;});
-    if (results.length == 1) {
-      _animationController.forward();
-    } else if (results.isNotEmpty){
-      showWidgetInModal(
-        context,
-        (context) => ResultsView(results: results)
-      );
-    } else {
-      noResult = true;
-    }
-  }
-
-  void _startSearch() async {
-    noResult = false;
-    await _animationController.reverse();
-    results.clear();
-    isLoading = true;
-    cameraViewKey.currentState?.takePicture();
-    setState(() {});
-  }
-
-  
-
-  void _runSearch(String imagePath) async {
-    // await Future.delayed(const Duration(seconds: 2));
-    var artworks = await fetchArtworkByImage(imagePath);
-    results.addAll(artworks);
-    recentScanKey.currentState!.addScan(artworks);
-    _showResults();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    super.build(context);
+  Widget build(BuildContext context) {    
     double screenHeight = MediaQuery.of(context).size.height;
     double containerHeight = screenHeight * 4 / 7;
+
     return DecodPageScaffold(
       title: "Scanner",
       smallTitle: true,
@@ -113,67 +27,10 @@ class CameraViewState extends State<CameraView>  with SingleTickerProviderStateM
         child: const Icon(CupertinoIcons.info_circle, size: 24),
       ),
       children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 30),
-          child: Stack(
-            children: [
-              Container(
-                width: double.infinity,
-                height: containerHeight,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: VisibilityDetector(
-                    key: const Key('camera-view-key'),
-                    onVisibilityChanged: (VisibilityInfo info){
-                      setState(() {hideCamera=info.visibleFraction == 0;});
-                    },
-                    child: hideCamera?Container():CoreCamera(
-                      key: cameraViewKey,
-                      onImageTaken: _runSearch,
-                    )
-                  )
-                ),
-              ),
-              if (results.length==1)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: ClipRect(
-                    child: SlideTransition(
-                      position: _offsetAnimation,
-                      child: Center(
-                        child: ResultsWidget(
-                          artwork: results[0],
-                          onPressed: () {
-                            showWidgetInModal(
-                              context,
-                              (context) => FutureArtworkView(artwork: results[0])
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  )
-                ),
-            ]
-          )
+        Camera(
+          height: containerHeight
         ),
-        const SizedBox(height: 20),
-        if (!noResult)
-          CameraButtonWidget(
-            isLoading: isLoading,
-            onPressed: _startSearch,)
-        else
-          NoResultWidget(onPressed: (){
-            setState(() {
-              noResult=false;
-            });
-          }),
-        RecentScan(key: recentScanKey)
+        const RecentScan()
       ],
     );
   }

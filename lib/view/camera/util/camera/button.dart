@@ -2,13 +2,15 @@ import 'package:flutter/cupertino.dart';
 
 
 class CameraButtonWidget extends StatelessWidget {
+  final bool canTakePicture;
+  final bool isSearching;
   final VoidCallback onPressed;
-  final bool isLoading;
 
   const CameraButtonWidget({
     super.key,
     required this.onPressed,
-    required this.isLoading});
+    required this.canTakePicture,
+    required this.isSearching});
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +20,12 @@ class CameraButtonWidget extends StatelessWidget {
         children: [
           CupertinoButton(
             padding: EdgeInsets.zero,
-            onPressed: onPressed,
+            onPressed: canTakePicture?onPressed:null,
             child: Container(
               width: 60,
               height: 60,
               decoration: BoxDecoration(
-                color: isLoading?CupertinoColors.systemGrey3:CupertinoColors.black,
+                color: isSearching||!canTakePicture?CupertinoColors.systemGrey3:CupertinoColors.black,
                 shape: BoxShape.circle,
               ),
               child: Padding(
@@ -40,7 +42,7 @@ class CameraButtonWidget extends StatelessWidget {
               ),
             ),
           ),
-          if (isLoading)
+          if (isSearching)
             const SizedBox(
               width: 40,
               height: 40,

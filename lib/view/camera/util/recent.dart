@@ -15,7 +15,6 @@ class RecentScan extends StatefulWidget{
 }
 
 class RecentScanState extends State<RecentScan> {
-  final int maxRecentSaved = 10;
   Box<List>? recentScanBox;
   final List<ArtworkListItem> recent = [];
 
@@ -32,6 +31,7 @@ class RecentScanState extends State<RecentScan> {
   }
 
   void _fetchHistory() {
+    // the method is called each time the Hive box is updated with new elements
     List<hive.ArtworkListItem>? recentList = recentScanBox
       ?.get('recent', defaultValue: [])
       ?.cast<hive.ArtworkListItem>();
@@ -49,17 +49,6 @@ class RecentScanState extends State<RecentScan> {
   Future<void> reset() async {
     await recentScanBox?.clear();
     setState(() {});
-  }
-
-  void addScan(List<ArtworkListItem> items) {
-    var recentList = recentScanBox?.get('recent', defaultValue: [])
-                                  ?.cast<hive.ArtworkListItem>();
-    if (recentList !=null) {
-      recentList.insertAll(0, items.map((item)=> item.toHive())
-                                   .take(maxRecentSaved)
-                                   .toList());      
-      recentScanBox?.put('recent', recentList);
-    }
   }
 
   @override
