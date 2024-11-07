@@ -84,7 +84,7 @@ class _SliverDecodNavigationBarState extends State<SliverDecodNavigationBar> {
           )
         : const Border(),
       backgroundColor: widget.showBorder
-        ? const Color.fromRGBO(245, 245, 245, 0.85)
+        ? const Color.fromRGBO(250, 250, 250, 0.85)
         
         : CupertinoColors.white,
     );
