@@ -3,7 +3,7 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
-import 'package:decodart/view/camera/util/camera/controller.dart' show CameraController;
+import 'package:decodart/view/camera/util/camera/controller.dart' show DecodCameraController;
 import 'package:decodart/view/camera/util/camera/core_camera.dart' show CoreCamera;
 import 'package:decodart/view/camera/util/results/no_result.dart' show NoResultWidget;
 import 'package:decodart/view/camera/util/results/result.dart' show ResultsWidget;
@@ -22,13 +22,14 @@ class Camera extends StatefulWidget {
 }
 
 class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
-  late final CameraController controller;
+  late final DecodCameraController controller;
   
   // hide camera when it is obfuscated by switching to another view
   bool hideCamera=false;
 
-  final List<ArtworkListItem> results = [];
   bool noResult = false;
+
+  ArtworkListItem? artworkFound;
 
   // Animation for the popup when a single result arrives
   late AnimationController _animationController;
@@ -41,10 +42,16 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
   void initState() {
     super.initState();
     _animationController = AnimationController(duration: const Duration(milliseconds: 200), vsync: this);
+
     _offsetAnimation = Tween<Offset>(begin: const Offset(0.0, 1.0), end: const Offset(0.0, 0.0))
       .animate(CurvedAnimation(parent: _animationController,curve: Curves.easeInOut));
 
-    controller = CameraController(initializedCallback: _cameraInitialized);
+    controller = DecodCameraController(
+      onInit: _cameraInitialized,
+      onSearchStart: _onSearchStart,
+      runSearch: fetchArtworkByImage,
+      onSearchEnd: _onSearchEnd
+    ); 
   }
 
   void _cameraInitialized() {
@@ -59,36 +66,26 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     super.dispose();
   }
 
-  Future<void> _startSearch() async {
-    // reset the previous results
-    noResult = false;
+  Future<void> _onSearchStart() async {
+    artworkFound = null;
     await _animationController.reverse();
-    results.clear();
-
-    // start search
-    if (controller.canTakePicture) {
-      setState(() {
-        controller.isSearching = true;
-      });
-      controller.takePicture();
-    }
+    setState(() {});
   }
 
-  Future<void> _runSearch(String imagePath) async {
-    var artworks = await fetchArtworkByImage(imagePath);
-    results.addAll(artworks);
-    _showResults();
-    await _saveResults(artworks);
+  void _onSearchEnd(List<ArtworkListItem> artworks) {
+    _saveResults(artworks);
+    _showResults(artworks);
   }
 
-  void _showResults() {
-    setState(() {controller.isSearching = false;});
-    if (results.length == 1) {
+  void _showResults(List<ArtworkListItem> artworks) {
+    setState(() {});
+    if (artworks.length == 1) {
+      artworkFound = artworks.first;
       _animationController.forward(); // this shows the small popup
-    } else if (results.isNotEmpty){
+    } else if (artworks.isNotEmpty){
       showWidgetInModal(
         context,
-        (context) => ResultsView(results: results)
+        (context) => ResultsView(results: artworks)
       );
     } else {
       setState(() {
@@ -103,9 +100,8 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     var recentList = recentScanBox?.get('recent', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList != null) {
-      recentList..insertAll(0, items.map((item)=> item.toHive())
-                                   .toList())
-                ..removeRange(maxRecentSaved, recentList.length);
+      recentList.insertAll(0, items.map((item)=> item.toHive()).toList());
+      if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);
       recentScanBox?.put('recent', recentList);
     }
   }
@@ -131,19 +127,16 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                     onVisibilityChanged: (VisibilityInfo info){
                       setState(() {
                         hideCamera=info.visibleFraction == 0;
-                        controller.isLoaded = !hideCamera;
+                        if (hideCamera)controller.dispose();
                       });
                     },
                     child: hideCamera
                       ? Container()
-                      : CoreCamera(
-                          onImageTaken: _runSearch,
-                          controller: controller,
-                        )
+                      : CoreCamera(controller: controller)
                   )
                 ),
               ),
-              if (results.length==1)
+              if (artworkFound != null)
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -153,11 +146,11 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                       position: _offsetAnimation,
                       child: Center(
                         child: ResultsWidget(
-                          artwork: results[0],
+                          artwork: artworkFound!,
                           onPressed: () {
                             showWidgetInModal(
                               context,
-                              (context) => FutureArtworkView(artwork: results[0])
+                              (context) => FutureArtworkView(artwork: artworkFound!)
                             );
                           },
                         ),
@@ -173,7 +166,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
           CameraButtonWidget(
             canTakePicture: controller.canTakePicture,
             isSearching: controller.isSearching,
-            onPressed: _startSearch
+            onPressed: controller.takePicture
           )
         else
           NoResultWidget(onPressed: (){

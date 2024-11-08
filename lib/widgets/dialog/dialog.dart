@@ -22,7 +22,10 @@ Future<T?> showDialog<T>(
             },
           ),
           CupertinoDialogAction(
-            onPressed: onPressedOk,
+            onPressed: () {
+              Navigator.of(context).pop();
+              onPressedOk();
+            },
             child: Text(ok),
           ),
         ],

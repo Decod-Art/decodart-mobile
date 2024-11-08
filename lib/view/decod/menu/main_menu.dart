@@ -1,8 +1,8 @@
 import 'package:decodart/api/decod.dart' show fetchTags;
 import 'package:decodart/model/decod.dart' show DecodTag;
-import 'package:decodart/view/decod/menu/history.dart' show DecodedHistory, DecodedHistoryState;
-import 'package:decodart/view/decod/menu/stats.dart' show StatsWidget, StatsWidgetState;
-import 'package:decodart/view/decod/menu/train_to_decod.dart' show TrainToDecod;
+import 'package:decodart/view/decod/menu/util/history.dart' show DecodedHistory, DecodedHistoryState;
+import 'package:decodart/view/decod/menu/util/stats.dart' show StatsWidget, StatsWidgetState;
+import 'package:decodart/view/decod/menu/util/train_to_decod.dart' show TrainToDecod;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 

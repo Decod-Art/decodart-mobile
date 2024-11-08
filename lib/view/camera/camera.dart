@@ -19,17 +19,12 @@ class CameraView extends StatelessWidget {
       leadingBar: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
-          showWidgetInModal(
-            context,
-            (context) => const HelpView()
-          );
+          showWidgetInModal(context, (context) => const HelpView());
         },
         child: const Icon(CupertinoIcons.info_circle, size: 24),
       ),
       children: [
-        Camera(
-          height: containerHeight
-        ),
+        Camera(height: containerHeight),
         const RecentScan()
       ],
     );

@@ -1,14 +1,11 @@
-import 'package:decodart/view/camera/util/camera/controller.dart' as decod show CameraController;
+import 'package:decodart/view/camera/util/camera/controller.dart' as decod show DecodCameraController;
 import 'package:camera/camera.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/cupertino.dart';
 
 class CoreCamera extends StatefulWidget {
-  final void Function(String) onImageTaken;
-  final decod.CameraController controller;
+  final decod.DecodCameraController controller;
   const CoreCamera({
     super.key,
-    required this.onImageTaken,
     required this.controller
   });
 
@@ -17,8 +14,7 @@ class CoreCamera extends StatefulWidget {
 }
 
 class CoreCameraState extends State<CoreCamera> {
-  CameraController? _cameraController;
-
+  
   double _opacity = 0; // the blink when taking the picture
 
   @override
@@ -39,45 +35,17 @@ class CoreCameraState extends State<CoreCamera> {
   }
 
   Future<void> _initializeCamera() async {
-    try {
-      widget.controller.takePictureFunction = _takePicture;
-      final cameras = await availableCameras();
-      final firstCamera = cameras.first;
-      final status = await Permission.camera.request();
-      if (status == PermissionStatus.granted) {
-        _cameraController = CameraController(
-          firstCamera,
-          ResolutionPreset.high,
-        );
-        await _cameraController!.initialize();
-        setState(() {});
-      } else if (status == PermissionStatus.denied) {
-        setState(() {
-          widget.controller.errorMessage = 'Permission refusée. Veuillez autoriser l\'accès à la caméra.';
-        });
-      } else if (status == PermissionStatus.permanentlyDenied) {
-        setState(() {
-         widget.controller.errorMessage = 'Permission refusée de façon permanente. Veuillez autoriser l\'accès à la caméra dans les paramètres.';
-        });
-      }
-      widget.controller.isLoaded = true;
-    } catch (e) {
-      setState(() {
-        widget.controller.errorMessage = 'Erreur lors de l\'initialisation de la caméra';
-      });
-    }
-  }
-
-  Future<void> _takePicture() async {
-    if (widget.controller.canTakePicture){
-      _blink();
-      final image = await _cameraController!.takePicture();
-      widget.onImageTaken(image.path);
-    }
+    widget.controller.beforeSearchStart = _blink;
+    await widget.controller.init();
   }
 
   @override
   Widget build(BuildContext context) {
+    bool isVertical = MediaQuery.of(context).orientation == Orientation.portrait;
+    double aspectRatio = widget.controller.isLoaded
+      ? widget.controller.aspectRatio
+      : 1;
+
     return widget.controller.hasError
       ? Padding(
         padding: const EdgeInsets.all(5),
@@ -93,10 +61,10 @@ class CoreCameraState extends State<CoreCamera> {
               fit: BoxFit.cover,
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.width*_cameraController!.value.aspectRatio,
+                height: MediaQuery.of(context).size.width*(isVertical?aspectRatio:1/aspectRatio),
                 child: Stack(
                   children: [
-                    CameraPreview(_cameraController!),
+                    CameraPreview(widget.controller.cameraController),
                     AnimatedOpacity(
                       opacity: _opacity,
                       duration: const Duration(milliseconds: 100),
@@ -113,7 +81,7 @@ class CoreCameraState extends State<CoreCamera> {
 
   @override
   void dispose() {
-    _cameraController?.dispose();
+    widget.controller.dispose();
     super.dispose();
   }
 }

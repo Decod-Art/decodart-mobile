@@ -9,6 +9,9 @@ import 'package:flutter/cupertino.dart';
 class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final String title;
   final SearchableDataFetcher<T> fetch;
+  // Fetch is used in the sub-lists when opening up the modal or the widget
+  // secondary fetch is used in the current block.. if not set, fetch is used instead.
+  // The interest of secondaryFetch is to permet explore widget to search simultaneously in all blocks
   final DataFetcher<T>? secondaryFetch;
   final AbstractListItemCallback onPressed;
   final bool isModal;

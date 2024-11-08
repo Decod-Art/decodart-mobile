@@ -55,9 +55,6 @@ class AproposView extends StatelessWidget {
                     Box<List>? recentScanBox = await Hive.openBox<List>('recentScan');
                     await recentScanBox.clear(); // Vider la boîte
                     await recentScanBox.close(); // Fermer la boîte
-                    if(context.mounted) {
-                      Navigator.of(context).pop();
-                    }
                   });
               },
             ),

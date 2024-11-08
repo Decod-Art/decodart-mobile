@@ -35,7 +35,7 @@ class RecentScanState extends State<RecentScan> {
     List<hive.ArtworkListItem>? recentList = recentScanBox
       ?.get('recent', defaultValue: [])
       ?.cast<hive.ArtworkListItem>();
-    if (recentList != null && recentList.length != recent.length){
+    if (recentList != null){
       recent.clear();
       recent.addAll(recentList.map((item) => ArtworkListItem.fromHive(item)).toList());
     }
