@@ -1,5 +1,7 @@
 import 'package:decodart/widgets/scaffold/navigation_bar/decod_bar.dart';
 import 'package:decodart/widgets/scaffold/navigation_bar/sliver_decod_bar.dart';
+import 'package:decodart/widgets/scaffold/scaffold/classic.dart' show DecodClassicScaffold;
+import 'package:decodart/widgets/scaffold/scaffold/sliver.dart' show DecodSliverScaffold;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 
@@ -37,37 +39,12 @@ class DecodPageScaffold extends StatefulWidget {
 class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   late ScrollController _scrollController;
   bool _showBorder = false;
-  late Widget? child;
 
   @override
   void initState() {
     super.initState();
     _scrollController = widget.controller??ScrollController();
     _scrollController.addListener(_scrollListener);
-    _configureChild();
-  }
-
-  @override
-  void didUpdateWidget(covariant DecodPageScaffold oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (child != widget.child) {
-      _configureChild();
-    }
-
-  }
-
-  void _configureChild() {
-    if (widget.child == null) {
-      child = null;
-    }
-    else {
-      child = widget.withScrolling
-        ? SingleChildScrollView(
-            controller: _scrollController,
-            child: widget.child,
-          )
-        : widget.child;
-    }
   }
 
   int get offsetThreshold => widget.smallTitle ? 5 : 50;
@@ -99,12 +76,29 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
     super.dispose();
   }
 
-  bool get isSmallNavigationBar => (widget.title==null&&widget.onSearch==null)||widget.smallTitle;
+  bool get hasClassicNavigationBar => (widget.title==null&&widget.onSearch==null)||widget.smallTitle;
 
-  @override
-  Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      navigationBar: isSmallNavigationBar
+  bool get hasSliverNavigationBar => !hasClassicNavigationBar;
+
+  bool get hasClassicView => widget.child != null;
+
+  Widget classic(BuildContext context){
+    return DecodClassicScaffold(
+      classicNavigationBar: DecodNavigationBar(
+        title: widget.title,
+        showBorder: _showBorder,
+        leadingBar: widget.leadingBar,
+        showTrailing: widget.showTrailing,
+      ),
+      withScrolling: widget.withScrolling,
+      controller: _scrollController,
+      child: widget.child!,
+    );
+  }
+
+  Widget sliver(BuildContext context) {
+    return DecodSliverScaffold(
+      classicNavigationBar: hasClassicNavigationBar
         ? DecodNavigationBar(
             title: widget.title,
             showBorder: _showBorder,
@@ -112,33 +106,24 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
             showTrailing: widget.showTrailing,
           )
         : null,
-      child: child != null 
-        ? SafeArea(
-            child: child!
-          )
-        : CustomScrollView( // We use the widget in child if it exists. Otherwise CustomScrollView
-            controller: _scrollController,
-            slivers: [
-              if (!isSmallNavigationBar)
-                SliverDecodNavigationBar(
-                  title: widget.title,
-                  onSearch: widget.onSearch,
-                  showBorder: _showBorder,),
-              SliverSafeArea(
-                top: isSmallNavigationBar,
-                sliver: SliverList(
-                  delegate: widget.children!=null
-                    ? SliverChildListDelegate(
-                        widget.children!
-                      )
-                    : SliverChildBuilderDelegate(
-                        widget.builder!,
-                        childCount: widget.childCount!
-                      )
-                ),
-              )
-            ],
-          ),
+      controller: _scrollController,
+      builder: widget.builder,
+      childCount: widget.childCount,
+      sliverNavigationBar:  hasSliverNavigationBar
+        ? SliverDecodNavigationBar(
+            title: widget.title,
+            onSearch: widget.onSearch,
+            showBorder: _showBorder,)
+        : null,
+      children: widget.children,
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (hasClassicView) {
+      return classic(context);
+    }
+    return sliver(context);
   }
 }
