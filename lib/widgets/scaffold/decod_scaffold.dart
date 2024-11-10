@@ -33,7 +33,6 @@ class DecodPageScaffold extends StatefulWidget {
     
       @override
       State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
-
 }
 
 class _DecodPageScaffoldState extends State<DecodPageScaffold> {
