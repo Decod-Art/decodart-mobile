@@ -1,0 +1,82 @@
+Flutter crash report.
+Please report a bug at https://github.com/flutter/flutter/issues.
+
+## command
+
+flutter run -d macos
+
+## exception
+
+RPCError: _flutter.renderFrameWithRasterStats: (-32000) Failed to render the last frame with raster stats. Rasterizer does not hold a valid last layer tree. This could happen if this method was invoked before a frame was rendered
+
+```
+#0      new _OutstandingRequest (package:vm_service/src/vm_service.dart:261:34)
+#1      VmService._call.<anonymous closure> (package:vm_service/src/vm_service.dart:1778:25)
+#2      VmService._call (package:vm_service/src/vm_service.dart:1790:8)
+#3      VmService.callServiceExtension (package:vm_service/src/vm_service.dart:1729:14)
+#4      VmService.callMethod (package:vm_service/src/vm_service.dart:1712:12)
+#5      FlutterVmService.callMethodWrapper (package:flutter_tools/src/vmservice.dart:501:28)
+#6      FlutterVmService.renderFrameWithRasterStats (package:flutter_tools/src/vmservice.dart:607:49)
+#7      ResidentHandlers.debugFrameJankMetrics (package:flutter_tools/src/resident_runner.dart:726:37)
+<asynchronous suspension>
+#8      TerminalHandler.processTerminalInput (package:flutter_tools/src/resident_runner.dart:1836:7)
+<asynchronous suspension>
+```
+
+## flutter doctor
+
+```
+[32m[✓][39m Flutter (Channel stable, 3.24.2, on macOS 14.6.1 23G93 darwin-arm64, locale
+    fr-FR)
+    [32m•[39m Flutter version 3.24.2 on channel stable at
+      /Users/maximilienservajean/Documents/flutter
+    [32m•[39m Upstream repository https://github.com/flutter/flutter.git
+    [32m•[39m Framework revision 4cf269e36d (3 weeks ago), 2024-09-03 14:30:00 -0700
+    [32m•[39m Engine revision a6bd3f1de1
+    [32m•[39m Dart version 3.5.2
+    [32m•[39m DevTools version 2.37.2
+
+[31m[✗][39m Android toolchain - develop for Android devices
+    [31m✗[39m Unable to locate Android SDK.
+      Install Android Studio from:
+      https://developer.android.com/studio/index.html
+      On first launch it will assist you in installing the Android SDK
+      components.
+      (or visit https://flutter.dev/to/macos-android-setup for detailed
+      instructions).
+      If the Android SDK has been installed to a custom location, please use
+      `flutter config --android-sdk` to update to that location.
+
+
+[32m[✓][39m Xcode - develop for iOS and macOS (Xcode 16.0)
+    [32m•[39m Xcode at /Applications/Xcode.app/Contents/Developer
+    [32m•[39m Build 16A242d
+    [32m•[39m CocoaPods version 1.15.2
+
+[31m[✗][39m Chrome - develop for the web (Cannot find Chrome executable at
+    /Applications/Google Chrome.app/Contents/MacOS/Google Chrome)
+    [33m![39m Cannot find Chrome. Try setting CHROME_EXECUTABLE to a Chrome executable.
+
+[33m[!][39m Android Studio (not installed)
+    [32m•[39m Android Studio not found; download from
+      https://developer.android.com/studio/index.html
+      (or visit https://flutter.dev/to/macos-android-setup for detailed
+      instructions).
+
+[32m[✓][39m VS Code (version 1.93.0)
+    [32m•[39m VS Code at /Applications/Visual Studio Code.app/Contents
+    [32m•[39m Flutter extension version 3.96.0
+
+[32m[✓][39m Connected device (3 available)
+    [32m•[39m iPhone 13 mini (mobile)         • 00008110-001E755C3A44801E • ios
+      • iOS 17.6.1 21G93
+    [32m•[39m macOS (desktop)                 • macos                     •
+      darwin-arm64 • macOS 14.6.1 23G93 darwin-arm64
+    [32m•[39m Mac Designed for iPad (desktop) • mac-designed-for-ipad     • darwin
+      • macOS 14.6.1 23G93 darwin-arm64
+
+[32m[✓][39m Network resources
+    [32m•[39m All expected network resources are available.
+
+[33m![39m Doctor found issues in 3 categories.
+```
