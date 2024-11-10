@@ -158,38 +158,36 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     return DecodPageScaffold(
       title: 'Carte',
       smallTitle: true,
-      child: SafeArea(
-        child: FlutterMap(
-          mapController: mapController.mapController,
-          options: const MapOptions(
-            initialCenter: LatLng(43.611299, 3.875854),
-            initialZoom: 15.2,
-            interactionOptions: InteractionOptions(
-              enableMultiFingerGestureRace: true,
-              flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
-            ),
+      child: FlutterMap(
+        mapController: mapController.mapController,
+        options: const MapOptions(
+          initialCenter: LatLng(43.611299, 3.875854),
+          initialZoom: 15.2,
+          interactionOptions: InteractionOptions(
+            enableMultiFingerGestureRace: true,
+            flags: InteractiveFlag.all & ~InteractiveFlag.rotate,
           ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}r.png',
-              subdomains: const ['a', 'b', 'c'],
-              userAgentPackageName: 'com.example.app',
-              //tileBuilder: darkModeTileBuilder,
-            ),
-            RichAttributionWidget(
-              attributions: [
-                TextSourceAttribution(
-                  'OpenStreetMap contributors',
-                  onTap: () => {},
-                ),
-              ],
-            ),
-            MarkerLayer(
-              markers: markers,
-            ),
-          ]
         ),
-      )
+        children: [
+          TileLayer(
+            urlTemplate: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}r.png',
+            subdomains: const ['a', 'b', 'c'],
+            userAgentPackageName: 'com.example.app',
+            //tileBuilder: darkModeTileBuilder,
+          ),
+          RichAttributionWidget(
+            attributions: [
+              TextSourceAttribution(
+                'OpenStreetMap contributors',
+                onTap: () => {},
+              ),
+            ],
+          ),
+          MarkerLayer(
+            markers: markers,
+          ),
+        ]
+      ),
     );
   }
 }
