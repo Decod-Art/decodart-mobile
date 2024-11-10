@@ -14,6 +14,7 @@ class DecodPageScaffold extends StatefulWidget {
   final ScrollController? controller;
   final Widget? leadingBar;
   final bool showTrailing;
+  final bool withScrolling;
   const DecodPageScaffold({
     super.key,
     this.children,
@@ -25,7 +26,8 @@ class DecodPageScaffold extends StatefulWidget {
     this.smallTitle=false,
     this.leadingBar,
     this.child,
-    this.showTrailing=true});
+    this.showTrailing=true,
+    this.withScrolling=false});
     
       @override
       State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
@@ -35,13 +37,40 @@ class DecodPageScaffold extends StatefulWidget {
 class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   late ScrollController _scrollController;
   bool _showBorder = false;
+  late Widget? child;
 
   @override
   void initState() {
     super.initState();
     _scrollController = widget.controller??ScrollController();
     _scrollController.addListener(_scrollListener);
+    _configureChild();
   }
+
+  @override
+  void didUpdateWidget(covariant DecodPageScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (child != widget.child) {
+      _configureChild();
+    }
+
+  }
+
+  void _configureChild() {
+    if (widget.child == null) {
+      child = null;
+    }
+    else {
+      child = widget.withScrolling
+        ? SingleChildScrollView(
+            controller: _scrollController,
+            child: widget.child,
+          )
+        : widget.child;
+    }
+  }
+
+  int get offsetThreshold => widget.smallTitle ? 5 : 50;
 
   void _scrollListener() {
     if (_scrollController.position.userScrollDirection != ScrollDirection.idle) {
@@ -49,11 +78,11 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
     }
     if (_scrollController.hasClients) {
       final offset = _scrollController.offset;
-      if (offset > 50 && !_showBorder) {
+      if (offset > offsetThreshold && !_showBorder) {
         setState(() {
           _showBorder = true;
         });
-      } else if (offset <= 50 && _showBorder) {
+      } else if (offset <= offsetThreshold && _showBorder) {
         setState(() {
           _showBorder = false;
         });
@@ -83,9 +112,9 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
             showTrailing: widget.showTrailing,
           )
         : null,
-      child: widget.child != null 
+      child: child != null 
         ? SafeArea(
-            child: widget.child!
+            child: child!
           )
         : CustomScrollView( // We use the widget in child if it exists. Otherwise CustomScrollView
             controller: _scrollController,

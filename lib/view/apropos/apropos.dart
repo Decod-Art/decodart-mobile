@@ -13,7 +13,8 @@ class AproposView extends StatelessWidget {
       title: 'À propos',
       smallTitle: true,
       showTrailing: false,
-      child: ListView(
+      withScrolling: true,
+      child: Column(
         children: <Widget>[
           DecodPreferenceTile(
             title: const Text('Remerciements'),
@@ -35,6 +36,90 @@ class AproposView extends StatelessWidget {
               value: false,
               onChanged: (bool value) {},
             ),
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
+          ),
+          DecodPreferenceTile(
+            title: const Text('Option 3'),
+            trailing: const Icon(CupertinoIcons.forward),
+            onTap: () {
+              // Action à effectuer lors du tap
+            },
           ),
           DecodPreferenceTile(
             title: const Text('Option 3'),
