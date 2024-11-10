@@ -37,7 +37,7 @@ class DecodPageScaffold extends StatefulWidget {
 class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   late ScrollController _scrollController;
   bool _showBorder = false;
-  late final Widget? child;
+  late Widget? child;
 
   @override
   void initState() {
@@ -45,6 +45,15 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
     _scrollController = widget.controller??ScrollController();
     _scrollController.addListener(_scrollListener);
     _configureChild();
+  }
+
+  @override
+  void didUpdateWidget(covariant DecodPageScaffold oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (child != widget.child) {
+      _configureChild();
+    }
+
   }
 
   void _configureChild() {
