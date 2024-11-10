@@ -69,7 +69,7 @@ class DecodCameraController {
     }
   }
 
-  bool get isLoaded => _isLoaded;
+  bool get isLoaded => _isLoaded&&_cameraController!=null;
   
   set isLoaded(bool isLoaded) {
     _isLoaded = isLoaded;
@@ -107,7 +107,9 @@ class DecodCameraController {
     isLoaded = false;
   }
 
-  CameraController get cameraController => _cameraController!;
+  CameraController get cameraController {
+    return _cameraController!;
+  }
 
   double get aspectRatio => _cameraController!.value.aspectRatio;
 }
