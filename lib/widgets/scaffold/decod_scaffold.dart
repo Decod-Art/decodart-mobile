@@ -83,31 +83,33 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
             showTrailing: widget.showTrailing,
           )
         : null,
-      child: SafeArea(
-        child: widget.child ?? CustomScrollView( // We use the widget in child if it exists. Otherwise CustomScrollView
-          controller: _scrollController,
-          slivers: [
-            if (!isSmallNavigationBar)
-              SliverDecodNavigationBar(
-                title: widget.title,
-                onSearch: widget.onSearch,
-                showBorder: _showBorder,),
-            SliverSafeArea(
-              top: false,
-              sliver: SliverList(
-                delegate: widget.children!=null
-                  ? SliverChildListDelegate(
-                      widget.children!
-                    )
-                  : SliverChildBuilderDelegate(
-                      widget.builder!,
-                      childCount: widget.childCount!
-                    )
-              ),
-            )
-          ],
-        ),
-      )
+      child: widget.child != null 
+        ? SafeArea(
+            child: widget.child!
+          )
+        : CustomScrollView( // We use the widget in child if it exists. Otherwise CustomScrollView
+            controller: _scrollController,
+            slivers: [
+              if (!isSmallNavigationBar)
+                SliverDecodNavigationBar(
+                  title: widget.title,
+                  onSearch: widget.onSearch,
+                  showBorder: _showBorder,),
+              SliverSafeArea(
+                top: isSmallNavigationBar,
+                sliver: SliverList(
+                  delegate: widget.children!=null
+                    ? SliverChildListDelegate(
+                        widget.children!
+                      )
+                    : SliverChildBuilderDelegate(
+                        widget.builder!,
+                        childCount: widget.childCount!
+                      )
+                ),
+              )
+            ],
+          ),
     );
   }
 }
