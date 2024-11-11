@@ -1,7 +1,7 @@
 import 'package:decodart/api/decod.dart' show fetchTags;
 import 'package:decodart/model/decod.dart' show DecodTag;
-import 'package:decodart/view/decod/menu/util/history.dart' show DecodedHistory, DecodedHistoryState;
-import 'package:decodart/view/decod/menu/util/stats.dart' show StatsWidget, StatsWidgetState;
+import 'package:decodart/view/decod/menu/util/history.dart' show DecodedHistory;
+import 'package:decodart/view/decod/menu/util/stats/stats.dart' show StatsWidget;
 import 'package:decodart/view/decod/menu/util/train_to_decod.dart' show TrainToDecod;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
@@ -14,20 +14,12 @@ class DecodMainMenuView extends StatefulWidget {
 }
 
 class DecodMainMenuViewState extends State<DecodMainMenuView> {
-  final GlobalKey<DecodedHistoryState> decodedHistoryKey = GlobalKey<DecodedHistoryState>();
-  final GlobalKey<StatsWidgetState> statsWidgetKey = GlobalKey<StatsWidgetState>();
   late final Future<List<DecodTag>> tags;
 
   @override
   void initState(){
     super.initState();
     tags = fetchTags();
-  }
-
-  Future<void> reset() async {
-    await statsWidgetKey.currentState?.reset();
-    await decodedHistoryKey.currentState?.reset();
-    setState(() {});
   }
 
   @override
@@ -38,10 +30,10 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          StatsWidget(key: statsWidgetKey, onReset: reset,),
-          Expanded(
+          const StatsWidget(),
+          const Expanded(
             flex: 3,
-            child: DecodedHistory(key: decodedHistoryKey),
+            child: DecodedHistory(),
           ),
           Container(
             color: CupertinoColors.systemGrey6,
