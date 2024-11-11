@@ -133,6 +133,7 @@ class _ExploreViewState extends State<ExploreView> {
               fetch: fetchAllMuseums,
               secondaryFetch: _museumListItemFetcher.call,
               onPressed: _onMuseumPressed,
+              isMuseum: (item) => true,
               title: 'Musées'
             ),
             Column(
