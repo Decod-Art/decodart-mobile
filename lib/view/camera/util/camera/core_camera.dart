@@ -1,3 +1,5 @@
+import 'dart:io' show File;
+
 import 'package:decodart/view/camera/util/camera/controller.dart' as decod show DecodCameraController;
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,6 +16,8 @@ class CoreCamera extends StatefulWidget {
 }
 
 class CoreCameraState extends State<CoreCamera> {
+
+  Image? preview;
   
   double _opacity = 0; // the blink when taking the picture
 
@@ -23,19 +27,29 @@ class CoreCameraState extends State<CoreCamera> {
     _initializeCamera();
   }
 
-  Future<void> _blink() async {
+  Future<void> _fadeIn () async {
     setState(() {
       _opacity = 1.0;
     });
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        _opacity = 0.0;
-      });
+    await Future.delayed(const Duration(milliseconds: 100));
+  }
+
+  Future<void> _fadeOutAndPreview (String path) async {
+    setState(() {
+      preview = Image.file(File(path));
+      _opacity = 0.0;
     });
   }
 
+  Future<void> _resetPreview () async {
+    await Future.delayed(const Duration(seconds: 1));
+    setState(() {preview=null;});
+  }
+
   Future<void> _initializeCamera() async {
-    widget.controller.beforeSearchStart = _blink;
+    widget.controller.beforeSearch = _fadeIn;
+    widget.controller.onSearch = _fadeOutAndPreview;
+    widget.controller.afterSearch = _resetPreview;
     await widget.controller.init();
   }
 
@@ -64,7 +78,7 @@ class CoreCameraState extends State<CoreCamera> {
                 height: MediaQuery.of(context).size.width*(isVertical?aspectRatio:1/aspectRatio),
                 child: Stack(
                   children: [
-                    CameraPreview(widget.controller.cameraController),
+                    preview ?? CameraPreview(widget.controller.cameraController),
                     AnimatedOpacity(
                       opacity: _opacity,
                       duration: const Duration(milliseconds: 100),

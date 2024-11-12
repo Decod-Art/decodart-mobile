@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart' show CameraController, ResolutionPreset, availableCameras;
+import 'package:camera/camera.dart' show CameraController, ResolutionPreset, XFile, availableCameras;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart' show Permission, PermissionActions, PermissionStatus;
@@ -15,6 +15,7 @@ class DecodCameraException implements Exception {
 
 typedef SearchFct=Future<List<ArtworkListItem>>Function(String);
 typedef SearchEndFct=void Function(List<ArtworkListItem>);
+typedef FutureVoidCallback=Future<void>Function();
 
 class DecodCameraController {
   String? errorMessage;
@@ -24,7 +25,10 @@ class DecodCameraController {
 
   final VoidCallback? onInit;
 
-  VoidCallback? _beforeSearchStart;
+  FutureVoidCallback? _beforeSearch;
+  void Function(String)? _onSearch;
+  VoidCallback? _afterSearch;
+
   final VoidCallback? onSearchStart;
   final SearchFct? runSearch;
   final SearchEndFct? onSearchEnd;
@@ -40,8 +44,16 @@ class DecodCameraController {
     this.onSearchEnd
   });
 
-  set beforeSearchStart (VoidCallback? fct) {
-    _beforeSearchStart = fct;
+  set beforeSearch (FutureVoidCallback? fct) {
+    _beforeSearch = fct;
+  }
+
+  set onSearch (void Function(String)? fct) {
+    _onSearch = fct;
+  }
+
+  set afterSearch(VoidCallback? fct) {
+    _afterSearch = fct;
   }
 
   bool get canTakePicture => errorMessage == null&&isLoaded;
@@ -54,18 +66,25 @@ class DecodCameraController {
     if (canTakePicture){
       _isSearching = true;
 
-      _beforeSearchStart?.call();
       onSearchStart?.call();
+      
+      await Future.wait([
+        _beforeSearch?.call() ?? Future.value(),
+        _cameraController!.takePicture()
+      ]).then((res) async {
+        final image = res[1] as XFile; // Récupérez l'image de la caméra
+        _onSearch?.call(image.path);
 
-      final image = await _cameraController!.takePicture();
-      final results = await runSearch?.call(image.path)??const[];
+        final results = await runSearch?.call(image.path)??const[];
 
-      _isSearching = false;
+        _isSearching = false;
 
-      onSearchEnd?.call(results);
-
+        _afterSearch?.call();
+        onSearchEnd?.call(results);
+      });
+      
     } else {
-      throw DecodCameraException('Camera can\'t take pictures for now.');
+      throw DecodCameraException('Camera can\'t take pictures for now. Init first.');
     }
   }
 
