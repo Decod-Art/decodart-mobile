@@ -7,8 +7,6 @@ class MenuController {
   static const String gameDataBoxName = 'gameDataBox';
   static const String gameArtworkHistoryName = 'gameArtworkHistory';
 
-  MenuController();
-
   Future<void> openBoxes () async {
     await HiveService().openBox<GameData>(gameDataBoxName);
     await HiveService().openBox<List>(gameArtworkHistoryName);

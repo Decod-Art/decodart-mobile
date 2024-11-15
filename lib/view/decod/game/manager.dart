@@ -1,16 +1,13 @@
 
+import 'package:decodart/controller/decod/game_controller.dart' show GameController;
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/model/hive/decod.dart' show GameData;
-import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
-import 'package:decodart/model/image.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import 'package:decodart/view/decod/game/end.dart' show EndingWidget;
 
-import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType, DecodTag;
+import 'package:decodart/model/decod.dart' show DecodQuestionType, DecodTag;
 import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
 import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
 import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
@@ -26,127 +23,76 @@ class DecodView extends StatefulWidget {
 }
 
 class _DecodViewState extends State<DecodView> {
-
-  double totalPoints = 0;
-  int currentQuestionIndex = 0;
-  Box<GameData>? gameDataBox;
-  Box<List>? artworkHistory;
-
-  final List<DecodQuestion> questions = [];
-  final List<bool> results = [];
+  late final GameController controller;
 
   @override
   void initState() {
     super.initState();
+    controller = GameController(artwork: widget.artwork);
     _fetchQuestions();
-    _openBox();
   }
 
   void _correctAnswer() async {
-    // if (await Vibration.hasVibrator() ?? false) {
-    //   Vibration.vibrate(duration: 100);  // Short vibration (100 ms)
-    // }
     HapticFeedback.heavyImpact();
   }
 
   void _incorrectAnswer() async {
-    // if (await Vibration.hasVibrator() ?? false) {
-    //   Vibration.vibrate(duration: 500);  // Short vibration (100 ms)
-    // }
     HapticFeedback.heavyImpact();
     await Future.delayed(const Duration(milliseconds: 200));
     HapticFeedback.heavyImpact();
     await Future.delayed(const Duration(milliseconds: 200));
     HapticFeedback.heavyImpact();
-  }
-
-  Future<void> _openBox() async {
-      gameDataBox = await Hive.openBox<GameData>('gameDataBox');
-      artworkHistory = await Hive.openBox<List>('gameArtworkHistory');
-      setState(() {});
-    }
-
-  Future<void> _saveScore(double score) async {
-    var scoreData = gameDataBox?.get('score', defaultValue: GameData());
-    scoreData?.count += 1;
-    scoreData?.success += score;
-    gameDataBox?.put('score', scoreData!);
-  }
-
-  Future<void> _addArtwork() async {
-    if (widget.artwork != null){
-      var history = artworkHistory?.get('history', defaultValue: [])
-                                  ?.cast<hive.ArtworkListItem>();
-      if (history !=null && !history.any((item) => item.uid == widget.artwork!.uid)) {
-        var preview = widget.artwork!.listItem;
-        await (preview.image as ImageOnline).downloadImageData();
-        history.insert(0, preview.toHive());
-        artworkHistory?.put('history', history);
-      }
-    }
   }
 
   Future<void> _fetchQuestions() async {
-    late final List<DecodQuestion> questionsShuffled;
-    if (widget.artwork != null){
-      questionsShuffled = (await fetchDecodQuestionByArtworkId(widget.artwork!.uid!))
-                    .map((item) => item.shuffleAnswers())
-                    .toList();
-    } else {
-      questionsShuffled = (await fetchDecodQuestionRandomly(tag: widget.tag))
-                    .map((item) => item.shuffleAnswers())
-                    .toList();
-    }
-    questions.addAll(questionsShuffled);
-    results.addAll(List.generate(questions.length, (_)=>false));
-    setState(() {});
-  }
+    await controller.init();
+    controller.add(
+      controller.hasArtwork
+        ? await fetchDecodQuestionByArtworkId(controller.artwork!.uid!)
+        : await fetchDecodQuestionRandomly(tag: widget.tag),
+      shuffle: true
+    );
 
-  void _nextQuestion() {
-    currentQuestionIndex++;
     setState(() {});
   }
 
   void _validateQuestion(double points, {int duration=1}) {
     if (points >= 1) {
       _correctAnswer();
-      results[currentQuestionIndex] = true;
+      controller.setCurrentQuestionToCorrect();
     } else {
       _incorrectAnswer();
     }
-    totalPoints += points;
-    _saveScore(points);
+    controller.points += points;
+    controller.saveScore();
     Future.delayed(Duration(seconds: duration), () {
-      _nextQuestion();
+      setState(() {controller.nextQuestion();});
     });
   }
 
   Widget _showQuestion() {
-    if (currentQuestionIndex >= questions.length) {
-      _addArtwork();
-
+    if (controller.isOver) {
       return EndingWidget(
-        totalPoints: totalPoints,
-        questions: questions,
-        results: results
+        totalPoints: controller.totalPoints,
+        questions: controller.questions,
+        results: controller.hasBeenCorrectlyAnswered
       );
     }
-    final currentQuestion = questions[currentQuestionIndex];
-    switch (currentQuestion.questionType) {
+    switch (controller.currentQuestionType) {
       case DecodQuestionType.image:
         return ImageQuestion(
-          question: currentQuestion,
+          question: controller.currentQuestion,
           submitPoints: _validateQuestion,
         );
       case DecodQuestionType.text:
         return TextQuestion(
-          question: currentQuestion,
+          question: controller.currentQuestion,
           submitPoints: _validateQuestion,
         );
       case DecodQuestionType.boundingbox:
         return ColorizeQuestion(
           submitPoints: _validateQuestion,
-          question: currentQuestion);
+          question: controller.currentQuestion);
     }
   } 
 
@@ -177,7 +123,7 @@ class _DecodViewState extends State<DecodView> {
       ),
       child: SafeArea(
         child: Center(
-          child: questions.isEmpty
+          child: controller.isEmpty
               ? const CupertinoActivityIndicator()
               : _showQuestion(),
         ),
