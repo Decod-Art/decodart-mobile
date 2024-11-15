@@ -1,7 +1,7 @@
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/decod/menu/util/controller/game_controller.dart' show GameController;
+import 'package:decodart/controller/decod/menu_controller.dart' show MenuController;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 
@@ -16,7 +16,7 @@ class DecodedHistory extends StatefulWidget{
 }
 
 class DecodedHistoryState extends State<DecodedHistory> {
-  final GameController controller = GameController();
+  final MenuController controller = MenuController();
   final List<ArtworkListItem> decoded = [];
 
   @override

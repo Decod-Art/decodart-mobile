@@ -1,6 +1,6 @@
 import 'dart:io' show File;
 
-import 'package:decodart/view/camera/util/camera/controller.dart' as decod show DecodCameraController;
+import 'package:decodart/controller/camera/controller.dart' as decod show DecodCameraController;
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 

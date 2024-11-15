@@ -38,6 +38,10 @@ class HiveService {
     return null as Box<T>?;
   }
 
+  bool isBoxOpened(String boxName) {
+    return _boxes.containsKey(boxName) && _boxes[boxName]!.isOpen;
+  }
+
   List<String> getOpenBoxNames() {
     return _boxes.keys.toList();
   }

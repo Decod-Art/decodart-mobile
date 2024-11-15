@@ -4,7 +4,7 @@ import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/image.dart';
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
-import 'package:decodart/view/camera/util/camera/controller.dart' show DecodCameraController;
+import 'package:decodart/controller/camera/controller.dart' show DecodCameraController;
 import 'package:decodart/view/camera/util/camera/core_camera.dart' show CoreCamera;
 import 'package:decodart/view/camera/util/results/no_result.dart' show NoResultWidget;
 import 'package:decodart/view/camera/util/results/result.dart' show ResultsWidget;
