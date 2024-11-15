@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 
 class CameraView extends StatelessWidget {
   const CameraView({super.key});
+
   @override
   Widget build(BuildContext context) {    
     double screenHeight = MediaQuery.of(context).size.height;

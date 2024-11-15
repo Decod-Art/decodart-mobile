@@ -1,4 +1,5 @@
 
+import 'package:decodart/controller/global/hive.dart' show HiveService;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
@@ -15,7 +16,7 @@ class RecentScan extends StatefulWidget{
 }
 
 class RecentScanState extends State<RecentScan> {
-  Box<List>? recentScanBox;
+  static const String recentScanBoxName = 'recentScan';
   final List<ArtworkListItem> recent = [];
 
   @override
@@ -26,60 +27,54 @@ class RecentScanState extends State<RecentScan> {
 
   @override
   void dispose() {
-    recentScanBox?.close();
+    HiveService().closeBox(recentScanBoxName);
     super.dispose();
   }
 
   void _fetchHistory() {
     // the method is called each time the Hive box is updated with new elements
+    Box<List>? recentScanBox = HiveService().getBox(recentScanBoxName);
     List<hive.ArtworkListItem>? recentList = recentScanBox
       ?.get('recent', defaultValue: [])
       ?.cast<hive.ArtworkListItem>();
-    if (recentList != null){
+    if(recentList != null){
       recent.clear();
       recent.addAll(recentList.map((item) => ArtworkListItem.fromHive(item)).toList());
     }
   }
 
-  Future<void> _openBox() async {
-    recentScanBox = await Hive.openBox<List>('recentScan');      
-    setState(() {});
-  }
-
-  Future<void> reset() async {
-    await recentScanBox?.clear();
+  Future<void> _openBox() async {                    
+    await HiveService().openBox<List>(recentScanBoxName);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(// TODO delete
-      child: recentScanBox==null
-        ? const Center(
-            child: CupertinoActivityIndicator(),
-          )
-        : ValueListenableBuilder(
-          valueListenable: recentScanBox!.listenable(),
-          builder: (context, __, _) {
-            _fetchHistory();
-            return recent.isEmpty?Container():Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 16, bottom: 15, top: 30),
-                  child: Text(
-                    'Scans récents',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500)),
-                  ),
-                ListWithThumbnail(items: recent, onPress: (item) async {
-                  showWidgetInModal(context,(context) => FutureArtworkView(artwork: item));
-                },)
-              ],
-            );
-          }
+    return HiveService().getBox(recentScanBoxName)==null
+      ? const Center(
+          child: CupertinoActivityIndicator(),
         )
+      : ValueListenableBuilder(
+        valueListenable: HiveService().getBox(recentScanBoxName)!.listenable(),
+        builder: (context, __, _) {
+          _fetchHistory();
+          return recent.isEmpty?Container():Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 16, bottom: 15, top: 30),
+                child: Text(
+                  'Scans récents',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w500)),
+                ),
+              ListWithThumbnail(items: recent, onPress: (item) async {
+                showWidgetInModal(context,(context) => FutureArtworkView(artwork: item));
+              },)
+            ],
+          );
+        }
     );
   }
 }

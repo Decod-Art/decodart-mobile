@@ -1,3 +1,4 @@
+import 'package:decodart/controller/global/hive.dart' show HiveService;
 import 'package:decodart/view/apropos/util/tile.dart' show DecodPreferenceTile;
 import 'package:decodart/widgets/dialog/dialog.dart' show showDialog;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
@@ -137,9 +138,9 @@ class AproposView extends StatelessWidget {
                   context,
                   content: const Text('Voulez-vous vraiment supprimer tous les scans récents ?'),
                   onPressedOk: () async {
-                    Box<List>? recentScanBox = await Hive.openBox<List>('recentScan');
+                    Box<List> recentScanBox = await HiveService().openBox<List>('recentScan');
                     await recentScanBox.clear(); // Vider la boîte
-                    await recentScanBox.close(); // Fermer la boîte
+                    await HiveService().closeBox('recentScan');
                   });
               },
             ),
