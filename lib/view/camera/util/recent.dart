@@ -53,7 +53,7 @@ class RecentScanState extends State<RecentScan> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return SingleChildScrollView(// TODO delete
       child: recentScanBox==null
         ? const Center(
             child: CupertinoActivityIndicator(),
