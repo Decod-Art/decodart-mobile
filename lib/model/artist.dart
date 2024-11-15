@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
 import 'package:decodart/model/hive/artist.dart' as hive;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
+import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 
 
 class ArtistForeignKey extends AbstractItem {
@@ -60,7 +60,7 @@ class Artist extends ArtistForeignKey {
       deathLocation: json['deathlocation'],
       activityLocation: json['activitylocation'],
       ulangetty: json['ulangetty'],
-      image: ImageWithPath.fromJson(json['image'])
+      image: ImageOnline.fromJson(json['image'])
     );
   }
 

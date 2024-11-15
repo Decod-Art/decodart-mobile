@@ -1,6 +1,8 @@
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
 import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/hive/image.dart' as hive;
+import 'dart:typed_data' show Uint8List;
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart' show Offset;
 
 
@@ -10,6 +12,10 @@ abstract class AbstractImage extends UnnamedAbstractItem {
     super.uid,
     this.boundingBoxes
   });
+
+  bool get isDownloaded => false;
+
+  Uint8List? get data => null;
 
   String get path;
 
@@ -26,20 +32,36 @@ abstract class AbstractImage extends UnnamedAbstractItem {
   bool get hasBoundingBox => boundingBoxes != null;
 }
 
-class ImageWithPath extends AbstractImage {
+class ImageOnline extends AbstractImage {
   final String _path;
-  const ImageWithPath(
+  @override
+  Uint8List? data;
+
+  ImageOnline(
     String path,
     {
       super.uid,
       super.boundingBoxes,
+      this.data
     }):_path = path;
 
   @override
   String get path => checkUrlForCdn(_path)!;
 
-  factory ImageWithPath.fromJson(Map<String, dynamic>json) {
-    return ImageWithPath(
+  Future<void> downloadImageData() async {
+    final response = await http.get(Uri.parse(path));
+    if (response.statusCode == 200) {
+      data = response.bodyBytes;
+    } else {
+      throw Exception('Failed to load image data');
+    }
+  }
+
+  @override
+  bool get isDownloaded => data != null;
+
+  factory ImageOnline.fromJson(Map<String, dynamic>json) {
+    return ImageOnline(
       json['path'],
       uid: json['uid'],
       boundingBoxes: json['boundingboxes']?.map((boundingBoxesJson) => BoundingBox.fromJson(boundingBoxesJson))
@@ -48,11 +70,12 @@ class ImageWithPath extends AbstractImage {
     );
   }
 
-  factory ImageWithPath.fromHive(hive.Image image) {
-    return ImageWithPath(
+  factory ImageOnline.fromHive(hive.Image image) {
+    return ImageOnline(
       image.path,
       uid: image.uid,
       boundingBoxes: image.boundingBoxes?.map((item) => BoundingBox.fromHive(item)).toList(),
+      data: image.data
       );
   }
 
@@ -60,7 +83,8 @@ class ImageWithPath extends AbstractImage {
     return hive.Image(
       uid: uid!,
       boundingBoxes: saveBoundingBox?boundingBoxes?.map((item) => item.toHive()).toList():null,
-      path: path);
+      path: path,
+      data: data!);
   }
 
   @override
@@ -72,43 +96,10 @@ class ImageWithPath extends AbstractImage {
   }
   @override
   AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes) {
-    return ImageWithPath(
+    return ImageOnline(
       _path,
       uid: uid,
       boundingBoxes: boundingBoxes);
-  }
-}
-
-class ImageWithData extends AbstractImage {
-  final String content;
-  final String filetype;
-  const ImageWithData(
-    String data,
-    {
-      super.uid,
-      super.boundingBoxes,
-      required this.filetype,
-    }):content = data;
-
-  String get data => content.split(',').last;
-
-  @override
-  String get path => content;
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'imagedata': data,
-      'filetype': filetype,
-    };
-  }
-  @override
-  AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes) {
-    return ImageWithData(
-      content,
-      uid: uid,
-      boundingBoxes: boundingBoxes,
-      filetype: filetype);
   }
 }
 

@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/model/image.dart' show ImageWithPath, AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline, AbstractImage;
 
 
 class MuseumForeignKey extends AbstractItem {
@@ -30,7 +30,7 @@ class MuseumListItem extends MuseumForeignKey implements AbstractListItem {
     return MuseumListItem(
       uid: json['uid'],
       name: json['name'],
-      image: ImageWithPath.fromJson(json['image']),
+      image: ImageOnline.fromJson(json['image']),
       city: json['city']
     );
   }
@@ -91,7 +91,7 @@ class Museum extends MuseumListItem {
       country: json['country'],
       latitude: json['latitude'],
       longitude: json['longitude'],
-      image: ImageWithPath.fromJson(json['image']),
+      image: ImageOnline.fromJson(json['image']),
       hasExhibitions: json['hasexhibitions'],
       hasCollection: json['hascollection'],
       hasTours: json['hastours'],

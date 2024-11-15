@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, UnnamedAbstractItem;
 import 'package:decodart/model/artwork.dart' show ArtworkForeignKey;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
+import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 
 import 'dart:math';
 
@@ -26,7 +26,7 @@ class DecodQuestionListItem extends AbstractItem {
     return DecodQuestionListItem(
       uid: json['uid'],
       name: json['name'],
-      image: ImageWithPath.fromJson(json['image']));
+      image: ImageOnline.fromJson(json['image']));
   }
   @override
   Map<String, dynamic> toJson(){
@@ -60,7 +60,7 @@ class DecodQuestion extends DecodQuestionListItem {
     return DecodQuestion(
       uid: json['uid'],
       name: json['name'],
-      image: ImageWithPath.fromJson(json['image']),
+      image: ImageOnline.fromJson(json['image']),
       question: json['question'],
       questionType: DecodQuestionType.values.firstWhere((e) => e.toString().split('.').last == json['question_type']),
       answers: (json['answers'] as List).map((item)=>DecodAnswer.fromJson(item)).toList(),
@@ -126,7 +126,7 @@ class DecodAnswer extends UnnamedAbstractItem {
   factory DecodAnswer.fromJson(Map<String, dynamic>json) {
     return DecodAnswer(
       uid: json['uid'],
-      image: json['image']!=null?ImageWithPath.fromJson(json['image']):null,
+      image: json['image']!=null?ImageOnline.fromJson(json['image']):null,
       text: json['text'],
       isCorrect: json['iscorrect']
     );

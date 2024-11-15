@@ -1,6 +1,6 @@
 import 'package:latlong2/latlong.dart' show LatLng;
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
+import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 
 class GeolocatedListItem extends AbstractItem implements AbstractListItem {
   final double latitude;
@@ -48,7 +48,7 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
       subtitle: json['subtitle'], 
       latitude: json['latitude'],
       longitude: json['longitude'],
-      image: ImageWithPath.fromJson(json['image']),
+      image: ImageOnline.fromJson(json['image']),
       isMuseum: json['ismuseum'],
       description: json['description']);
   }

@@ -1,5 +1,6 @@
 
 import 'package:hive/hive.dart';
+import 'dart:typed_data' show Uint8List;
 
 // dart run build_runner build
 // hive data at the bottom of current file
@@ -41,10 +42,13 @@ class Image {
   final List<BoundingBox>? boundingBoxes;
   @HiveField(2)
   final String path;
+  @HiveField(3)
+  final Uint8List data;
 
   Image({
     required this.uid,
     required this.boundingBoxes,
     required this.path,
+    required this.data
   });
 }

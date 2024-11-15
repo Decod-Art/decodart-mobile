@@ -1,6 +1,7 @@
 import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
+import 'package:decodart/model/image.dart';
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
 import 'package:decodart/view/camera/util/camera/controller.dart' show DecodCameraController;
@@ -100,6 +101,8 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     var recentList = recentScanBox?.get('recent', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList != null) {
+      // TODO check that it works
+      await Future.wait(items.map((item) => (item.image as ImageOnline).downloadImageData()));
       recentList.insertAll(0, items.map((item)=> item.toHive()).toList());
       if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);
       recentScanBox?.put('recent', recentList);

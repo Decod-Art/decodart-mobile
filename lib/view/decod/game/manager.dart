@@ -2,6 +2,7 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/hive/decod.dart' show GameData;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
+import 'package:decodart/model/image.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -72,12 +73,14 @@ class _DecodViewState extends State<DecodView> {
     gameDataBox?.put('score', scoreData!);
   }
 
-  void _addArtwork() {
+  Future<void> _addArtwork() async {
     if (widget.artwork != null){
       var history = artworkHistory?.get('history', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
       if (history !=null && !history.any((item) => item.uid == widget.artwork!.uid)) {
-        history.insert(0, widget.artwork!.listItem.toHive());
+        var preview = widget.artwork!.listItem;
+        await (preview.image as ImageOnline).downloadImageData();
+        history.insert(0, preview.toHive());
         artworkHistory?.put('history', history);
       }
     }

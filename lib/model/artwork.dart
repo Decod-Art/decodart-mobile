@@ -3,7 +3,7 @@ import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey;
 import 'package:decodart/model/artwork_tag.dart';
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
+import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 import 'package:decodart/model/room.dart';
 import 'package:decodart/widgets/component/formatted_content/_util.dart';
@@ -28,7 +28,7 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
       uid: json['uid'],
       title: json['title'],
       artist: ArtistForeignKey.fromJson(json['artist']),
-      image: ImageWithPath.fromJson(json['image'])
+      image: ImageOnline.fromJson(json['image'])
     );
   }
 
@@ -58,7 +58,7 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
       uid: artwork.uid,
       title: artwork.title,
       artist: ArtistForeignKey.fromHive(artwork.artist),
-      image: ImageWithPath.fromHive(artwork.image));
+      image: ImageOnline.fromHive(artwork.image));
   }
 
   hive.ArtworkListItem toHive(){
@@ -66,7 +66,7 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
       uid: uid!,
       title: title,
       artist: artist.toHive(),
-      image: (image as ImageWithPath).toHive(saveBoundingBox: false));
+      image: (image as ImageOnline).toHive(saveBoundingBox: false));
   }
 
   @override
@@ -141,8 +141,8 @@ class Artwork extends AbstractItem {
       country: json['country'],
       sortYear: json['sortyear'],
       description: json['description'],
-      images: json['images'].map((imageJson) => ImageWithPath.fromJson(imageJson)).toList()
-                                                                                  .cast<ImageWithPath>(),
+      images: json['images'].map((imageJson) => ImageOnline.fromJson(imageJson)).toList()
+                                                                                  .cast<ImageOnline>(),
       hasDecodQuestion: json['hasdecodquestion'],
       tags: json['tags'].map((item) => ArtworkTag.fromJson(item))
                         .toList()

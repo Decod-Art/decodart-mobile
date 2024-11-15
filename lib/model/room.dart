@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageWithPath;
+import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 
 class RoomForeignKey extends AbstractItem {
@@ -67,7 +67,7 @@ class Room extends RoomListItem {
       description: json['description'],
       museum: MuseumForeignKey.fromJson(json['museum']),
       image: json['image'] != null
-        ? ImageWithPath.fromJson(json['image'])
+        ? ImageOnline.fromJson(json['image'])
         : null,
       artworks: json['artworkPreview']!=null
         ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))

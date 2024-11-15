@@ -58,7 +58,7 @@ List<AbstractFormattedContent> parseString(String input) {
       result.add(ArtworkButtonContent(
         title: title,
         subtitle: subtitle,
-        image: ImageWithPath(imagePath),
+        image: ImageOnline(imagePath),
         uid:  uid));
     } else if (imageRegExp.hasMatch(line)) {
       // Ajouter le chunk actuel à la liste s'il n'est pas vide

@@ -17,7 +17,7 @@ class BoundingBoxAdapter extends TypeAdapter<BoundingBox> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return BoundingBox(
-      uid: fields[0] == null ? 0 : fields[0] as int,
+      uid: fields[0] == null ? 0 : fields[0] as int?,
       x: fields[1] == null ? 0 : fields[1] as double,
       y: fields[2] == null ? 0 : fields[2] as double,
       width: fields[3] == null ? 0 : fields[3] as double,
@@ -72,19 +72,22 @@ class ImageAdapter extends TypeAdapter<Image> {
       uid: fields[0] == null ? 0 : fields[0] as int,
       boundingBoxes: (fields[1] as List?)?.cast<BoundingBox>(),
       path: fields[2] as String,
+      data: fields[3] as Uint8List,
     );
   }
 
   @override
   void write(BinaryWriter writer, Image obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.uid)
       ..writeByte(1)
       ..write(obj.boundingBoxes)
       ..writeByte(2)
-      ..write(obj.path);
+      ..write(obj.path)
+      ..writeByte(3)
+      ..write(obj.data);
   }
 
   @override

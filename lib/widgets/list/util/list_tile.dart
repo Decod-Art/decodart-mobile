@@ -1,4 +1,5 @@
 import 'package:decodart/model/abstract_item.dart';
+import 'package:decodart/widgets/component/image/image.dart' show DecodImage;
 import 'package:flutter/cupertino.dart';
 
 class ListTile<T extends AbstractListItem> extends StatelessWidget {
@@ -20,8 +21,8 @@ class ListTile<T extends AbstractListItem> extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: Image.network(
-                item.image.path,
+              child: DecodImage(
+                item.image,
                 width: 50,
                 height: 50,
                 fit: BoxFit.cover,
