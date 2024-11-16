@@ -1,7 +1,7 @@
 import 'package:decodart/api/tour.dart' show fetchTourById;
 import 'package:decodart/model/tour.dart' show Tour, TourListItem;
 import 'package:decodart/view/tour/tour.dart' show TourView;
-import 'package:decodart/widgets/util/wait_future.dart';
+import 'package:decodart/widgets/util/wait_future.dart' show WaitFutureWidget;
 import 'package:flutter/cupertino.dart';
 
 class FutureTourView extends StatelessWidget {
