@@ -1,16 +1,21 @@
 import 'package:flutter/cupertino.dart';
 
-class Error extends StatelessWidget {
+class ErrorView extends StatelessWidget {
   final VoidCallback onPress;
-  const Error({super.key, required this.onPress});
+  const ErrorView({super.key, required this.onPress});
   @override
   Widget build(BuildContext context){
-    return Center(
+    final screenSize = MediaQuery.of(context).size;
+    final padding = MediaQuery.of(context).padding;
+    final safeAreaHeight = screenSize.height - padding.top - padding.bottom;
+    return Container(
+      width: screenSize.width,
+      height: safeAreaHeight-300,
+      color: CupertinoColors.white, // Fond blanc
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const SizedBox(height: 50),
-          Text('Une erreur s\'est produite'),
+          Text('Une erreur s\'est produite...'),
           CupertinoButton(
             onPressed: onPress, // Assurez-vous d'avoir une méthode _refresh définie
             child: Text('Rafraîchir'),
