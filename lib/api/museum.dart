@@ -26,7 +26,13 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
       },
     );
     logger.d(uri);
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5),
+      onTimeout: () {
+        // Handle timeout
+        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
+      },
+    );
     if (response.statusCode == 200) {
       final museums = jsonDecode(response.body);
       List<MuseumListItem> listItems = museums['data'].map((museum) => MuseumListItem.fromJson(museum))
