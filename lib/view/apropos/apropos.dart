@@ -3,7 +3,7 @@ import 'package:decodart/view/apropos/util/tile.dart' show DecodPreferenceTile;
 import 'package:decodart/widgets/dialog/dialog.dart' show showDialog;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
-import 'package:hive_flutter/hive_flutter.dart' show Hive, Box;
+import 'package:hive_flutter/hive_flutter.dart' show Box;
 
 class AproposView extends StatelessWidget {
   const AproposView({super.key});

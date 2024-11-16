@@ -41,12 +41,13 @@ Future<List<TourListItem>>  fetchAllTours({
                           .cast<TourListItem>();
     } else {
       logger.e('Error from server: ${response.statusCode}');
+      throw FetchTourException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
     logger.e(e);
     logger.d(stackTrace);
+    rethrow;
   }
-  return [];
 }
 
 Future<Tour> fetchTourById(int id) async {

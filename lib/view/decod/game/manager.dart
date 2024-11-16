@@ -13,16 +13,16 @@ import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
 import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
 import 'package:decodart/view/decod/game/questions/image.dart' show ImageQuestion;
 
-class DecodView extends StatefulWidget {
+class DecodManager extends StatefulWidget {
   final Artwork? artwork;
   final DecodTag? tag;
-  const DecodView({super.key, this.artwork, this.tag});
+  const DecodManager({super.key, this.artwork, this.tag});
 
   @override
-  State<DecodView> createState() => _DecodViewState();
+  State<DecodManager> createState() => _DecodManagerState();
 }
 
-class _DecodViewState extends State<DecodView> {
+class _DecodManagerState extends State<DecodManager> {
   late final GameController controller;
 
   @override

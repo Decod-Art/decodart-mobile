@@ -2,19 +2,15 @@ import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
-import 'package:decodart/util/online.dart' show Fetcher, LazyList;
-import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToGeoLocated, navigateToMuseum, navigateToTour;
+import 'package:decodart/util/online.dart' show Fetcher;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
-import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
-import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
-import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
-import 'package:decodart/widgets/navigation/screen.dart' show navigateToWidget;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
+import 'package:decodart/widgets/component/error/error.dart' show Error;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {
@@ -25,19 +21,39 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
-  final LazyList<TourListItem> _tours = LazyList(fetch: fetchAllTours);
   late Fetcher<GeolocatedListItem> _geolocatedListItemFetcher;
+  bool errorAroundMe = false;
   late Fetcher<ArtworkListItem> _artworkListItemFetcher;
+  bool errorArtwork = false;
   late Fetcher<MuseumListItem> _museumListItemFetcher;
+  bool errorMuseum = false;
+  late Fetcher<TourListItem> _tourListItemFetcher;
+  bool errorTour = false;
   String? _filter;
 
   @override
   void initState() {
     super.initState();
-    _fetchTours();
+    _setFetcher();
+  }
+
+  bool get hasError => errorAroundMe && errorArtwork && errorMuseum && errorTour;
+  bool get hasNoError => !hasError;
+
+  void _setFetcher() {
     _setGeoLocatedFetcher();
     _setArtworkFetcher();
     _setMuseumFetcher();
+    _setTourFetcher();
+  }
+
+  void _reset() {
+    errorAroundMe = false;
+    errorArtwork = false;
+    errorMuseum = false;
+    errorTour = false;
+    _setFetcher();
+    setState(() {});
   }
 
   void _setGeoLocatedFetcher() {
@@ -56,46 +72,19 @@ class _ExploreViewState extends State<ExploreView> {
     );
   }
 
+  void _setTourFetcher() {
+    _tourListItemFetcher = Fetcher(
+      fetch: ({
+        int limit=10, int offset=0
+      }) => fetchAllTours(limit: limit, offset: offset, query: _filter)
+    );
+  }
+
   void _setMuseumFetcher() {
     _museumListItemFetcher = Fetcher(
       fetch: ({
         int limit=10, int offset=0
       }) => fetchAllMuseums(limit: limit, offset: offset, query: _filter)
-    );
-  }
-
-  Future<void> _fetchTours() async {
-    await _tours.fetchMore();
-    setState(() {});
-  }
-
-  void _onAroundMePressed(AbstractListItem item) {
-    final geoItem = item as GeolocatedListItem;
-    if (geoItem.isMuseum) {      
-      _onMuseumPressed(MuseumListItem.fromGeolocatedListItem(item));
-    } else {
-      _onArtworkPressed(ArtworkListItem.fromGeolocatedListItem(item));
-    }
-  }
-
-  void _onArtworkPressed(AbstractListItem item) {
-    navigateToWidget(
-      context,
-      (context) => FutureArtworkView(artwork: item as ArtworkListItem),
-    );
-  }
-
-  void _onMuseumPressed(AbstractListItem item) {
-    navigateToWidget(
-      context,
-      (context) => FutureMuseumView(museum: item as MuseumListItem, useModal: false),
-    );
-  }
-
-  void _onTourPressed(AbstractListItem item) {
-    navigateToWidget(
-      context,
-      (context) => FutureTourView(tour: item as TourListItem),
     );
   }
 
@@ -108,55 +97,63 @@ class _ExploreViewState extends State<ExploreView> {
         if (value.isEmpty) {
           _filter = null;
         }
-        _setGeoLocatedFetcher();
-        _setArtworkFetcher();
-        _setMuseumFetcher();
+        _setFetcher();
         setState(() {});
       },
       children: [
-        Column(// Column so that it is a single widget in the scaffold.. And queries only done once.
-          children: [
-            ContentBlock(
-              fetch: fetchAroundMe,
-              secondaryFetch: _geolocatedListItemFetcher.call,          
-              onPressed: _onAroundMePressed,
-              isMuseum: (item) => item.isMuseum,
-              title: 'Autour de moi',
-            ),
-            ContentBlock(
-              fetch: fetchAllArtworks,
-              secondaryFetch: _artworkListItemFetcher.call,
-              onPressed: _onArtworkPressed,
-              title: 'Œuvres'
-            ),
-            ContentBlock(
-              fetch: fetchAllMuseums,
-              secondaryFetch: _museumListItemFetcher.call,
-              onPressed: _onMuseumPressed,
-              isMuseum: (item) => true,
-              title: 'Musées'
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+        hasNoError
+          ? Column(// Column so that it is a single widget in the scaffold.. And queries only done once.
               children: [
-                const Padding(
-                  padding: EdgeInsets.all(15),
-                  child: Text(
-                    "Visites",
-                    style: TextStyle(
-                      color: CupertinoColors.darkBackgroundGray,
-                      fontSize: 22,
-                      fontWeight: FontWeight.w500
-                    ),
-                  )
-                ),
-                ListWithThumbnail(items: _tours.list, onPress: _onTourPressed,)
-              ],
-            )
-          ],
-        ),
+              ContentBlock(
+                fetch: fetchAroundMe,
+                secondaryFetch: _geolocatedListItemFetcher.call,          
+                onPressed: (item) => navigateToGeoLocated(item, context),
+                isMuseum: (item) => item.isMuseum,
+                title: 'Autour de moi',
+                onError: (_, __) {
+                  setState(() {
+                    errorAroundMe = true;
+                  });
+                },
+              ),
+              ContentBlock(
+                fetch: fetchAllArtworks,
+                secondaryFetch: _artworkListItemFetcher.call,
+                onPressed: (item) => navigateToArtwork(item, context),
+                title: 'Œuvres',
+                onError: (_, __) {
+                  setState(() {
+                    errorArtwork = true;
+                  });
+                }
+              ),
+              ContentBlock(
+                fetch: fetchAllMuseums,
+                secondaryFetch: _museumListItemFetcher.call,
+                onPressed: (item) => navigateToMuseum(item, context),
+                isMuseum: (item) => true,
+                title: 'Musées',
+                onError: (_, __) {
+                  setState(() {
+                    errorMuseum = true;
+                  });
+                }
+              ),
+              ContentBlock(
+                fetch: fetchAllTours,
+                secondaryFetch: _tourListItemFetcher.call,
+                onPressed: (item) => navigateToTour(item, context),
+                isMuseum: (item) => true,
+                title: 'Visites',
+                onError: (_, __) {
+                  setState(() {
+                    errorTour = true;
+                  });
+                }
+              ),
+            ]
+          )
+        : Error(onPress: _reset)
       ]
     );
   }

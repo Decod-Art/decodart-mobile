@@ -35,12 +35,13 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
       return listItems;
     } else {
       logger.e('Error from server: ${response.statusCode}');
+      throw FetchMuseumException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
     logger.e(e);
     logger.d(stackTrace);
-  }
-  return [];
+    rethrow;
+  } 
 }
 
 Future<Museum> fetchMuseumById(int id) async {

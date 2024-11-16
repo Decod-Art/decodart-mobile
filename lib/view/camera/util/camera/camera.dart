@@ -101,7 +101,6 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     var recentList = recentScanBox?.get('recent', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList != null) {
-      // TODO check that it works
       await Future.wait(items.map((item) => (item.image as ImageOnline).downloadImageData()));
       recentList.insertAll(0, items.map((item)=> item.toHive()).toList());
       if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);

@@ -36,7 +36,13 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
       },
     );
     logger.d(uri);
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5),
+      onTimeout: () {
+        // Handle timeout
+        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
+      },
+    );
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body);
       List<ArtworkListItem> listItems = results['data'].map((item) => ArtworkListItem.fromJson(item))
@@ -45,12 +51,13 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
       return listItems;
     } else {
       logger.e('Error from server: ${response.statusCode}');
+      throw FetchArtworkException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
     logger.e(e);
     logger.d(stackTrace);
+    rethrow;
   }
-  return [];
 }
 
 Future<Artwork> fetchArtworkById(int uid) async {

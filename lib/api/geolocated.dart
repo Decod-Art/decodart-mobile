@@ -58,7 +58,13 @@ Future<List<GeolocatedListItem>>  fetchAroundMe({
       },
     );
     logger.d(uri);
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5),
+      onTimeout: () {
+        // Handle timeout
+        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
+      },
+    );
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body);
       List<GeolocatedListItem> listItems = results['data'].map((item) => GeolocatedListItem.fromJson(item))
@@ -67,10 +73,11 @@ Future<List<GeolocatedListItem>>  fetchAroundMe({
       return listItems;
     } else {
       logger.e('Error from server: ${response.statusCode}');
+      throw Exception('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
     logger.e(e);
     logger.d(stackTrace);
-  }
-  return [];
+    rethrow;
+  }  
 }

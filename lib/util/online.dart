@@ -1,8 +1,8 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItemBase;
 
 
-const String hostName = 'http://192.168.10.102:8000';
-const String cdn = 'http://192.168.10.102:8000/cdn_images';
+const String hostName = 'http://localhost:8000';
+const String cdn = 'http://localhost:8000/cdn_images';
 
 String? checkUrlForCdn(String? url) {
   if (url == null) {

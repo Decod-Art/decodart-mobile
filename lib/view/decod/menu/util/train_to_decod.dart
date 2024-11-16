@@ -1,5 +1,5 @@
 import 'package:decodart/model/decod.dart' show DecodTag;
-import 'package:decodart/view/decod/game/manager.dart' show DecodView;
+import 'package:decodart/view/decod/game/manager.dart' show DecodManager;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show AlertDialog, showDialog;
 
@@ -89,7 +89,7 @@ class _PopUpDialogState extends State<PopUpDialog> with SingleTickerProviderStat
     Navigator.of(
       context, rootNavigator: true).push(
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => DecodView(tag: tag),
+        pageBuilder: (context, animation, secondaryAnimation) => DecodManager(tag: tag),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           var begin = const Offset(0.0, 1.0);
           var end = Offset.zero;

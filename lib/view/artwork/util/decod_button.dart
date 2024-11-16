@@ -1,5 +1,5 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/view/decod/game/manager.dart' show DecodView;
+import 'package:decodart/view/decod/game/manager.dart' show DecodManager;
 import 'package:flutter/cupertino.dart';
 
 class DecodButton extends StatelessWidget {
@@ -19,7 +19,7 @@ class DecodButton extends StatelessWidget {
                 Navigator.of(
                 context, rootNavigator: true).push(
                 PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => DecodView(artwork: artwork,),
+                  pageBuilder: (context, animation, secondaryAnimation) => DecodManager(artwork: artwork,),
                   transitionsBuilder: (context, animation, secondaryAnimation, child) {
                     var begin = const Offset(0.0, 1.0);
                     var end = Offset.zero;
