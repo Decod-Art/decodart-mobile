@@ -10,7 +10,7 @@ import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
-import 'package:decodart/widgets/component/error/error.dart' show Error;
+import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {
@@ -104,56 +104,56 @@ class _ExploreViewState extends State<ExploreView> {
         hasNoError
           ? Column(// Column so that it is a single widget in the scaffold.. And queries only done once.
               children: [
-              ContentBlock(
-                fetch: fetchAroundMe,
-                secondaryFetch: _geolocatedListItemFetcher.call,          
-                onPressed: (item) => navigateToGeoLocated(item, context),
-                isMuseum: (item) => item.isMuseum,
-                title: 'Autour de moi',
-                onError: (_, __) {
-                  setState(() {
-                    errorAroundMe = true;
-                  });
-                },
-              ),
-              ContentBlock(
-                fetch: fetchAllArtworks,
-                secondaryFetch: _artworkListItemFetcher.call,
-                onPressed: (item) => navigateToArtwork(item, context),
-                title: 'Œuvres',
-                onError: (_, __) {
-                  setState(() {
-                    errorArtwork = true;
-                  });
-                }
-              ),
-              ContentBlock(
-                fetch: fetchAllMuseums,
-                secondaryFetch: _museumListItemFetcher.call,
-                onPressed: (item) => navigateToMuseum(item, context),
-                isMuseum: (item) => true,
-                title: 'Musées',
-                onError: (_, __) {
-                  setState(() {
-                    errorMuseum = true;
-                  });
-                }
-              ),
-              ContentBlock(
-                fetch: fetchAllTours,
-                secondaryFetch: _tourListItemFetcher.call,
-                onPressed: (item) => navigateToTour(item, context),
-                isMuseum: (item) => true,
-                title: 'Visites',
-                onError: (_, __) {
-                  setState(() {
-                    errorTour = true;
-                  });
-                }
-              ),
-            ]
-          )
-        : Error(onPress: _reset)
+                ContentBlock(
+                  fetch: fetchAroundMe,
+                  secondaryFetch: _geolocatedListItemFetcher.call,          
+                  onPressed: (item) => navigateToGeoLocated(item, context),
+                  isMuseum: (item) => item.isMuseum,
+                  title: 'Autour de moi',
+                  onError: (_, __) {
+                    setState(() {
+                      errorAroundMe = true;
+                    });
+                  },
+                ),
+                ContentBlock(
+                  fetch: fetchAllArtworks,
+                  secondaryFetch: _artworkListItemFetcher.call,
+                  onPressed: (item) => navigateToArtwork(item, context),
+                  title: 'Œuvres',
+                  onError: (_, __) {
+                    setState(() {
+                      errorArtwork = true;
+                    });
+                  }
+                ),
+                ContentBlock(
+                  fetch: fetchAllMuseums,
+                  secondaryFetch: _museumListItemFetcher.call,
+                  onPressed: (item) => navigateToMuseum(item, context),
+                  isMuseum: (item) => true,
+                  title: 'Musées',
+                  onError: (_, __) {
+                    setState(() {
+                      errorMuseum = true;
+                    });
+                  }
+                ),
+                ContentBlock(
+                  fetch: fetchAllTours,
+                  secondaryFetch: _tourListItemFetcher.call,
+                  onPressed: (item) => navigateToTour(item, context),
+                  isMuseum: (item) => true,
+                  title: 'Visites',
+                  onError: (_, __) {
+                    setState(() {
+                      errorTour = true;
+                    });
+                  }
+                ),
+              ]
+            )
+          : ErrorView(onPress: _reset)
       ]
     );
   }
