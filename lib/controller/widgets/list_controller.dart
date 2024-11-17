@@ -1,8 +1,10 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/util/online.dart' show LazyList;
 import 'package:decodart/widgets/list/sliver_lazy_list.dart' show SearchableFetch;
+import 'package:flutter/cupertino.dart' show ScrollController, VoidCallback;
 
 abstract class _ListController<T> {
+  final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   bool _failedLoading = false;
   bool _firstTimeLoading = true;
@@ -40,6 +42,24 @@ abstract class _ListController<T> {
   bool get canReload => !failed&&!_isLoading&&hasMore;
 
   bool get isLoading => _isLoading;
+
+  bool get scrollReachedLimit => _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30;
+
+  bool get shouldReload => scrollReachedLimit&&canReload;
+
+  void removeListener(VoidCallback listener) {
+    _scrollController.removeListener(listener);
+  }
+
+  void addListener(VoidCallback listener) {
+    _scrollController.addListener(listener);
+  }
+
+  void dispose() {
+    _scrollController.dispose();
+  }
+
+  ScrollController get scrollController => _scrollController;
 
   // Abstract methods
   bool get hasMore;
@@ -82,6 +102,9 @@ class SearchableListController<T extends AbstractListItem> extends _ListControll
   Future<void> _fetchMore() async {
     await items.fetchMore();
   }
+
+  @override
+  bool get shouldReload => (scrollReachedLimit||hasBeenUpdated)&&canReload;
 
   @override
   T get first => items.first;

@@ -27,16 +27,13 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   State<StatefulWidget> createState() => SliverLazyListViewState<T>();
 }
 
-class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {
-  late ScrollController _scrollController;
-  
+class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {  
   late final SearchableListController<T> _listController = SearchableListController<T>(widget.fetch);
 
   @override
   void initState() {
     super.initState();
-    _scrollController = ScrollController();
-    _scrollController.addListener(_checkIfNeedsLoading);
+    _listController.addListener(_checkIfNeedsLoading);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 250));
       _checkIfNeedsLoading();
@@ -45,15 +42,12 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
 
   @override
   void dispose() {
-    _scrollController.removeListener(_checkIfNeedsLoading);
-    _scrollController.dispose();
+    _listController.dispose();
     super.dispose();
   }
 
-  bool get _scrollReachedLimit => _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30;
-
   Future<void> _checkIfNeedsLoading() async {
-    if ((_scrollReachedLimit||_listController.hasBeenUpdated) && _listController.canReload) {
+    if (_listController.shouldReload) {
       _loadMoreItems();
     }
   }
@@ -65,6 +59,9 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
     await _listController.fetchMore();
     if (mounted){
       setState(() {});
+      if (!_listController.failed) {
+        _checkIfNeedsLoading();
+      }
     }
   }
 
@@ -75,7 +72,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
     return DecodPageScaffold(
       title: widget.title,
       smallTitle: widget.smallTitle,
-      controller: _scrollController,
+      controller: _listController.scrollController,
       onSearch: (String value) {
         _listController.query = value.isEmpty?null:value;
         _checkIfNeedsLoading();
