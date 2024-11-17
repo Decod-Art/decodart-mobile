@@ -1,6 +1,7 @@
 
 import 'package:decodart/controller/decod/game_controller.dart' show GameController;
 import 'package:decodart/model/artwork.dart' show Artwork;
+import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:decodart/view/decod/game/end.dart' show EndingWidget;
 
 import 'package:decodart/model/decod.dart' show DecodQuestionType, DecodTag;
-import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
 import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
 import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
 import 'package:decodart/view/decod/game/questions/image.dart' show ImageQuestion;
@@ -28,8 +28,8 @@ class _DecodManagerState extends State<DecodManager> {
   @override
   void initState() {
     super.initState();
-    controller = GameController(artwork: widget.artwork);
-    _fetchQuestions();
+    controller = GameController(artwork: widget.artwork, tag: widget.tag);
+    _initManager();
   }
 
   void _correctAnswer() async {
@@ -45,15 +45,14 @@ class _DecodManagerState extends State<DecodManager> {
   }
 
   Future<void> _fetchQuestions() async {
-    await controller.init();
-    controller.add(
-      controller.hasArtwork
-        ? await fetchDecodQuestionByArtworkId(controller.artwork!.uid!)
-        : await fetchDecodQuestionRandomly(tag: widget.tag),
-      shuffle: true
-    );
-
+    setState(() {controller.clear();});
+    await controller.fetchQuestions(shuffle: true);
     setState(() {});
+  }
+
+  Future<void> _initManager () async {
+    await controller.init();
+    _fetchQuestions();
   }
 
   void _validateQuestion(double points, {int duration=1}) {
@@ -123,9 +122,11 @@ class _DecodManagerState extends State<DecodManager> {
       ),
       child: SafeArea(
         child: Center(
-          child: controller.isEmpty
+          child: controller.isNotReady
               ? const CupertinoActivityIndicator()
-              : _showQuestion(),
+              : controller.hasFailedLoading
+                ? ErrorView(onPress: _fetchQuestions)
+                : _showQuestion(),
         ),
       )
     );

@@ -1,9 +1,10 @@
 import 'dart:math' show Random;
 
+import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
 import 'package:decodart/controller/decod/menu_controller.dart' show MenuController;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
+import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType, DecodTag;
 import 'package:decodart/model/hive/decod.dart' show GameData;
 import 'package:decodart/model/image.dart' show ImageOnline;
 
@@ -17,8 +18,11 @@ class GameController extends MenuController {
   final List<bool> hasBeenCorrectlyAnswered = [];
 
   final Artwork? artwork;
+  final DecodTag? tag;
 
-  GameController({this.artwork});
+  bool errorLoading = false;
+
+  GameController({this.artwork, this.tag});
 
   Future<void> init() async {
     await openBoxes();
@@ -34,7 +38,20 @@ class GameController extends MenuController {
     hasBeenCorrectlyAnswered.addAll(List.generate(this.questions.length, (_)=>false));
   }
 
+  Future<void> fetchQuestions ({bool shuffle = false}) async {
+    try {
+      if(hasArtwork) {
+        add(await fetchDecodQuestionByArtworkId(artwork!.uid!), shuffle: shuffle);
+      } else {
+        add(await fetchDecodQuestionRandomly(tag: tag), shuffle: shuffle);
+      }
+    } catch (_, __) {
+      errorLoading = true;
+    }
+  }
+
   void clear() {
+    errorLoading = false;
     questions.clear();
     hasBeenCorrectlyAnswered.clear();
   }
@@ -85,6 +102,10 @@ class GameController extends MenuController {
   bool get containsQuestions => questions.isNotEmpty;
 
   bool get canBePlayed => containsQuestions;
+
+  bool get isNotReady => isEmpty && !errorLoading;
+
+  bool get hasFailedLoading => errorLoading;
 
   bool get isEmpty => !containsQuestions;
 
