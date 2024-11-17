@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart' show ScrollController, VoidCallback;
 // can check if failed
 // should reload when controller.shouldReload
 
-abstract class AbstractListController<T> {
+abstract class AbstractListController<T extends AbstractListItem> {
   late final ScrollController _scrollController;
   bool _isLoading = false;
   bool _failedLoading = false;
