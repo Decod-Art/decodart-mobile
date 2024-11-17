@@ -1,6 +1,7 @@
-import 'package:decodart/util/online.dart';
+import 'package:decodart/controller/widgets/list_controller/_util.dart' show DataFetcher, LazyList;
+import 'package:decodart/controller/widgets/list_controller/controller.dart' show ListController;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/component/error/error.dart';
+import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
@@ -23,87 +24,73 @@ class LazyListWidget<T extends AbstractListItem> extends StatefulWidget {
 }
 
 class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWidget<T>> {
-  late ScrollController _scrollController;
-  bool isLoading = true;
-  bool failedLoading = false;
-  bool firstTimeLoading = true;
-  late LazyList<T> items;
+  late final ListController<T> _listController = ListController<T>(
+    widget.fetch,
+    scrollController: widget.controller
+  );
 
   @override
   void initState() {
     super.initState();
-    items = LazyList<T>(fetch: widget.fetch);
-    _scrollController = widget.controller??ScrollController();
-    _scrollController.addListener(_checkIfNeedsLoading);
+    _listController.addListener(_checkIfNeedsLoading);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await Future.delayed(const Duration(milliseconds: 250));
       _checkIfNeedsLoading();
     });
   }
 
+  @override
+  void dispose() {
+    _listController.removeListener(_checkIfNeedsLoading);
+    _listController.dispose(
+      disposeScrollController: widget.controller == null
+    );
+    super.dispose();
+  }
+
   Future<void> _checkIfNeedsLoading() async {
-    if ((_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30 && !isLoading && items.hasMore) || firstTimeLoading) {
+    if (_listController.shouldReload) {
       _loadMoreItems();
     }
   }
 
   Future<void> _loadMoreItems() async {
     setState(() {
-      isLoading = true;
-      failedLoading = false;
+      _listController.resetLoading();
     });
-
-    try {
-      // Simuler un délai de 2 secondes
-      await items.fetchMore();
-      if (mounted){
-        setState(() {
-          isLoading = false;
-          firstTimeLoading = false;
-        });
+    await _listController.fetchMore();
+    if (mounted){
+      setState(() {});
+      if (!_listController.failed) {
         _checkIfNeedsLoading();
       }
-    } catch (_, __) {
-      setState(() {
-        failedLoading = true;
-        isLoading = false;
-      });
     }
   }
 
-  bool get hasFailed => failedLoading && firstTimeLoading;
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_checkIfNeedsLoading);
-    if (widget.controller == null){
-      _scrollController.dispose();
-    }
-    super.dispose();
-  }
+  int get nbElements => _listController.length + (_listController.isLoading ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
-    return hasFailed
+    return _listController.failed&&_listController.firstTimeLoading
       ? ErrorView(onPress: _loadMoreItems)
       : ListView.builder(
-          controller: _scrollController,
-          itemCount: items.length + (isLoading ? 1 : 0),
+          controller: _listController.scrollController,
+          itemCount: nbElements,
           itemBuilder: (context, index) {
-            if (index == items.length) {
+            if (index == _listController.length) {
               return const Center(child: CupertinoActivityIndicator());
             }
-            final item = items[index];
+            final item = _listController[index];
             return Column(
               children: [
                 if (index == 0) const SizedBox(height: 8),
                 ListTile(item: item, onPress: widget.onPress),
-                if (index != items.length - 1)
+                if (index != _listController.length - 1)
                   const Divider(
                     indent: 80.0,
                     color: CupertinoColors.separator,
                   ),
-                if (index == items.length - 1) const SizedBox(height: 8),
+                if (index == _listController.length - 1) const SizedBox(height: 8),
               ],
             );
           },

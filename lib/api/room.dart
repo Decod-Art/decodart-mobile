@@ -35,7 +35,13 @@ Future<List<RoomListItem>> fetchRooms({
   );
   logger.d(uri);
   try {
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5),
+      onTimeout: () {
+        // Handle timeout
+        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
+      },
+    );
 
     if (response.statusCode == 200) {
       // Si la requête a réussi, décodez le corps de la réponse

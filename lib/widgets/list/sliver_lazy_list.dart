@@ -1,14 +1,11 @@
-import 'package:decodart/controller/widgets/list_controller.dart' show SearchableListController;
+import 'package:decodart/controller/widgets/list_controller/_util.dart' show OnPressList, SearchableFetch;
+import 'package:decodart/controller/widgets/list_controller/controller.dart' show SearchableListController;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/component/error/error.dart';
+import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
-
-
-typedef OnPressList<T> = void Function(T);
-typedef SearchableFetch<T> = Future<List<T>> Function({int limit, int offset, String? query});
 
 class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   final String title;
