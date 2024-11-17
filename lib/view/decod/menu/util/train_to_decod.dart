@@ -1,7 +1,9 @@
+import 'package:decodart/api/decod.dart' show fetchTags;
 import 'package:decodart/model/decod.dart' show DecodTag;
 import 'package:decodart/view/decod/game/manager.dart' show DecodManager;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show AlertDialog, showDialog;
+import 'package:decodart/widgets/dialog/dialog.dart' as decod_dialog show showDialog;
 
 class TrainToDecod extends StatefulWidget {
   final Future<List<DecodTag>> tags;
@@ -14,28 +16,45 @@ class TrainToDecod extends StatefulWidget {
 
 class _TrainToDecodState extends State<TrainToDecod> {
   final List<DecodTag> tags = [];
+  bool _error = false;
 
   @override
   void initState(){
     super.initState();
-    _awaitTags();
+    _awaitTags(widget.tags);
   }  
 
-  Future<void> _awaitTags() async {
-    tags.addAll(await widget.tags);
+  Future<void> _awaitTags(Future<List<DecodTag>> tags) async {
+    try{
+      this.tags.addAll(await tags);
+      _error = false;
+    } catch (_, __) {
+      _error = true;
+    }
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return PopUpDialog(tags: tags);
-          },
-        ); 
+      onTap: () async {
+        if (_error) {
+          decod_dialog.showDialog(
+            context,
+            title: 'Erreur',
+            content: const Text('Une erreur de connexion a empêché la récupération des catégories de jeu.'),
+            ok: 'Retenter',
+            onPressedOk: () {_awaitTags(fetchTags());}
+          );        
+             
+        } else {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return PopUpDialog(tags: tags);
+            },
+          ); 
+        }
       },
       child: Column(
         children: [
