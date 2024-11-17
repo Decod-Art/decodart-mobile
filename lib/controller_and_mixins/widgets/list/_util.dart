@@ -1,6 +1,6 @@
-import 'package:decodart/model/abstract_item.dart' show AbstractItemBase;
+import 'package:decodart/model/abstract_item.dart' show AbstractItemBase, AbstractListItem;
 
-typedef OnPressList<T> = void Function(T);
+typedef OnPressList<T extends AbstractListItem> = void Function(T);
 typedef SearchableFetch<T> = Future<List<T>> Function({int limit, int offset, String? query});
 typedef DataFetcher<T> = Future<List<T>> Function({int limit, int offset});
 typedef SearchableDataFetcher<T> = Future<List<T>> Function({int limit, int offset, String? query});

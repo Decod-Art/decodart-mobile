@@ -1,4 +1,4 @@
-import 'package:decodart/controller/widgets/list_controller/_util.dart' show OnPressList, SearchableFetch;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableFetch;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/list/sliver_lazy_list.dart' show SliverLazyListView;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart';

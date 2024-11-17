@@ -1,7 +1,7 @@
 import 'dart:math' show Random;
 
 import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
-import 'package:decodart/controller/decod/menu_controller.dart' show MenuController;
+import 'package:decodart/controller_and_mixins/decod/menu_controller.dart' show MenuController;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType, DecodTag;

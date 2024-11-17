@@ -1,4 +1,4 @@
-import 'package:decodart/controller/global/hive.dart' show HiveService;
+import 'package:decodart/controller_and_mixins/global/hive.dart' show HiveService;
 import 'package:decodart/model/hive/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/decod.dart' show GameData;
 import 'package:hive/hive.dart';

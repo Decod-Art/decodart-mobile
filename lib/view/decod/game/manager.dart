@@ -1,5 +1,5 @@
 
-import 'package:decodart/controller/decod/game_controller.dart' show GameController;
+import 'package:decodart/controller_and_mixins/decod/game_controller.dart' show GameController;
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 

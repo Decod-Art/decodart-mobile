@@ -1,5 +1,6 @@
-import 'package:decodart/controller/widgets/list_controller/_util.dart' show OnPressList, SearchableFetch;
-import 'package:decodart/controller/widgets/list_controller/controller.dart' show SearchableListController;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableFetch;
+import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show SearchableListController;
+import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show ListMixin;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
@@ -24,77 +25,55 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   State<StatefulWidget> createState() => SliverLazyListViewState<T>();
 }
 
-class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {  
-  late final SearchableListController<T> _listController = SearchableListController<T>(widget.fetch);
+class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> with ListMixin {  
+  @override
+  late final SearchableListController<T> controller = SearchableListController<T>(widget.fetch);
 
   @override
   void initState() {
     super.initState();
-    _listController.addListener(_checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 250));
-      _checkIfNeedsLoading();
-    });
+    initMixin();
   }
 
   @override
   void dispose() {
-    _listController.dispose();
+    controller.dispose();
     super.dispose();
   }
 
-  Future<void> _checkIfNeedsLoading() async {
-    if (_listController.shouldReload) {
-      _loadMoreItems();
-    }
-  }
-
-  Future<void> _loadMoreItems() async {
-    setState(() {
-      _listController.resetLoading();
-    });
-    await _listController.fetchMore();
-    if (mounted){
-      setState(() {});
-      if (!_listController.failed) {
-        _checkIfNeedsLoading();
-      }
-    }
-  }
-
-  int get nbElements => _listController.length + (_listController.isLoading ? 1 : 0) + (_listController.failed ? 1 : 0);
+  int get nbElements => controller.length + (controller.isLoading ? 1 : 0) + (controller.failed ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
     return DecodPageScaffold(
       title: widget.title,
       smallTitle: widget.smallTitle,
-      controller: _listController.scrollController,
+      controller: controller.scrollController,
       onSearch: (String value) {
-        _listController.query = value.isEmpty?null:value;
-        _checkIfNeedsLoading();
+        controller.query = value.isEmpty?null:value;
+        checkIfNeedsLoading();
       },
       childCount: nbElements,
       builder: (context, index) {
-        if (_listController.failed) {
+        if (controller.failed) {
           return Center(
-            child: ErrorView(onPress: _loadMoreItems)
+            child: ErrorView(onPress: loadMoreItems)
           );
         }
-        if (index == _listController.length) {
+        if (index == controller.length) {
           return const Center(child: CupertinoActivityIndicator());
         }
-        final item = _listController[index];
+        final item = controller[index];
         return Column(
           children: [
             if (index == 0) const SizedBox(height: 8),
             ListTile(item: item, onPress: widget.onPress),
-            if (index != _listController.length - 1)
+            if (index != controller.length - 1)
               const Divider(
                 indent: 80.0,
                 color: CupertinoColors.separator,
               ),
-            if (index == _listController.length - 1) const SizedBox(height: 8),
+            if (index == controller.length - 1) const SizedBox(height: 8),
           ],
         );
       },

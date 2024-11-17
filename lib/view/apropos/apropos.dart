@@ -1,4 +1,4 @@
-import 'package:decodart/controller/global/hive.dart' show HiveService;
+import 'package:decodart/controller_and_mixins/global/hive.dart' show HiveService;
 import 'package:decodart/view/apropos/util/tile.dart' show DecodPreferenceTile;
 import 'package:decodart/widgets/dialog/dialog.dart' show showDialog;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;

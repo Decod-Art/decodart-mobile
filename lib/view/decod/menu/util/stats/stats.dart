@@ -1,5 +1,5 @@
 import 'package:decodart/model/hive/decod.dart' show GameData;
-import 'package:decodart/controller/decod/menu_controller.dart' show MenuController;
+import 'package:decodart/controller_and_mixins/decod/menu_controller.dart' show MenuController;
 import 'package:decodart/view/decod/menu/util/stats/_empty.dart' show EmptyStat;
 import 'package:decodart/view/decod/menu/util/stats/_stat_content.dart' show StatContent;
 import 'package:flutter/cupertino.dart';

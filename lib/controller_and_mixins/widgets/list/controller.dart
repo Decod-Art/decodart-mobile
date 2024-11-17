@@ -1,4 +1,4 @@
-import 'package:decodart/controller/widgets/list_controller/_util.dart';
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnError, SearchableFetch, LazyList, DataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:flutter/cupertino.dart' show ScrollController, VoidCallback;
 

@@ -1,7 +1,7 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/room.dart' show fetchRooms;
-import 'package:decodart/controller/widgets/list_controller/_util.dart' show LazyList, SearchableDataFetcher;
-import 'package:decodart/controller/widgets/list_controller/controller.dart' show AbstractListController;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show LazyList, SearchableDataFetcher;
+import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show AbstractListController;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey, MuseumListItem;
 import 'package:decodart/model/room.dart' show RoomListItem;

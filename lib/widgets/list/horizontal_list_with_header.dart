@@ -1,5 +1,6 @@
-import 'package:decodart/controller/widgets/list_controller/_util.dart' show DataFetcher, LazyList;
-import 'package:decodart/controller/widgets/list_controller/controller.dart' show ListController;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show DataFetcher, OnPressList;
+import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show ListController;
+import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show ListMixin;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/component/image/thumbnail.dart' show ThumbnailWidget;
@@ -8,7 +9,7 @@ import 'package:flutter/cupertino.dart';
 class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulWidget {
   final String name;
   final DataFetcher<T> fetch;
-  final AbstractListItemCallback onPressed;
+  final OnPressList onPressed;
   final VoidCallback onTitlePressed;
   final void Function(Object, StackTrace)? onError;
   final bool Function(T) isMuseum;
@@ -28,25 +29,18 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
       State<LazyHorizontalListWithHeader<T>> createState() => LazyHorizontalListWithHeaderState<T>();
 }
 
-class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends State<LazyHorizontalListWithHeader<T>> {
-  late ListController<T> _listController = ListController<T>(
+class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends State<LazyHorizontalListWithHeader<T>> with ListMixin {
+  @override
+  late ListController<T> controller = ListController<T>(
     widget.fetch,
     initial: widget.initialValues,
     onError: widget.onError
   );
 
-  // late ScrollController _scrollController;
-  // bool isLoading = false;
-  // bool error = false;
-  // late LazyList<T> items;
-
   @override
   void initState() {
     super.initState();
-    _listController.addListener(_checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      _checkIfNeedsLoading();
-    });
+    initMixin();
   }
 
   @override
@@ -54,13 +48,13 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
     super.didUpdateWidget(oldWidget);
     if (oldWidget.fetch != widget.fetch) {
       setState(() {
-        _listController = ListController<T>(
+        controller = ListController<T>(
           widget.fetch,
           initial: widget.initialValues,
           onError: widget.onError
         );
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _checkIfNeedsLoading();
+          checkIfNeedsLoading();
         });
       });
     }
@@ -68,31 +62,10 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
 
   @override
   void dispose() {
-    _listController.removeListener(_checkIfNeedsLoading);
-    _listController.dispose();
+    controller.removeListener(checkIfNeedsLoading);
+    controller.dispose();
     super.dispose();
   }
-
-  Future<void> _checkIfNeedsLoading() async {
-    if (_listController.shouldReload) {
-      _loadMoreItems();
-    }
-  }
-
-  Future<void> _loadMoreItems() async {
-    setState(() {
-      _listController.resetLoading();
-    });
-    await _listController.fetchMore();
-    if (mounted){
-      setState(() {});
-      if (!_listController.failed) {
-        _checkIfNeedsLoading();
-      }
-    }
-  }
-
-  bool get showContent => (_listController.isNotEmpty || _listController.hasMore) && !(_listController.failed&&_listController.firstTimeLoading);
 
   @override
   Widget build(BuildContext context) {
@@ -110,12 +83,12 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
           SizedBox(
             height: 250, // Ajustez la hauteur selon vos besoins
             child: ListView.builder(
-              controller: _listController.scrollController,
+              controller: controller.scrollController,
               scrollDirection: Axis.horizontal,
-              itemCount: _listController.length + (_listController.isLoading?1:0),
+              itemCount: controller.length + (controller.isLoading?1:0),
               itemBuilder: (context, index) {
-                if (index != _listController.length){
-                  final item = _listController[index];
+                if (index != controller.length){
+                  final item = controller[index];
                   return ThumbnailWidget(
                       title: item.title,
                       image: item.image,
@@ -133,5 +106,3 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
   );
   }
 }
-
-typedef AbstractListItemCallback = void Function(AbstractListItem);

@@ -1,7 +1,7 @@
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/controller/decod/menu_controller.dart' show MenuController;
+import 'package:decodart/controller_and_mixins/decod/menu_controller.dart' show MenuController;
 import 'package:decodart/widgets/list/list_with_thumbnail.dart' show ListWithThumbnail;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 

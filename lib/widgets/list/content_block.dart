@@ -1,6 +1,6 @@
-import 'package:decodart/controller/widgets/list_controller/_util.dart' show SearchableDataFetcher, DataFetcher;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show DataFetcher, OnPressList, SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show AbstractListItemCallback, LazyHorizontalListWithHeader;
+import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/lazy_list.dart' show LazyListWidget;
 import 'package:decodart/widgets/navigation/modal.dart' show showListInModal;
 import 'package:decodart/widgets/navigation/screen.dart' show navigateToList;
@@ -13,7 +13,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   // secondary fetch is used in the current block.. if not set, fetch is used instead.
   // The interest of secondaryFetch is to permet explore widget to search simultaneously in all blocks
   final DataFetcher<T>? secondaryFetch;
-  final AbstractListItemCallback onPressed;
+  final OnPressList onPressed;
   final bool isModal;
   final bool Function(T)? isMuseum;
   final List<T> initialValues;

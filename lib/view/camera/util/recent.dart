@@ -1,5 +1,5 @@
 
-import 'package:decodart/controller/global/hive.dart' show HiveService;
+import 'package:decodart/controller_and_mixins/global/hive.dart' show HiveService;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;

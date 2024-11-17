@@ -1,5 +1,6 @@
-import 'package:decodart/controller/widgets/list_controller/_util.dart' show DataFetcher, LazyList;
-import 'package:decodart/controller/widgets/list_controller/controller.dart' show ListController;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show DataFetcher;
+import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show ListController;
+import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show ListMixin;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
@@ -23,8 +24,9 @@ class LazyListWidget<T extends AbstractListItem> extends StatefulWidget {
   State<LazyListWidget<T>> createState() => _LazyListWidgetState<T>();
 }
 
-class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWidget<T>> {
-  late final ListController<T> _listController = ListController<T>(
+class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWidget<T>> with ListMixin {
+  @override
+  late final ListController<T> controller = ListController<T>(
     widget.fetch,
     scrollController: widget.controller
   );
@@ -32,65 +34,42 @@ class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWid
   @override
   void initState() {
     super.initState();
-    _listController.addListener(_checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 250));
-      _checkIfNeedsLoading();
-    });
+    initMixin();
   }
 
   @override
   void dispose() {
-    _listController.removeListener(_checkIfNeedsLoading);
-    _listController.dispose(
+    controller.removeListener(checkIfNeedsLoading);
+    controller.dispose(
       disposeScrollController: widget.controller == null
     );
     super.dispose();
   }
 
-  Future<void> _checkIfNeedsLoading() async {
-    if (_listController.shouldReload) {
-      _loadMoreItems();
-    }
-  }
-
-  Future<void> _loadMoreItems() async {
-    setState(() {
-      _listController.resetLoading();
-    });
-    await _listController.fetchMore();
-    if (mounted){
-      setState(() {});
-      if (!_listController.failed) {
-        _checkIfNeedsLoading();
-      }
-    }
-  }
-
-  int get nbElements => _listController.length + (_listController.isLoading ? 1 : 0);
+  int get nbElements => controller.length + (controller.isLoading ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
-    return _listController.failed&&_listController.firstTimeLoading
-      ? ErrorView(onPress: _loadMoreItems)
+    return controller.failed&&controller.firstTimeLoading
+      ? ErrorView(onPress: loadMoreItems)
       : ListView.builder(
-          controller: _listController.scrollController,
+          controller: controller.scrollController,
           itemCount: nbElements,
           itemBuilder: (context, index) {
-            if (index == _listController.length) {
+            if (index == controller.length) {
               return const Center(child: CupertinoActivityIndicator());
             }
-            final item = _listController[index];
+            final item = controller[index];
             return Column(
               children: [
                 if (index == 0) const SizedBox(height: 8),
                 ListTile(item: item, onPress: widget.onPress),
-                if (index != _listController.length - 1)
+                if (index != controller.length - 1)
                   const Divider(
                     indent: 80.0,
                     color: CupertinoColors.separator,
                   ),
-                if (index == _listController.length - 1) const SizedBox(height: 8),
+                if (index == controller.length - 1) const SizedBox(height: 8),
               ],
             );
           },

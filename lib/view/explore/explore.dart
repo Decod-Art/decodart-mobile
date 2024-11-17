@@ -2,7 +2,7 @@ import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
-import 'package:decodart/controller/widgets/list_controller/_util.dart';
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart';
 import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToGeoLocated, navigateToMuseum, navigateToTour;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
