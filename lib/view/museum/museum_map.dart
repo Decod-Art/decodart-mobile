@@ -41,6 +41,12 @@ class _MuseumMapState extends State<MuseumMap> {
     });
   }
 
+  @override
+  void dispose() {
+    _mapController.dispose(disposeScrollController: widget.controller==null);
+    super.dispose();
+  }
+
   Future<void> _checkIfNeedsLoading() async {
     if (_mapController.shouldReload) {
       _loadMoreItems();

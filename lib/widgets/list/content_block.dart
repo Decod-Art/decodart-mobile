@@ -17,6 +17,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final bool isModal;
   final bool Function(T)? isMuseum;
   final List<T> initialValues;
+  // Error when fetching new data for the list
   final void Function(Object, StackTrace)? onError;
   const ContentBlock({
     super.key,
