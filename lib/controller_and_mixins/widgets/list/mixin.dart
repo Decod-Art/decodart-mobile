@@ -14,7 +14,7 @@ mixin ListMixin {
     });
   }
 
-  bool get showContent => (controller.isNotEmpty || controller.hasMore) && !(controller.failed&&controller.firstTimeLoading);
+  bool get showContent => (controller.isNotEmpty || controller.hasMore) && (!controller.failed||controller.firstTimeLoading);
 
   Future<void> checkIfNeedsLoading() async {
     if (controller.shouldReload) {
