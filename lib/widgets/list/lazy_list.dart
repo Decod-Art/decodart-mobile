@@ -1,5 +1,6 @@
 import 'package:decodart/util/online.dart';
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/widgets/component/error/error.dart';
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Divider;
@@ -24,6 +25,7 @@ class LazyListWidget<T extends AbstractListItem> extends StatefulWidget {
 class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWidget<T>> {
   late ScrollController _scrollController;
   bool isLoading = true;
+  bool failedLoading = false;
   bool firstTimeLoading = true;
   late LazyList<T> items;
 
@@ -48,21 +50,28 @@ class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWid
   Future<void> _loadMoreItems() async {
     setState(() {
       isLoading = true;
+      failedLoading = false;
     });
 
-    // Simuler un délai de 2 secondes
-    await items.fetchMore();
-
-    // Appeler la fonction pour charger plus d'éléments
-    //await widget.loadMoreItems();
-    if (mounted){
+    try {
+      // Simuler un délai de 2 secondes
+      await items.fetchMore();
+      if (mounted){
+        setState(() {
+          isLoading = false;
+          firstTimeLoading = false;
+        });
+        _checkIfNeedsLoading();
+      }
+    } catch (_, __) {
       setState(() {
+        failedLoading = true;
         isLoading = false;
-        firstTimeLoading = false;
       });
-      _checkIfNeedsLoading();
     }
   }
+
+  bool get hasFailed => failedLoading && firstTimeLoading;
 
   @override
   void dispose() {
@@ -75,27 +84,29 @@ class _LazyListWidgetState<T extends AbstractListItem> extends State<LazyListWid
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: items.length + (isLoading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index == items.length) {
-          return const Center(child: CupertinoActivityIndicator());
-        }
-        final item = items[index];
-        return Column(
-          children: [
-            if (index == 0) const SizedBox(height: 8),
-            ListTile(item: item, onPress: widget.onPress),
-            if (index != items.length - 1)
-              const Divider(
-                indent: 80.0,
-                color: CupertinoColors.separator,
-              ),
-            if (index == items.length - 1) const SizedBox(height: 8),
-          ],
+    return hasFailed
+      ? ErrorView(onPress: _loadMoreItems)
+      : ListView.builder(
+          controller: _scrollController,
+          itemCount: items.length + (isLoading ? 1 : 0),
+          itemBuilder: (context, index) {
+            if (index == items.length) {
+              return const Center(child: CupertinoActivityIndicator());
+            }
+            final item = items[index];
+            return Column(
+              children: [
+                if (index == 0) const SizedBox(height: 8),
+                ListTile(item: item, onPress: widget.onPress),
+                if (index != items.length - 1)
+                  const Divider(
+                    indent: 80.0,
+                    color: CupertinoColors.separator,
+                  ),
+                if (index == items.length - 1) const SizedBox(height: 8),
+              ],
+            );
+          },
         );
-      },
-    );
   }
 }

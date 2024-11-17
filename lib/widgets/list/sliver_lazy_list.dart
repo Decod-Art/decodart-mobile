@@ -1,5 +1,6 @@
-import 'package:decodart/util/online.dart' show LazyList;
+import 'package:decodart/controller/widgets/list_controller.dart' show SearchableListController;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
+import 'package:decodart/widgets/component/error/error.dart';
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
@@ -28,15 +29,12 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
 
 class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {
   late ScrollController _scrollController;
-  bool isLoading = false;
-  bool firstTimeLoading = true;
-  bool _queryChanged = false;
-  late LazyList<T> items;
+  
+  late final SearchableListController<T> _listController = SearchableListController<T>(widget.fetch);
 
   @override
   void initState() {
     super.initState();
-    items = LazyList<T>(fetch: widget.fetch);
     _scrollController = ScrollController();
     _scrollController.addListener(_checkIfNeedsLoading);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -52,26 +50,25 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
     super.dispose();
   }
 
+  bool get _scrollReachedLimit => _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30;
+
   Future<void> _checkIfNeedsLoading() async {
-    if (((_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30||_queryChanged) && !isLoading && items.hasMore)||firstTimeLoading) {
-      _queryChanged = false;
+    if ((_scrollReachedLimit||_listController.hasBeenUpdated) && _listController.canReload) {
       _loadMoreItems();
     }
   }
 
   Future<void> _loadMoreItems() async {
     setState(() {
-      isLoading = true;
+      _listController.resetLoading();
     });
-    await items.fetchMore();
+    await _listController.fetchMore();
     if (mounted){
-      setState(() {
-        isLoading = false;
-        firstTimeLoading = false;
-      });
-      _checkIfNeedsLoading();
+      setState(() {});
     }
   }
+
+  int get nbElements => _listController.length + (_listController.isLoading ? 1 : 0) + (_listController.failed ? 1 : 0);
 
   @override
   Widget build(BuildContext context) {
@@ -80,26 +77,30 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
       smallTitle: widget.smallTitle,
       controller: _scrollController,
       onSearch: (String value) {
-        _queryChanged = true;
-        items = LazyList<T>(fetch: ({limit=10, offset=0}){return widget.fetch(limit: limit, offset: offset, query: value.isEmpty?null:value);});
+        _listController.query = value.isEmpty?null:value;
         _checkIfNeedsLoading();
       },
-      childCount: items.length + (isLoading ? 1 : 0),
+      childCount: nbElements,
       builder: (context, index) {
-        if (index == items.length) {
+        if (_listController.failed) {
+          return Center(
+            child: ErrorView(onPress: _loadMoreItems)
+          );
+        }
+        if (index == _listController.length) {
           return const Center(child: CupertinoActivityIndicator());
         }
-        final item = items[index];
+        final item = _listController[index];
         return Column(
           children: [
             if (index == 0) const SizedBox(height: 8),
             ListTile(item: item, onPress: widget.onPress),
-            if (index != items.length - 1)
+            if (index != _listController.length - 1)
               const Divider(
                 indent: 80.0,
                 color: CupertinoColors.separator,
               ),
-            if (index == items.length - 1) const SizedBox(height: 8),
+            if (index == _listController.length - 1) const SizedBox(height: 8),
           ],
         );
       },
