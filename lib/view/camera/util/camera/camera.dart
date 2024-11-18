@@ -150,10 +150,11 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                         child: ResultsWidget(
                           artwork: artworkFound!,
                           onPressed: () {
+                            final artwork = artworkFound!;
                             _resetSearch();
                             showWidgetInModal(
                               context,
-                              (context) => FutureArtworkView(artwork: artworkFound!)
+                              (context) => FutureArtworkView(artwork: artwork)
                             );
                           },
                         ),
