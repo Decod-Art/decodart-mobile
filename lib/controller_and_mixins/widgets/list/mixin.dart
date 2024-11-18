@@ -1,6 +1,9 @@
 import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show AbstractListController;
 import 'package:flutter/cupertino.dart' show VoidCallback, WidgetsBinding;
 
+// The mixin is required to handle lazy lists
+// because it accesses "setState" as well as "mounted"
+// to refresh the widget when required
 mixin ListMixin {
   AbstractListController get controller;
   void setState(VoidCallback fn);
