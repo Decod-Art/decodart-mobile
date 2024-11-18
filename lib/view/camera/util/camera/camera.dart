@@ -49,7 +49,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
 
     controller = DecodCameraController(
       onInit: _cameraInitialized,
-      onSearchStart: _onSearchStart,
+      onSearchStart: _resetSearch,
       runSearch: fetchArtworkByImage,
       onSearchEnd: _onSearchEnd
     ); 
@@ -67,7 +67,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     super.dispose();
   }
 
-  Future<void> _onSearchStart() async {
+  Future<void> _resetSearch() async {
     artworkFound = null;
     await _animationController.reverse();
     setState(() {});
@@ -150,6 +150,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                         child: ResultsWidget(
                           artwork: artworkFound!,
                           onPressed: () {
+                            _resetSearch();
                             showWidgetInModal(
                               context,
                               (context) => FutureArtworkView(artwork: artworkFound!)
