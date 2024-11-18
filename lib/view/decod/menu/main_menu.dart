@@ -19,6 +19,9 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
   @override
   void initState(){
     super.initState();
+    // This is to preload categories...
+    // The rest of the loading is handled in
+    // the TrainToDecod class...
     tags = fetchTags();
   }
 
