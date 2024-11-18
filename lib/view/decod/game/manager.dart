@@ -9,9 +9,9 @@ import 'package:flutter/services.dart';
 import 'package:decodart/view/decod/game/end.dart' show EndingWidget;
 
 import 'package:decodart/model/decod.dart' show DecodQuestionType, DecodTag;
-import 'package:decodart/view/decod/game/questions/text.dart' show TextQuestion;
-import 'package:decodart/view/decod/game/questions/colorize/colorize.dart' show ColorizeQuestion;
-import 'package:decodart/view/decod/game/questions/image.dart' show ImageQuestion;
+import 'package:decodart/view/decod/game/questions/text/text.dart' show TextQuestion;
+import 'package:decodart/view/decod/game/questions/findMe/find_me.dart' show FindMeQuestion;
+import 'package:decodart/view/decod/game/questions/images/image.dart' show ImageQuestion;
 
 class DecodManager extends StatefulWidget {
   final Artwork? artwork;
@@ -89,7 +89,7 @@ class _DecodManagerState extends State<DecodManager> {
           submitPoints: _validateQuestion,
         );
       case DecodQuestionType.boundingbox:
-        return ColorizeQuestion(
+        return FindMeQuestion(
           submitPoints: _validateQuestion,
           question: controller.currentQuestion);
     }

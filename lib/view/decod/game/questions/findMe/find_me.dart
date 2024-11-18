@@ -1,12 +1,12 @@
-import 'package:decodart/view/decod/game/questions/colorize/image_drawing.dart' show ImageDrawingWidget;
+import 'package:decodart/view/decod/game/questions/findMe/image_drawing.dart' show ImageDrawingWidget;
 import 'package:flutter/cupertino.dart';
 
 import 'package:decodart/view/decod/game/questions/abstract_question.dart' show AbstractQuestionWidget;
 import 'package:flutter/services.dart';
 
-class ColorizeQuestion extends AbstractQuestionWidget {
+class FindMeQuestion extends AbstractQuestionWidget {
 
-  const ColorizeQuestion({
+  const FindMeQuestion({
     super.key,
     required super.submitPoints,
     required super.question
@@ -16,7 +16,7 @@ class ColorizeQuestion extends AbstractQuestionWidget {
   State<AbstractQuestionWidget> createState() => _BoundingBoxQuestionState();
 }
 
-class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
+class _BoundingBoxQuestionState extends State<FindMeQuestion> {
   final int numberOfErrorsAllowed = 2;
   bool isOver = false;
   late List<bool> found;
@@ -34,7 +34,7 @@ class _BoundingBoxQuestionState extends State<ColorizeQuestion> {
   }
 
   @override
-  void didUpdateWidget(covariant ColorizeQuestion oldWidget) {
+  void didUpdateWidget(covariant FindMeQuestion oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.question != widget.question) {
       _initQuestion();
