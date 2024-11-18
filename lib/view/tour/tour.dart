@@ -19,10 +19,18 @@ class TourView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+           Text(
+            tour.name,
+            style: const TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 5),
           const Text(
             "Liste des œuvres à découvrir",
             style: TextStyle(
-              fontWeight: FontWeight.w500, 
+              fontWeight: FontWeight.w400, 
               fontSize: 22,)),
           const SizedBox(height: 5,),
           ListWithThumbnail<ArtworkForeignKey>(
@@ -31,11 +39,6 @@ class TourView extends StatelessWidget {
               showWidgetInModal(context, (context) => FutureArtworkView(artwork: artwork));
             },),
           const SizedBox(height: 5),
-          Text(
-            tour.name,
-            style: const TextStyle(
-              fontWeight: FontWeight.w500, 
-              fontSize: 22,)),
           ContentWidget(
             items: tour.description,
             onButtonPressed: (item){
