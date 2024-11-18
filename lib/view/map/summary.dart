@@ -5,6 +5,7 @@ import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
+import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToGeoLocated, navigateToMuseum;
 
 import 'package:flutter/cupertino.dart';
 
@@ -99,17 +100,7 @@ class GeolocatedSummaryWidget extends StatelessWidget {
             width: double.infinity,
             child: CupertinoButton.filled(
               onPressed: () {
-                if (item.isMuseum) {
-                  showWidgetInModal(
-                    context,
-                    (context) => FutureMuseumView(museum: MuseumListItem.fromGeolocatedListItem(item), useModal: true)
-                  );
-                } else {
-                  showWidgetInModal(
-                    context,
-                    (context) => FutureArtworkView(artwork: ArtworkListItem.fromGeolocatedListItem(item))
-                  );
-                }
+                navigateToGeoLocated(item, context, modal: true);
               },
               child: const Row(
                 mainAxisSize: MainAxisSize.min,

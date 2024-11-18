@@ -108,7 +108,7 @@ class _ExploreViewState extends State<ExploreView> {
                 ContentBlock(
                   fetch: fetchAroundMe,
                   secondaryFetch: _geolocatedListItemFetcher.call,          
-                  onPressed: (item) => navigateToGeoLocated(item, context),
+                  onPressed: (item) => navigateToGeoLocated(item as GeolocatedListItem, context),
                   itemType: (item) => item.isMuseum ? ItemType.museum : ItemType.artwork,
                   title: 'Autour de moi',
                   onError: (_, __) {
@@ -120,7 +120,7 @@ class _ExploreViewState extends State<ExploreView> {
                 ContentBlock(
                   fetch: fetchAllArtworks,
                   secondaryFetch: _artworkListItemFetcher.call,
-                  onPressed: (item) => navigateToArtwork(item, context),
+                  onPressed: (item) => navigateToArtwork(item as ArtworkListItem, context),
                   title: 'Œuvres',
                   onError: (_, __) {
                     setState(() {
@@ -131,7 +131,7 @@ class _ExploreViewState extends State<ExploreView> {
                 ContentBlock(
                   fetch: fetchAllMuseums,
                   secondaryFetch: _museumListItemFetcher.call,
-                  onPressed: (item) => navigateToMuseum(item, context),
+                  onPressed: (item) => navigateToMuseum(item as MuseumListItem, context),
                   itemType: (item) => ItemType.museum,
                   title: 'Musées',
                   onError: (_, __) {
@@ -143,7 +143,7 @@ class _ExploreViewState extends State<ExploreView> {
                 ContentBlock(
                   fetch: fetchAllTours,
                   secondaryFetch: _tourListItemFetcher.call,
-                  onPressed: (item) => navigateToTour(item, context),
+                  onPressed: (item) => navigateToTour(item as TourListItem, context),
                   itemType: (item) => ItemType.tour,
                   title: 'Visites',
                   onError: (_, __) {

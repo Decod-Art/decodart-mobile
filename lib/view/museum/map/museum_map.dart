@@ -3,7 +3,7 @@ import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show Lis
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/museum/map_viewer.dart' show FullScreenPDFViewer;
+import 'package:decodart/view/museum/map/pdf_map_viewer.dart' show FullScreenPDFViewer;
 import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;

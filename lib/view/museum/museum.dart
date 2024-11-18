@@ -1,19 +1,16 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
 import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show SearchableDataFetcher;
-import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/model/tour.dart' show TourListItem;
-import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/museum/museum_map.dart' show MuseumMap;
-import 'package:decodart/view/museum/museum_map_button.dart' show MuseumMapButton;
+import 'package:decodart/view/museum/map/museum_map.dart' show MuseumMap;
+import 'package:decodart/view/museum/map/museum_map_button.dart' show MuseumMapButton;
 import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
-import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
 import 'package:decodart/widgets/list/util/_item_type.dart' show ItemType;
 import 'package:decodart/widgets/navigation/modal.dart' show showListInModal, showWidgetInModal;
-import 'package:decodart/widgets/navigation/screen.dart' show navigateToWidget;
+import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToTour;
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
 
@@ -59,36 +56,11 @@ class _MuseumViewState extends State<MuseumView>  {
     super.dispose();
   }
 
-  void _onArtworkPressed(AbstractListItem item){
-    if (widget.useModal){
-      showWidgetInModal(
-        context,
-        (context) => FutureArtworkView(artwork: item as ArtworkListItem));
-    } else {
-      navigateToWidget(
-        context,
-        (context) => FutureArtworkView(artwork: item as ArtworkListItem),
-      );
-    }
-  }
-
-  void _onTourPressed(AbstractListItem item){
-    if (widget.useModal){
-      showWidgetInModal(
-        context,
-        (context) => FutureTourView(tour: item as TourListItem));
-    } else {
-      navigateToWidget(
-        context,
-        (context) => FutureTourView(tour: item as TourListItem),
-      );
-    }
-  }
-
   void _onMuseumMapPressed() {
       showListInModal(
         context,
-        (context, [sc]) => MuseumMap(museum: widget.museum, isModal: widget.useModal, controller: sc,));
+        (context, [sc]) => MuseumMap(museum: widget.museum, isModal: widget.useModal, controller: sc,)
+      );
   }
 
   @override
@@ -151,14 +123,14 @@ class _MuseumViewState extends State<MuseumView>  {
             title: 'Expositions',
             fetch: _fetchExhibition,
             itemType: (item) => ItemType.tour,
-            onPressed: _onTourPressed,
+            onPressed: (item) => navigateToTour(item as TourListItem, context, modal: widget.useModal),
             isModal: widget.useModal,
           ),
         if (widget.museum.hasCollection)
           ContentBlock(
             title: 'Collection',
             fetch: _fetchCollection,
-            onPressed: _onArtworkPressed,
+            onPressed: (item) => navigateToArtwork(item as ArtworkListItem, context, modal: widget.useModal),
             isModal: widget.useModal,
           ),
         if (widget.museum.hasTours)
@@ -166,7 +138,7 @@ class _MuseumViewState extends State<MuseumView>  {
             title: 'Visites',
             fetch: _fetchTour,
             itemType: (item) => ItemType.tour,
-            onPressed: _onTourPressed,
+            onPressed: (item) => navigateToTour(item as TourListItem, context, modal: widget.useModal),
             isModal: widget.useModal,
           ),
         const SizedBox(height: 35)
