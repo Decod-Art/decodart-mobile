@@ -1,11 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart' show CachedNetworkImage;
-import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/model/museum.dart' show MuseumListItem;
-import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
-import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
-import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToGeoLocated, navigateToMuseum;
+import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToGeoLocated;
 
 import 'package:flutter/cupertino.dart';
 
