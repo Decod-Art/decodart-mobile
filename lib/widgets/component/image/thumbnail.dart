@@ -1,33 +1,41 @@
-import 'package:decodart/model/image.dart';
+import 'package:decodart/model/image.dart' show AbstractImage;
+import 'package:decodart/widgets/list/util/_item_type.dart' show ItemType;
 import 'package:flutter/cupertino.dart';
 
 class ThumbnailWidget extends StatelessWidget {
   final String title;
   final AbstractImage image;
   final VoidCallback onPressed;
-  final bool isMuseum;
+  final ItemType itemType;
   const ThumbnailWidget({
     super.key,
     required this.title,
     required this.image,
     required this.onPressed,
-    this.isMuseum=false
+    required this.itemType
   });
 
   Widget get icon {
-    if(isMuseum) {
-      return Image.asset(
-        'images/icons/museum.png',
-        width: 20,
-        height: 20,
-        color: CupertinoColors.white, // Optionnel : pour colorer l'icône
-      );
-    }
-    else {
-      return const Icon(
+    switch(itemType) {
+      case ItemType.museum:
+        return Image.asset(
+          'images/icons/museum.png',
+          width: 20,
+          height: 20,
+          color: CupertinoColors.white, // Optionnel : pour colorer l'icône
+        );
+      case ItemType.artwork:
+        return const Icon(
           CupertinoIcons.paintbrush_fill,
           color: CupertinoColors.white,
           size: 20,
+        );
+      case ItemType.tour:
+        return Image.asset(
+          'images/icons/mappin_and_ellipse.png',
+          width: 20,
+          height: 20,
+          color: CupertinoColors.white, // Optionnel : pour colorer l'icône
         );
     }
   }

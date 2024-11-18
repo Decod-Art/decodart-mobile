@@ -87,6 +87,7 @@ flutter:
   assets:
     - images/main_background.jpeg
     - images/icons/museum.png
+    - images/icons/mappin_and_ellipse.png
     - images/icons/text_book_closed.png
     - images/icons/plus_magnifyingglass.png
     - images/icons/questionmark_bubble.png

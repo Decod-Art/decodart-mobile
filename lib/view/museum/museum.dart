@@ -6,11 +6,12 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
-import 'package:decodart/view/museum/museum_map.dart';
+import 'package:decodart/view/museum/museum_map.dart' show MuseumMap;
 import 'package:decodart/view/museum/museum_map_button.dart' show MuseumMapButton;
-import 'package:decodart/widgets/component/formatted_content/content.dart';
+import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
 import 'package:decodart/view/tour/future_tour.dart' show FutureTourView;
+import 'package:decodart/widgets/list/util/_item_type.dart' show ItemType;
 import 'package:decodart/widgets/navigation/modal.dart' show showListInModal, showWidgetInModal;
 import 'package:decodart/widgets/navigation/screen.dart' show navigateToWidget;
 import 'package:flutter/cupertino.dart';
@@ -149,6 +150,7 @@ class _MuseumViewState extends State<MuseumView>  {
           ContentBlock(
             title: 'Expositions',
             fetch: _fetchExhibition,
+            itemType: (item) => ItemType.tour,
             onPressed: _onTourPressed,
             isModal: widget.useModal,
           ),
@@ -163,6 +165,7 @@ class _MuseumViewState extends State<MuseumView>  {
           ContentBlock(
             title: 'Visites',
             fetch: _fetchTour,
+            itemType: (item) => ItemType.tour,
             onPressed: _onTourPressed,
             isModal: widget.useModal,
           ),

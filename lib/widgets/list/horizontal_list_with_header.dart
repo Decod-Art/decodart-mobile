@@ -4,6 +4,7 @@ import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show Lis
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/component/image/thumbnail.dart' show ThumbnailWidget;
+import 'package:decodart/widgets/list/util/_item_type.dart';
 import 'package:flutter/cupertino.dart';
 
 class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulWidget {
@@ -12,14 +13,14 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
   final OnPressList onPressed;
   final VoidCallback onTitlePressed;
   final void Function(Object, StackTrace)? onError;
-  final bool Function(T) isMuseum;
+  final ItemType Function(T) itemType;
   final List<T> initialValues;
   const LazyHorizontalListWithHeader({
     super.key,
     required this.name,
     required this.fetch,
     required this.onPressed,
-    required this.isMuseum,
+    required this.itemType,
     required this.onTitlePressed,
     this.initialValues = const [],
     this.onError
@@ -92,7 +93,7 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
                   return ThumbnailWidget(
                       title: item.title,
                       image: item.image,
-                      isMuseum: widget.isMuseum(item),
+                      itemType: widget.itemType(item),
                       onPressed: (){widget.onPressed(item);}
                     );
                 } else {

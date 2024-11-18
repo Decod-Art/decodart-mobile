@@ -2,9 +2,11 @@ import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show Dat
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/lazy_list.dart' show LazyListWidget;
+import 'package:decodart/widgets/list/util/_item_type.dart' show defaultItemTypeFct, ItemType;
 import 'package:decodart/widgets/navigation/modal.dart' show showListInModal;
 import 'package:decodart/widgets/navigation/screen.dart' show navigateToList;
 import 'package:flutter/cupertino.dart';
+
 
 class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final String title;
@@ -15,7 +17,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final DataFetcher<T>? secondaryFetch;
   final OnPressList onPressed;
   final bool isModal;
-  final bool Function(T)? isMuseum;
+  final ItemType Function(T) itemType;
   final List<T> initialValues;
   // Error when fetching new data for the list
   final void Function(Object, StackTrace)? onError;
@@ -26,9 +28,11 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
     required this.onPressed,
     this.isModal=false,
     this.secondaryFetch,
-    this.isMuseum,
+    this.itemType=defaultItemTypeFct,
     this.initialValues = const [],
     this.onError});
+
+  
 
 
   @override
@@ -38,7 +42,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
       name: title,
       fetch: secondaryFetch??fetch,
       onPressed: onPressed,
-      isMuseum: isMuseum??(item)=>false,
+      itemType: itemType,
       initialValues: initialValues,
       onError: onError,
       onTitlePressed: (){

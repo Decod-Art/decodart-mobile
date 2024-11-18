@@ -2,7 +2,8 @@ import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
-import 'package:decodart/controller_and_mixins/widgets/list/_util.dart';
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show Fetcher;
+import 'package:decodart/widgets/list/util/_item_type.dart' show ItemType;
 import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToGeoLocated, navigateToMuseum, navigateToTour;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
@@ -108,7 +109,7 @@ class _ExploreViewState extends State<ExploreView> {
                   fetch: fetchAroundMe,
                   secondaryFetch: _geolocatedListItemFetcher.call,          
                   onPressed: (item) => navigateToGeoLocated(item, context),
-                  isMuseum: (item) => item.isMuseum,
+                  itemType: (item) => item.isMuseum ? ItemType.museum : ItemType.artwork,
                   title: 'Autour de moi',
                   onError: (_, __) {
                     setState(() {
@@ -131,7 +132,7 @@ class _ExploreViewState extends State<ExploreView> {
                   fetch: fetchAllMuseums,
                   secondaryFetch: _museumListItemFetcher.call,
                   onPressed: (item) => navigateToMuseum(item, context),
-                  isMuseum: (item) => true,
+                  itemType: (item) => ItemType.museum,
                   title: 'Musées',
                   onError: (_, __) {
                     setState(() {
@@ -143,7 +144,7 @@ class _ExploreViewState extends State<ExploreView> {
                   fetch: fetchAllTours,
                   secondaryFetch: _tourListItemFetcher.call,
                   onPressed: (item) => navigateToTour(item, context),
-                  isMuseum: (item) => true,
+                  itemType: (item) => ItemType.tour,
                   title: 'Visites',
                   onError: (_, __) {
                     setState(() {
