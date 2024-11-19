@@ -2,7 +2,7 @@ import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
 import 'package:decodart/api/geolocated.dart' show fetchAroundMe;
 import 'package:decodart/api/museum.dart' show fetchAllMuseums;
 import 'package:decodart/api/tour.dart' show fetchAllTours;
-import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show Fetcher;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show DataFetcher;
 import 'package:decodart/widgets/list/util/_item_type.dart' show ItemType;
 import 'package:decodart/widgets/navigation/navigate_to_items.dart' show navigateToArtwork, navigateToGeoLocated, navigateToMuseum, navigateToTour;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
@@ -22,13 +22,13 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
-  late Fetcher<GeolocatedListItem> _geolocatedListItemFetcher;
+  late DataFetcher<GeolocatedListItem> _geolocatedListItemFetcher;
   bool errorAroundMe = false;
-  late Fetcher<ArtworkListItem> _artworkListItemFetcher;
+  late DataFetcher<ArtworkListItem> _artworkListItemFetcher;
   bool errorArtwork = false;
-  late Fetcher<MuseumListItem> _museumListItemFetcher;
+  late DataFetcher<MuseumListItem> _museumListItemFetcher;
   bool errorMuseum = false;
-  late Fetcher<TourListItem> _tourListItemFetcher;
+  late DataFetcher<TourListItem> _tourListItemFetcher;
   bool errorTour = false;
   String? _filter;
 
@@ -58,35 +58,27 @@ class _ExploreViewState extends State<ExploreView> {
   }
 
   void _setGeoLocatedFetcher() {
-    _geolocatedListItemFetcher = Fetcher(
-      fetch: ({
+    _geolocatedListItemFetcher = ({
         int limit=10, int offset=0
-      }) => fetchAroundMe(limit: limit, offset: offset, query: _filter)
-    );
+      }) => fetchAroundMe(limit: limit, offset: offset, query: _filter);
   }
 
   void _setArtworkFetcher() {
-    _artworkListItemFetcher = Fetcher(
-      fetch: ({
+    _artworkListItemFetcher = ({
         int limit=10, int offset=0
-      }) => fetchAllArtworks(limit: limit, offset: offset, query: _filter)
-    );
+      }) => fetchAllArtworks(limit: limit, offset: offset, query: _filter);
   }
 
   void _setTourFetcher() {
-    _tourListItemFetcher = Fetcher(
-      fetch: ({
+    _tourListItemFetcher = ({
         int limit=10, int offset=0
-      }) => fetchAllTours(limit: limit, offset: offset, query: _filter)
-    );
+      }) => fetchAllTours(limit: limit, offset: offset, query: _filter);
   }
 
   void _setMuseumFetcher() {
-    _museumListItemFetcher = Fetcher(
-      fetch: ({
+    _museumListItemFetcher = ({
         int limit=10, int offset=0
-      }) => fetchAllMuseums(limit: limit, offset: offset, query: _filter)
-    );
+      }) => fetchAllMuseums(limit: limit, offset: offset, query: _filter);
   }
 
   @override

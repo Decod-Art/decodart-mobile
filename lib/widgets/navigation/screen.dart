@@ -1,4 +1,4 @@
-import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableFetch;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/list/sliver_lazy_list.dart' show SliverLazyListView;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart';
@@ -18,7 +18,7 @@ Future<T?> navigateToList<T, C extends AbstractListItem>(
     required String title,
     required OnPressList<C> onPress,
     hideSearch=false,
-    required SearchableFetch<C> fetch
+    required SearchableDataFetcher<C> fetch
   }) async {
     _waitForKeyboardToClose();
     return Navigator.push(

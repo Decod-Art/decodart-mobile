@@ -1,4 +1,4 @@
-import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnError, SearchableFetch, LazyList, DataFetcher;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnError, SearchableDataFetcher, LazyList, DataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:flutter/cupertino.dart' show ScrollController, VoidCallback;
 
@@ -98,7 +98,7 @@ abstract class AbstractListController<T> {
 }
 
 class SearchableListController<T extends AbstractListItem> extends AbstractListController<T> {
-  final SearchableFetch<T> fetch;
+  final SearchableDataFetcher<T> fetch;
   late LazyList<T> items;
 
   bool _gotUpdated = false;

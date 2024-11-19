@@ -1,4 +1,4 @@
-import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableFetch;
+import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableDataFetcher;
 import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show SearchableListController;
 import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show ListMixin;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
@@ -11,7 +11,7 @@ import 'package:flutter/material.dart' show Divider;
 class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   final String title;
   final OnPressList<T> onPress;
-  final SearchableFetch<T> fetch;
+  final SearchableDataFetcher<T> fetch;
   final bool smallTitle;
   const SliverLazyListView({
     super.key,

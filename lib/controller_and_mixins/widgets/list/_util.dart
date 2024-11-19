@@ -1,17 +1,19 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItemBase, AbstractListItem;
+import 'package:mutex/mutex.dart' show Mutex;
 
 typedef OnPressList<T extends AbstractListItem> = void Function(T);
-typedef SearchableFetch<T> = Future<List<T>> Function({int limit, int offset, String? query});
+typedef OnError = void Function(Object, StackTrace);
+
 typedef DataFetcher<T> = Future<List<T>> Function({int limit, int offset});
 typedef SearchableDataFetcher<T> = Future<List<T>> Function({int limit, int offset, String? query});
-typedef OnError = void Function(Object, StackTrace);
 
 class LazyList<T extends AbstractItemBase> extends Iterable<T> {
   final List<T> _list = [];
   final DataFetcher<T> fetch;
   final int limit;
-  int _offset=0;
   bool hasMore = true;
+
+  final m = Mutex();
 
   LazyList({
     required this.fetch,
@@ -20,16 +22,19 @@ class LazyList<T extends AbstractItemBase> extends Iterable<T> {
   }) {
     if (initial!=null){
       _list.addAll(initial);
-      _offset += initial.length;
     }
   }
 
   Future<void> fetchMore () async {
-    if (hasMore){
-      final List<T> results = await fetch(limit: limit, offset: _offset);
-      _offset += results.length;
-      hasMore = results.length == limit;
-      _list.addAll(results);
+    await m.acquire();
+    try {
+      if (hasMore){
+        final List<T> results = await fetch(limit: limit, offset: _list.length);
+        hasMore = results.length == limit;
+        _list.addAll(results);
+      }
+    } finally {
+      m.release();
     }
   }
 
@@ -54,14 +59,4 @@ class LazyList<T extends AbstractItemBase> extends Iterable<T> {
   
   @override
   Iterator<T> get iterator => _list.iterator;
-}
-
-class Fetcher<T extends AbstractItemBase> {
-  final Future<List<T>> Function({int limit, int offset}) fetch;
-
-  Fetcher({required this.fetch});
-
-  Future<List<T>> call({int limit = 10, int offset = 0}) {
-    return fetch(limit: limit, offset: offset);
-  }
 }
