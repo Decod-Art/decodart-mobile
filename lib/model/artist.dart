@@ -37,6 +37,8 @@ class Artist extends ArtistForeignKey {
   final String? ulangetty;
   final AbstractImage image;
 
+  bool get hasBiography => biography.trim().isNotEmpty;
+
   const Artist({
     super.uid,
     required super.name,

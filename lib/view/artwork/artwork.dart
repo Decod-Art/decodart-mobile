@@ -41,22 +41,23 @@ class ArtworkView extends StatelessWidget {
         const SizedBox(height: 20),
         ButtonListWidget(
           buttons: [
-            ChevronButtonWidget(
-              text: "À propos de l'artiste",
-              icon: const Icon(
-                CupertinoIcons.person_circle,
-                color: CupertinoColors.activeBlue,
+            if (artwork.artist.hasBiography)
+              ChevronButtonWidget(
+                text: "À propos de l'artiste",
+                icon: const Icon(
+                  CupertinoIcons.person_circle,
+                  color: CupertinoColors.activeBlue,
+                ),
+                onPressed: (){
+                  showWidgetInModal(
+                    context,
+                    (context) => ContentWidget(
+                      items: artwork.artist.biography,
+                      edges: const EdgeInsets.all(15)
+                    )
+                  );
+                },
               ),
-              onPressed: (){
-                showWidgetInModal(
-                  context,
-                  (context) => ContentWidget(
-                    items: artwork.artist.biography,
-                    edges: const EdgeInsets.all(15)
-                  )
-                );
-              },
-            ),
             for(final tag in artwork.sortedTags) ... [
               ChevronButtonWidget(
                 text: tag.name,
