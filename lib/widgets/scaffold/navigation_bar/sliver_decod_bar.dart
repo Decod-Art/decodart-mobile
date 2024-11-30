@@ -1,5 +1,8 @@
+import 'dart:async' show Timer;
 import 'package:decodart/view/apropos/apropos.dart' show AproposView;
 import 'package:flutter/cupertino.dart';
+
+const int secondsToWaitAfterInactivityBeforeSearch = 1;
 
 class SliverDecodNavigationBar extends StatefulWidget {
   final String? title;
@@ -19,6 +22,8 @@ class SliverDecodNavigationBar extends StatefulWidget {
 
 class _SliverDecodNavigationBarState extends State<SliverDecodNavigationBar> {
   final TextEditingController _searchController = TextEditingController();
+  // Timer used to submit query after inactivity
+  Timer? _debounce;
 
   @override
   void dispose() {
@@ -47,6 +52,12 @@ class _SliverDecodNavigationBarState extends State<SliverDecodNavigationBar> {
                 //focusNode: _searchFocusNode,
                 placeholder: 'Rechercher',
                 onSubmitted: widget.onSearch,
+                onChanged: (String value) {
+                  if (_debounce?.isActive ?? false) _debounce?.cancel();
+                  _debounce = Timer(const Duration(seconds: secondsToWaitAfterInactivityBeforeSearch), () {
+                    widget.onSearch?.call(value);
+                  });
+                },
                 onSuffixTap: (){
                   setState((){_searchController.text = '';});
                   widget.onSearch!('');
