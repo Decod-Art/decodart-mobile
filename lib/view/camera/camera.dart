@@ -13,11 +13,10 @@ class CameraView extends StatelessWidget {
   Widget build(BuildContext context) {    
     double screenHeight = MediaQuery.of(context).size.height;
     double containerHeight = screenHeight * 4 / 7;
-
     return DecodPageScaffold(
       title: "Scanner",
       smallTitle: true,
-      leadingBar: CupertinoButton(
+      leading: CupertinoButton(
         padding: EdgeInsets.zero,
         onPressed: () {
           showWidgetInModal(context, (context) => const HelpView());

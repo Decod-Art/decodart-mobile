@@ -1,22 +1,40 @@
-import 'package:decodart/widgets/scaffold/navigation_bar/decod_bar.dart';
-import 'package:decodart/widgets/scaffold/navigation_bar/sliver_decod_bar.dart';
-import 'package:decodart/widgets/scaffold/scaffold/classic.dart' show DecodClassicScaffold;
-import 'package:decodart/widgets/scaffold/scaffold/sliver.dart' show DecodSliverScaffold;
+import 'package:decodart/widgets/scaffold/navigation_bar/classic_navigation_bar.dart' show ClassicNavigationBar;
+import 'package:decodart/widgets/component/button/apropos_button.dart' show AproposButton;
+import 'package:decodart/widgets/scaffold/scaffold/classic_scaffold.dart' show ClassicScaffold;
+import 'package:decodart/widgets/scaffold/scaffold/searchable_or_large_title_scaffold.dart' show SearchableOrLargeTitleScaffold;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
 
 class DecodPageScaffold extends StatefulWidget {
   final List<Widget>? children;
-  final NullableIndexedWidgetBuilder? builder;
-  final Widget? child;
+
   final int? childCount;
+  final NullableIndexedWidgetBuilder? builder;
+
+  final Widget? child;
+
   final String? title;
   final bool smallTitle;
+
   final void Function(String)? onSearch;
+
   final ScrollController? controller;
-  final Widget? leadingBar;
+
+  // Should we add a specific icon as leading
+  // in the navigation bar
+  final Widget? leading;
+
+  // should we show the a propos view ?
   final bool showTrailing;
+
+  // In the classical scaffold, should we add a scroll ?
   final bool withScrolling;
+
+  // When using the classical navigation bar
+  // How much pixel of scrolling should be used as a buffer
+  // before changing the style (more transparent) of the navigation bar
+  final double? threshold;
+
   const DecodPageScaffold({
     super.key,
     this.children,
@@ -26,10 +44,11 @@ class DecodPageScaffold extends StatefulWidget {
     this.onSearch,
     this.controller,
     this.smallTitle=false,
-    this.leadingBar,
+    this.leading,
     this.child,
     this.showTrailing=true,
-    this.withScrolling=false});
+    this.withScrolling=false,
+    this.threshold});
     
       @override
       State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
@@ -37,7 +56,7 @@ class DecodPageScaffold extends StatefulWidget {
 
 class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   late ScrollController _scrollController;
-  bool _showBorder = false;
+  
 
   @override
   void initState() {
@@ -46,29 +65,16 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
     _scrollController.addListener(_scrollListener);
   }
 
-  int get offsetThreshold => widget.smallTitle ? 5 : 50;
-
   void _scrollListener() {
     if (_scrollController.position.userScrollDirection != ScrollDirection.idle) {
       FocusScope.of(context).focusedChild?.unfocus();
     }
-    if (_scrollController.hasClients) {
-      final offset = _scrollController.offset;
-      if (offset > offsetThreshold && !_showBorder) {
-        setState(() {
-          _showBorder = true;
-        });
-      } else if (offset <= offsetThreshold && _showBorder) {
-        setState(() {
-          _showBorder = false;
-        });
-      }
-    }
   }
+
+  int get offsetThreshold => widget.smallTitle ? 5 : 50;
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
     if (widget.controller == null){
       _scrollController.dispose();
     }
@@ -82,12 +88,14 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   bool get hasClassicView => widget.child != null;
 
   Widget classic(BuildContext context){
-    return DecodClassicScaffold(
-      classicNavigationBar: DecodNavigationBar(
-        title: widget.title,
-        showBorder: _showBorder,
-        leadingBar: widget.leadingBar,
-        showTrailing: widget.showTrailing,
+    return ClassicScaffold(
+      classicNavigationBar: ClassicNavigationBar(
+        title: widget.title??'',
+        scrollController: _scrollController,
+        leading: widget.leading,
+        trailing: widget.showTrailing
+          ? AproposButton()
+          : null,
       ),
       withScrolling: widget.withScrolling,
       controller: _scrollController,
@@ -96,24 +104,18 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
   }
 
   Widget sliver(BuildContext context) {
-    return DecodSliverScaffold(
-      classicNavigationBar: hasClassicNavigationBar
-        ? DecodNavigationBar(
-            title: widget.title,
-            showBorder: _showBorder,
-            leadingBar: widget.leadingBar,
-            showTrailing: widget.showTrailing,
-          )
-        : null,
-      controller: _scrollController,
+    return SearchableOrLargeTitleScaffold(
+      title: widget.title??'',
+      showLargeTitle: !widget.smallTitle,
+      scrollController: _scrollController,
+      onSearch: widget.onSearch,
+      leading: widget.leading,
+      trailing: widget.showTrailing
+          ? AproposButton()
+          : null,
+      threshold: widget.threshold,
       builder: widget.builder,
       childCount: widget.childCount,
-      sliverNavigationBar:  hasSliverNavigationBar
-        ? SliverDecodNavigationBar(
-            title: widget.title,
-            onSearch: widget.onSearch,
-            showBorder: _showBorder,)
-        : null,
       children: widget.children,
     );
   }

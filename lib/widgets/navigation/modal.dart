@@ -96,6 +96,7 @@ class _ModalState extends State<ModalView> {
           ? CupertinoColors.white 
           : CupertinoColors.black,
         child: SafeArea(
+          bottom: false,
           child: Stack(
             children: [
               Column(
@@ -129,9 +130,14 @@ class _ModalState extends State<ModalView> {
                         )
                       : SingleChildScrollView(
                         controller: _scrollController,
-                        child: widget.builder(context)
+                        child: Column(
+                          children: [
+                            widget.builder(context),
+                            const SizedBox(height: 25)
+                          ]
+                        )
                       )
-                  )
+                  ),
                   
                 ]
               ),

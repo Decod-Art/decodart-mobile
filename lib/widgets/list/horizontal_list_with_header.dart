@@ -54,9 +54,8 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
           initial: widget.initialValues,
           onError: widget.onError
         );
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          checkIfNeedsLoading();
-        });
+        controller.addListener(checkIfNeedsLoading);// Solved the stuff
+        updateView();
       });
     }
   }

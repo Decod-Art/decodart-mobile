@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoTabScaffold(
+      resizeToAvoidBottomInset: false,
       controller: _tabController,
       backgroundColor: CupertinoColors.black,
       tabBar: CupertinoTabBar(

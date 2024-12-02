@@ -10,8 +10,8 @@ import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/museum.dart' show MuseumListItem;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
-import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
+import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
 class ExploreView extends StatefulWidget {
@@ -85,6 +85,7 @@ class _ExploreViewState extends State<ExploreView> {
   Widget build(BuildContext context) {
     return DecodPageScaffold(
       title: 'Explorer',
+      smallTitle: false,
       onSearch: (String value) {
         _filter = value;
         if (value.isEmpty) {

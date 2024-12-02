@@ -29,12 +29,12 @@ class _WaitFutureWidget<T> extends State<WaitFutureWidget<T>> {
     });
   }
 
-  Future<void> _fetch ({double? pause}) async {
+  Future<void> _fetch ({int? pause}) async {
     try {
       setState(() {_error = false;});
       final futureItem = widget.fetch();
       if (pause != null) {
-        await Future.delayed(const Duration(milliseconds: 250));
+        await Future.delayed(Duration(milliseconds: pause));
       }
       item = await futureItem;
     } catch(_, __) {

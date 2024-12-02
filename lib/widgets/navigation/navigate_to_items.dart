@@ -19,7 +19,7 @@ void navigateToGeoLocated(GeolocatedListItem item, BuildContext context, {bool m
 }
 
 void navigateToArtwork(ArtworkListItem item, BuildContext context, {bool modal=false}) {
-  _navigateToWidget((context) => FutureArtworkView(artwork: item), context, modal: modal);
+  _navigateToWidget((context) => FutureArtworkView(artwork: item), context, modal: modal, threshold: 55);
 }
 
 void navigateToMuseum(MuseumListItem item, BuildContext context, {bool modal=false}) {
@@ -27,13 +27,13 @@ void navigateToMuseum(MuseumListItem item, BuildContext context, {bool modal=fal
 }
 
 void navigateToTour(TourListItem item, BuildContext context, {bool modal=false}) {
-  _navigateToWidget((context) => FutureTourView(tour: item), context, modal: modal);
+  _navigateToWidget((context) => FutureTourView(tour: item), context, modal: modal, threshold: 55);
 }
 
-void _navigateToWidget(WidgetBuilder builder, BuildContext context, {bool modal=false}) {
+void _navigateToWidget(WidgetBuilder builder, BuildContext context, {bool modal=false, double? threshold}) {
   if (modal) {
     showWidgetInModal(context, builder);
   } else {
-    navigateToWidget(context, builder);
+    navigateToWidget(context, builder, threshold: threshold);
   }
 }

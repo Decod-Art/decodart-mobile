@@ -27,7 +27,6 @@ Future<T?> navigateToList<T, C extends AbstractListItem>(
         builder: (context) => SliverLazyListView<C>(
           title: title,
           fetch: fetch,
-          smallTitle: hideSearch,
           onPress: onPress,),
       ),
     );
@@ -39,7 +38,8 @@ Future<T?> navigateToWidget<T>(
   {
     String? title,
     void Function(String)? onSearch,
-    bool smallTitle=false
+    bool smallTitle=true,
+    double? threshold
   }) async {
   _waitForKeyboardToClose();
   return Navigator.push(
@@ -49,6 +49,7 @@ Future<T?> navigateToWidget<T>(
           title: title,
           smallTitle: smallTitle,
           onSearch: onSearch,
+          threshold: threshold,
           children: [
             builder(context)
           ],

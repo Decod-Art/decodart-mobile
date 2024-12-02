@@ -12,13 +12,11 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   final String title;
   final OnPressList<T> onPress;
   final SearchableDataFetcher<T> fetch;
-  final bool smallTitle;
   const SliverLazyListView({
     super.key,
     required this.title,
     required this.onPress,
-    required this.fetch,
-    this.smallTitle=false
+    required this.fetch
   });
   
   @override
@@ -47,8 +45,8 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
   Widget build(BuildContext context) {
     return DecodPageScaffold(
       title: widget.title,
-      smallTitle: widget.smallTitle,
       controller: controller.scrollController,
+      smallTitle: true,
       onSearch: (String value) {
         controller.query = value.isEmpty?null:value;
         checkIfNeedsLoading();

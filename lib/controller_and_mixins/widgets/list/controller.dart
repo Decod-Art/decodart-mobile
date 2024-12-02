@@ -77,6 +77,7 @@ abstract class AbstractListController<T> {
   }
 
   void dispose({bool disposeScrollController=true}) {
+    print('disposing...');
     if (disposeScrollController) {
       _scrollController.dispose();
     }

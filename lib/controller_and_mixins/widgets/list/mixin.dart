@@ -17,9 +17,16 @@ mixin ListMixin {
     });
   }
 
+  void updateView() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      checkIfNeedsLoading();
+    });
+  }
+
   bool get showContent => (controller.isNotEmpty || controller.hasMore) && (!controller.failed||controller.firstTimeLoading);
 
   Future<void> checkIfNeedsLoading() async {
+    print('toto');
     if (controller.shouldReload) {
       loadMoreItems();
     }
@@ -28,12 +35,12 @@ mixin ListMixin {
   Future<void> loadMoreItems() async {
     setState(() {
       controller.resetLoading();
-    });
+    });   
     await controller.fetchMore();
     if (mounted){
       setState(() {});
       if (!controller.failed) {
-        checkIfNeedsLoading();
+        updateView();
       }
     }
   }
