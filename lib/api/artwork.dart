@@ -6,10 +6,12 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem, Artwork;
 import 'package:decodart/util/online.dart' show hostName;
 import 'package:decodart/util/logger.dart' show logger;
 
-// fetchAllArtworks
-// fetchArtworkById
-// fetchArtworkByImage
+/// The artwork API provides these three methods:
+/// fetchAllArtworks
+/// fetchArtworkById
+/// fetchArtworkByImage
 
+/// FetchArtworkException is raised for any failed API call
 class FetchArtworkException implements Exception {
   final String message;
   FetchArtworkException(this.message);
@@ -18,6 +20,16 @@ class FetchArtworkException implements Exception {
   String toString() => 'FetchArtworkException: $message';
 }
 
+/// Retrieves all artworks with the specified parameters.
+///
+/// [limit] specifies the maximum number of artworks to retrieve.
+/// [offset] specifies the offset for pagination.
+/// [query] is a search string to filter the artworks by keyword (title, artist name)
+/// [museumId] is the identifier of the museum to filter the artworks.
+/// [room] is the room name of the museum to filter the artworks.
+///
+/// Returns a list of artwork items.
+/// Throws a [FetchArtworkException] if the API fails or returned an ill-formed json
 Future<List<ArtworkListItem>> fetchAllArtworks({
     int limit=10,
     int offset=0,
@@ -37,20 +49,15 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
     );
     logger.d(uri);
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        // Handle timeout
-        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408),
     );
     if (response.statusCode == 200) {
+      // Note that ill-formatted json should produce an exception
       final results = jsonDecode(response.body);
-      List<ArtworkListItem> listItems = results['data'].map((item) => ArtworkListItem.fromJson(item))
-                                                       .toList()
-                                                       .cast<ArtworkListItem>();
-      return listItems;
+      return results['data'].map((item) => ArtworkListItem.fromJson(item))
+                            .toList()
+                            .cast<ArtworkListItem>();
     } else {
-      logger.e('Error from server: ${response.statusCode}');
       throw FetchArtworkException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
@@ -60,15 +67,22 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
   }
 }
 
+/// Fetches an artwork by its unique identifier.
+///
+/// This method sends a GET request to the server to retrieve the details
+/// of an artwork specified by its unique identifier [uid].
+///
+/// [uid] is the unique identifier of the artwork to retrieve.
+///
+/// Returns an [Artwork] object if the request is successful.
+///
+/// Throws a [FetchArtworkException] if the artwork is not found or if there is an error during the request.
 Future<Artwork> fetchArtworkById(int uid) async {
   try {
     final uri = Uri.parse('$hostName/artworks/$uid');
     logger.d(uri);
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        return http.Response('Request timed out', 408);
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
       return Artwork.fromJson(jsonDecode(response.body)['data']);
@@ -82,29 +96,42 @@ Future<Artwork> fetchArtworkById(int uid) async {
   }
 }
 
+/// Fetches artworks by an image.
+///
+/// This method sends a POST request to the server with an image file to search for artworks
+/// that match the image. The image is specified by its file path [imagePath].
+///
+/// [imagePath] is the file path of the image to use for the search. The image must be in JPEG or PNG format.
+///
+/// Returns a list of [ArtworkListItem] objects if the request is successful.
+///
+/// Throws a [FetchArtworkException] if the image has an incorrect MIME type, if there is an error during the request,
+/// or if the server returns an error.
 Future<List<ArtworkListItem>> fetchArtworkByImage(String imagePath) async {
   try {
     final url = Uri.parse('$hostName/artworks/search');
     logger.d(url);
-    String mimeType = 'application/octet-stream';
+    String mimeType;// = 'application/octet-stream';
     if (imagePath.endsWith('.jpg') || imagePath.endsWith('.jpeg')) {
       mimeType = 'image/jpeg';
     } else if (imagePath.endsWith('.png')) {
       mimeType = 'image/png';
+    } else {
+      throw FetchArtworkException("Incorrect MIME TYPE for image...");
     }
     final request = http.MultipartRequest('POST', url)
                        ..files.add(await http.MultipartFile.fromPath(
-                        'picture',
-                        imagePath,
-                        contentType: MediaType.parse(mimeType)
-                      )
-                    );
+                          'picture',
+                          imagePath,
+                          contentType: MediaType.parse(mimeType)
+                        )
+                      );
+    // Larger timeout duration because of image transfer
     final response = await request.send().timeout(const Duration(seconds: 10));
     if (response.statusCode == 200) {
       List<dynamic> results = jsonDecode(await response.stream.bytesToString())['data'];
       return results.map((item) => ArtworkListItem.fromJson(item)).toList();
     } {
-      logger.e('Error from server: ${response.statusCode}');
       throw FetchArtworkException('Error from server: ${response.statusCode}');
     }
   } catch(e, stackTrace){
