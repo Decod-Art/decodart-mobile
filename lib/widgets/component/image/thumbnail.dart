@@ -1,5 +1,5 @@
 import 'package:decodart/model/image.dart' show AbstractImage;
-import 'package:decodart/widgets/list/util/_item_type.dart' show ItemType;
+import 'package:decodart/widgets/list/util/item_type.dart' show ItemType;
 import 'package:flutter/cupertino.dart';
 
 class ThumbnailWidget extends StatelessWidget {

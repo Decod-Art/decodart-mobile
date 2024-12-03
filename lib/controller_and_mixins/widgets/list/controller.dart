@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart' show ScrollController, VoidCallback;
 
 abstract class AbstractListController<T> {
   late final ScrollController _scrollController;
+  late final bool shouldDisposeController;
   bool _isLoading = false;
   bool _failedLoading = false;
   bool _firstTimeLoading = true;
@@ -17,8 +18,9 @@ abstract class AbstractListController<T> {
   OnError? onError;
   static final int waitBeforeRetry = 5;
 
-  AbstractListController({ScrollController? scrollController, this.onError})
-    :_scrollController = scrollController??ScrollController();
+  AbstractListController({ScrollController? scrollController, this.onError}):
+    _scrollController = scrollController??ScrollController(),
+    shouldDisposeController=scrollController == null;
 
   void resetLoading () {
     _isLoading = true;
@@ -46,7 +48,7 @@ abstract class AbstractListController<T> {
   Future<void> fetchMore() async {
     try {
       beforeFetching();
-      await fetchMoreAPI();
+      await _fetchMoreAPI();
       _completeLoading();
       afterCompleting();
     } catch (e, trace) {
@@ -60,11 +62,17 @@ abstract class AbstractListController<T> {
 
   bool get failed => _failedLoading;
 
+  bool get firstTimeLoadingAndNotFailed => !failed&&firstTimeLoading;
+
   bool get canReload => (!failed||_retry)&&!_isLoading&&hasMore;
 
   bool get isLoading => _isLoading;
 
-  bool get scrollReachedLimit => _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30;
+  bool get scrollReachedLimit { 
+    if (_scrollController.hasClients) {
+      return _scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 30;
+    } return false;
+  }
 
   bool get shouldReload => scrollReachedLimit&&canReload;
 
@@ -76,9 +84,8 @@ abstract class AbstractListController<T> {
     _scrollController.addListener(listener);
   }
 
-  void dispose({bool disposeScrollController=true}) {
-    print('disposing...');
-    if (disposeScrollController) {
+  void dispose() {
+    if (shouldDisposeController) {
       _scrollController.dispose();
     }
   }
@@ -87,7 +94,7 @@ abstract class AbstractListController<T> {
 
   // Abstract methods
   bool get hasMore;
-  Future<void> fetchMoreAPI();
+  Future<void> _fetchMoreAPI();
   int get length;
   List<T> get list;
   T get first;
@@ -123,7 +130,7 @@ class SearchableListController<T extends AbstractListItem> extends AbstractListC
   }
 
   @override
-  Future<void> fetchMoreAPI() async {
+  Future<void> _fetchMoreAPI() async {
     await items.fetchMore();
   }
 
@@ -177,12 +184,12 @@ class ListController<T extends AbstractListItem> extends AbstractListController<
   }
 
   @override
-  Future<void> fetchMoreAPI() async {
+  Future<void> _fetchMoreAPI() async {
     await items.fetchMore();
   }
 
   @override
-  bool get shouldReload => (scrollReachedLimit)&&canReload;
+  bool get shouldReload => (scrollReachedLimit)&&canReload||firstTimeLoadingAndNotFailed;
 
   @override
   T get first => items.first;

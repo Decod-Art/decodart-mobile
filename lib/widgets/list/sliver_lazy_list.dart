@@ -1,6 +1,5 @@
 import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show OnPressList, SearchableDataFetcher;
 import 'package:decodart/controller_and_mixins/widgets/list/controller.dart' show SearchableListController;
-import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show ListMixin;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/list/util/list_tile.dart' show ListTile;
@@ -23,20 +22,48 @@ class SliverLazyListView<T extends AbstractListItem> extends StatefulWidget {
   State<StatefulWidget> createState() => SliverLazyListViewState<T>();
 }
 
-class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> with ListMixin {  
-  @override
+class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLazyListView<T>> {  
   late final SearchableListController<T> controller = SearchableListController<T>(widget.fetch);
 
   @override
   void initState() {
     super.initState();
-    initMixin();
+    controller.addListener(checkIfNeedsLoading);
+    updateView(250);
   }
 
   @override
   void dispose() {
     controller.dispose();
     super.dispose();
+  }
+
+  void updateView([int? duration]) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (duration != null) await Future.delayed(Duration(milliseconds: duration));
+      checkIfNeedsLoading();
+    });
+  }
+
+  bool get showContent => (controller.isNotEmpty || controller.hasMore) && (!controller.failed||controller.firstTimeLoading);
+
+  Future<void> checkIfNeedsLoading() async {
+    if (controller.shouldReload) {
+      loadMoreItems();
+    }
+  }
+
+  Future<void> loadMoreItems() async {
+    setState(() {
+      controller.resetLoading();
+    });   
+    await controller.fetchMore();
+    if (mounted){
+      setState(() {});
+      if (!controller.failed) {
+        updateView();
+      }
+    }
   }
 
   int get nbElements => controller.length + (controller.isLoading ? 1 : 0) + (controller.failed ? 1 : 0);
@@ -49,7 +76,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
       smallTitle: true,
       onSearch: (String value) {
         controller.query = value.isEmpty?null:value;
-        checkIfNeedsLoading();
+        updateView();
       },
       childCount: nbElements,
       builder: (context, index) {

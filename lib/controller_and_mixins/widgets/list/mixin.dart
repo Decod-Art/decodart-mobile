@@ -4,21 +4,27 @@ import 'package:flutter/cupertino.dart' show VoidCallback, WidgetsBinding;
 // The mixin is required to handle lazy lists
 // because it accesses "setState" as well as "mounted"
 // to refresh the widget when required
+
+// The list mixin handles the work with the controller.
+
+// the user must handle all the creation update work with the controller
 mixin ListMixin {
+  // The list controller actually manages the condition, etc. over the scroll controller
+  // to query the API
   AbstractListController get controller;
   void setState(VoidCallback fn);
   bool get mounted;
 
-  void initMixin () {
+  void initOrUpdateListMixin () {
     controller.addListener(checkIfNeedsLoading);
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await Future.delayed(const Duration(milliseconds: 250));
-      checkIfNeedsLoading();
-    });
+    updateView(250);
   }
 
-  void updateView() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  void updateView([int? duration]) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (duration != null){
+        await Future.delayed(Duration(milliseconds: duration));
+      }
       checkIfNeedsLoading();
     });
   }
@@ -26,7 +32,6 @@ mixin ListMixin {
   bool get showContent => (controller.isNotEmpty || controller.hasMore) && (!controller.failed||controller.firstTimeLoading);
 
   Future<void> checkIfNeedsLoading() async {
-    print('toto');
     if (controller.shouldReload) {
       loadMoreItems();
     }

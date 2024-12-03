@@ -52,7 +52,7 @@ class MuseumMapController extends AbstractListController<RoomListItem>{
   List<RoomListItem> get list => items.list;
 
   @override
-  Future<void> fetchMoreAPI() async {
+  Future<void> _fetchMoreAPI() async {
     await items.fetchMore();
   }
 

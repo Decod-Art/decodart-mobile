@@ -1,8 +1,8 @@
 import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show DataFetcher, OnPressList, SearchableDataFetcher;
 import 'package:decodart/model/abstract_item.dart' show AbstractListItem;
-import 'package:decodart/widgets/list/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
+import 'package:decodart/widgets/list/content_block/horizontal_list_with_header.dart' show LazyHorizontalListWithHeader;
 import 'package:decodart/widgets/list/lazy_list.dart' show LazyListWidget;
-import 'package:decodart/widgets/list/util/_item_type.dart' show defaultItemTypeFct, ItemType;
+import 'package:decodart/widgets/list/util/item_type.dart' show defaultItemTypeFct, ItemType;
 import 'package:decodart/widgets/navigation/modal.dart' show showListInModal;
 import 'package:decodart/widgets/navigation/screen.dart' show navigateToList;
 import 'package:flutter/cupertino.dart';
@@ -17,7 +17,10 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final DataFetcher<T>? secondaryFetch;
   final OnPressList onPressed;
   final bool isModal;
+  // itemType returns an element from the enumeration to show
+  // the correct icon on the image
   final ItemType Function(T) itemType;
+  // initialValues prefill the list with the correct values
   final List<T> initialValues;
   // Error when fetching new data for the list
   final void Function(Object, StackTrace)? onError;
@@ -32,12 +35,8 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
     this.initialValues = const [],
     this.onError});
 
-  
-
-
   @override
   Widget build(BuildContext context){
-    
     return LazyHorizontalListWithHeader<T>(
       name: title,
       fetch: secondaryFetch??fetch,
@@ -48,24 +47,10 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
       onTitlePressed: (){
         if (isModal) {
           showListInModal(
-            context, 
-            (context, [controller]) => LazyListWidget(
-              fetch: (
-                {int limit=10,int offset=0}
-              ) => fetch(limit: limit, offset: offset),
-              onPress: onPressed,
-              controller: controller,
-            )
-          );
+            context, (context, [controller]) => LazyListWidget(fetch: fetch, onPress: onPressed, controller: controller))
+          ;
         } else {
-          navigateToList(
-            context, 
-            title: title,
-            onPress: onPressed,
-            fetch: (
-              {int limit=10,int offset=0,String? query}
-            ) => fetch(limit: limit, offset: offset, query: query)
-          );
+          navigateToList(context, title: title, onPress: onPressed, fetch: fetch);
         }
       },
     );

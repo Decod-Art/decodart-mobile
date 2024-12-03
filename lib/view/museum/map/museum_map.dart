@@ -6,7 +6,7 @@ import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkVie
 import 'package:decodart/view/museum/map/pdf_map_viewer.dart' show FullScreenPDFViewer;
 import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
-import 'package:decodart/widgets/list/content_block.dart' show ContentBlock;
+import 'package:decodart/widgets/list/content_block/content_block.dart' show ContentBlock;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
@@ -37,12 +37,12 @@ class _MuseumMapState extends State<MuseumMap>  with ListMixin {
   @override
   void initState() {
     super.initState();
-    initMixin();
+    initOrUpdateListMixin();
   }
 
   @override
   void dispose() {
-    controller.dispose(disposeScrollController: widget.controller==null);
+    controller.dispose();
     super.dispose();
   }
 
