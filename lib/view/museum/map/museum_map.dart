@@ -1,5 +1,4 @@
 import 'package:decodart/controller_and_mixins/museum/map/controller.dart' show MuseumMapController;
-import 'package:decodart/controller_and_mixins/widgets/list/mixin.dart' show ListMixin;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
@@ -28,8 +27,7 @@ class MuseumMap extends StatefulWidget {
   State<MuseumMap> createState() => _MuseumMapState();
 }
 
-class _MuseumMapState extends State<MuseumMap>  with ListMixin {
-  @override
+class _MuseumMapState extends State<MuseumMap>  {
   late final MuseumMapController controller = MuseumMapController(
     widget.museum,
     scrollController: widget.controller
@@ -37,13 +35,45 @@ class _MuseumMapState extends State<MuseumMap>  with ListMixin {
   @override
   void initState() {
     super.initState();
-    initOrUpdateListMixin();
+    controller.addListener(checkIfNeedsLoading);
+    updateView(250);
   }
 
   @override
   void dispose() {
+    controller.removeListener(checkIfNeedsLoading);
     controller.dispose();
     super.dispose();
+  }
+
+  void updateView([int? duration]) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (duration != null){
+        await Future.delayed(Duration(milliseconds: duration));
+      }
+      checkIfNeedsLoading();
+    });
+  }
+
+  bool get showContent => (controller.isNotEmpty || controller.hasMore) && (!controller.failed||controller.firstTimeLoading);
+
+  Future<void> checkIfNeedsLoading() async {
+    if (controller.shouldReload) {
+      loadMoreItems();
+    }
+  }
+
+  Future<void> loadMoreItems() async {
+    setState(() {
+      controller.resetLoading();
+    });   
+    await controller.fetchMore();
+    if (mounted){
+      setState(() {});
+      if (!controller.failed) {
+        updateView();
+      }
+    }
   }
 
   @override

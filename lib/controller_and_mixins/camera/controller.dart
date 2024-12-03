@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart' show CameraController, ResolutionPreset, XFile, availableCameras;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
+import 'package:decodart/util/logger.dart' show logger;
 import 'package:flutter/cupertino.dart';
 import 'package:permission_handler/permission_handler.dart' show Permission, PermissionActions, PermissionStatus;
 
@@ -13,8 +14,10 @@ class DecodCameraException implements Exception {
   String toString() => 'DecodCameraException: $message';
 }
 
-typedef SearchFct=Future<List<ArtworkListItem>>Function(String);
-typedef SearchEndFct=void Function(List<ArtworkListItem>);
+typedef RunSearch=Future<List<ArtworkListItem>>Function(String);
+typedef AfterPictureTaken = void Function(String);
+typedef OnSearchStart = VoidCallback;
+typedef OnSearchResults=void Function(List<ArtworkListItem>);
 typedef FutureVoidCallback=Future<void>Function();
 
 class DecodCameraController {
@@ -25,13 +28,21 @@ class DecodCameraController {
 
   final VoidCallback? onInit;
 
+  // This are user functions to execute at steps during
+  //  the image search procedure
   FutureVoidCallback? _beforeSearch;
-  void Function(String)? _onSearch;
+  AfterPictureTaken? _onSearch;
   VoidCallback? _afterSearch;
 
-  final VoidCallback? onSearchStart;
-  final SearchFct? runSearch;
-  final SearchEndFct? onSearchEnd;
+  // This are the user functions to specify
+  // that actually perform the search
+
+  // take the picture
+  final OnSearchStart? onSearchStart;
+  // run the search
+  final RunSearch? runSearch;
+  // returns the results
+  final OnSearchResults? onSearchEnd;
 
   
   CameraController? _cameraController;
@@ -74,8 +85,14 @@ class DecodCameraController {
       ]).then((res) async {
         final image = res[1] as XFile; // Récupérez l'image de la caméra
         _onSearch?.call(image.path);
-
-        final results = await runSearch?.call(image.path)??const[];
+        List<ArtworkListItem>? results;
+        try {
+          results = await runSearch!(image.path);
+        } catch(e) {
+          logger.e("Search failed : $e");
+        } finally {
+          results ??= [];
+        }
 
         _isSearching = false;
 

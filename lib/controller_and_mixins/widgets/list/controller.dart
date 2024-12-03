@@ -48,7 +48,7 @@ abstract class AbstractListController<T> {
   Future<void> fetchMore() async {
     try {
       beforeFetching();
-      await _fetchMoreAPI();
+      await fetchMoreAPI();
       _completeLoading();
       afterCompleting();
     } catch (e, trace) {
@@ -94,7 +94,7 @@ abstract class AbstractListController<T> {
 
   // Abstract methods
   bool get hasMore;
-  Future<void> _fetchMoreAPI();
+  Future<void> fetchMoreAPI();
   int get length;
   List<T> get list;
   T get first;
@@ -130,7 +130,7 @@ class SearchableListController<T extends AbstractListItem> extends AbstractListC
   }
 
   @override
-  Future<void> _fetchMoreAPI() async {
+  Future<void> fetchMoreAPI() async {
     await items.fetchMore();
   }
 
@@ -184,7 +184,7 @@ class ListController<T extends AbstractListItem> extends AbstractListController<
   }
 
   @override
-  Future<void> _fetchMoreAPI() async {
+  Future<void> fetchMoreAPI() async {
     await items.fetchMore();
   }
 

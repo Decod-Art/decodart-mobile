@@ -64,7 +64,12 @@ Future<Artwork> fetchArtworkById(int uid) async {
   try {
     final uri = Uri.parse('$hostName/artworks/$uid');
     logger.d(uri);
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5),
+      onTimeout: () {
+        return http.Response('Request timed out', 408);
+      },
+    );
     if (response.statusCode == 200) {
       return Artwork.fromJson(jsonDecode(response.body)['data']);
     } else {
@@ -94,16 +99,17 @@ Future<List<ArtworkListItem>> fetchArtworkByImage(String imagePath) async {
                         contentType: MediaType.parse(mimeType)
                       )
                     );
-    final response = await request.send();
+    final response = await request.send().timeout(const Duration(seconds: 10));
     if (response.statusCode == 200) {
       List<dynamic> results = jsonDecode(await response.stream.bytesToString())['data'];
       return results.map((item) => ArtworkListItem.fromJson(item)).toList();
     } {
       logger.e('Error from server: ${response.statusCode}');
+      throw FetchArtworkException('Error from server: ${response.statusCode}');
     }
   } catch(e, stackTrace){
     logger.e('$e, image from: $imagePath');
     logger.d(stackTrace);
+    rethrow;
   }
-  return [];
 }

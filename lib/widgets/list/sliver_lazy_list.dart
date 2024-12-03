@@ -81,9 +81,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
       childCount: nbElements,
       builder: (context, index) {
         if (controller.failed) {
-          return Center(
-            child: ErrorView(onPress: loadMoreItems)
-          );
+          return Center(child: ErrorView(onPress: loadMoreItems));
         }
         if (index == controller.length) {
           return const Center(child: CupertinoActivityIndicator());

@@ -7,6 +7,13 @@ import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 
 // fetchAllOnMap
 // fetchAroundMe
+class FetchGeolocatedException implements Exception {
+  final String message;
+  FetchGeolocatedException(this.message);
+
+  @override
+  String toString() => 'FetchGeolocatedException: $message';
+}
 
 Future<List<GeolocatedListItem>>  fetchAllOnMap({
   required double minLatitude,
@@ -23,7 +30,13 @@ Future<List<GeolocatedListItem>>  fetchAllOnMap({
       },
     );
     logger.d(uri);
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5),
+      onTimeout: () {
+        // Handle timeout
+        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
+      },
+    );
     if (response.statusCode == 200) {
       final results = jsonDecode(response.body);
       List<GeolocatedListItem> listItems = results['data'].map((item) => GeolocatedListItem.fromJson(item))
@@ -31,13 +44,13 @@ Future<List<GeolocatedListItem>>  fetchAllOnMap({
                                                           .cast<GeolocatedListItem>();
       return listItems;
     } else {
-      logger.e('Error from server: ${response.statusCode}');
+      throw FetchGeolocatedException("Error from server: ${response.statusCode}");
     }
   } catch (e, stackTrace) {
     logger.e(e);
     logger.d(stackTrace);
+    rethrow;
   }
-  return [];
 }
 
 Future<List<GeolocatedListItem>>  fetchAroundMe({
@@ -72,8 +85,7 @@ Future<List<GeolocatedListItem>>  fetchAroundMe({
                                                           .cast<GeolocatedListItem>();
       return listItems;
     } else {
-      logger.e('Error from server: ${response.statusCode}');
-      throw Exception('Error from server: ${response.statusCode}');
+      throw FetchGeolocatedException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
     logger.e(e);

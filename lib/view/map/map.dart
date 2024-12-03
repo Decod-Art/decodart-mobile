@@ -2,6 +2,7 @@ import 'dart:math' show Point;
 
 import 'package:decodart/api/geolocated.dart' show fetchAllOnMap;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
+import 'package:decodart/util/logger.dart' show logger;
 import 'package:decodart/view/map/marker.dart' show DecodMarkerUI;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart';
 import 'package:flutter/cupertino.dart';
@@ -80,43 +81,47 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
   }
  
   Future<void> _loadMarkers() async {
-    const buffer = 0.5; 
-    // The function is a bit complex
-    // because it must not reconstruct markers that were already available.
-    // To avoid blinking effects
-    final visibleRegion = mapController.mapController.camera.visibleBounds;
-    final newItems = await fetchAllOnMap(
-      minLatitude: visibleRegion.south - buffer * (visibleRegion.north-visibleRegion.south),
-      maxLatitude: visibleRegion.north + buffer * (visibleRegion.north-visibleRegion.south),
-      minLongitude: visibleRegion.west - buffer * (visibleRegion.east-visibleRegion.west),
-      maxLongitude: visibleRegion.east + buffer * (visibleRegion.east-visibleRegion.west)
-    );
-    final newUids = newItems.map((item) => item.uid).toSet();
+    try {
+      const buffer = 0.5;
+      // The function is a bit complex
+      // because it must not reconstruct markers that were already available.
+      // To avoid blinking effects
+      final visibleRegion = mapController.mapController.camera.visibleBounds;
+      final newItems = await fetchAllOnMap(
+        minLatitude: visibleRegion.south - buffer * (visibleRegion.north-visibleRegion.south),
+        maxLatitude: visibleRegion.north + buffer * (visibleRegion.north-visibleRegion.south),
+        minLongitude: visibleRegion.west - buffer * (visibleRegion.east-visibleRegion.west),
+        maxLongitude: visibleRegion.east + buffer * (visibleRegion.east-visibleRegion.west)
+      );
+      final newUids = newItems.map((item) => item.uid).toSet();
 
-    List<MarkerWithUID> updatedMarkers = [];
-    for (int i = 0; i < markers.length; i++) {
-      if (newUids.contains(markers[i].uid)) {
-        updatedMarkers.add(markers[i]);
+      List<MarkerWithUID> updatedMarkers = [];
+      for (int i = 0; i < markers.length; i++) {
+        if (newUids.contains(markers[i].uid)) {
+          updatedMarkers.add(markers[i]);
+        }
       }
-    }
-    markers = updatedMarkers;
+      markers = updatedMarkers;
 
-    for (var item in newItems) {
-      if (!markers.any((existingItem) => existingItem.uid == item.uid)) {
-        markers.add(MarkerWithUID(
-          uid: item.uid!,
-          point: item.coordinates,
-          width: 80,
-          height: 80,
-          child: DecodMarkerUI(
-            onPress: () => _moveMap(item),
-            item: item,
-            modalKey: modalKey
-          )
-        ));
+      for (var item in newItems) {
+        if (!markers.any((existingItem) => existingItem.uid == item.uid)) {
+          markers.add(MarkerWithUID(
+            uid: item.uid!,
+            point: item.coordinates,
+            width: 80,
+            height: 80,
+            child: DecodMarkerUI(
+              onPress: () => _moveMap(item),
+              item: item,
+              modalKey: modalKey
+            )
+          ));
+        }
       }
+      setState(() {});
+    } catch(e) {
+      logger.e("Failed reloading the markers... Keeping current markers: $e");
     }
-    setState(() {});
   }
 
   @override
