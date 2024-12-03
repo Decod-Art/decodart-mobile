@@ -1,6 +1,6 @@
 import 'dart:math' show Random;
 
-import 'package:decodart/api/decod.dart' show fetchDecodQuestionByArtworkId, fetchDecodQuestionRandomly;
+import 'package:decodart/api/decod.dart' show fetchDecodQuestions, fetchDecodQuestionRandomly;
 import 'package:decodart/controller_and_mixins/decod/menu_controller.dart' show MenuController;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/artwork.dart' show Artwork;
@@ -41,9 +41,9 @@ class GameController extends MenuController {
   Future<void> fetchQuestions ({bool shuffle = false}) async {
     try {
       if(hasArtwork) {
-        add(await fetchDecodQuestionByArtworkId(artwork!.uid!), shuffle: shuffle);
+        add(await fetchDecodQuestions(artworkId: artwork!.uid!), shuffle: shuffle);
       } else {
-        add(await fetchDecodQuestionRandomly(tag: tag), shuffle: shuffle);
+        add(await fetchDecodQuestions(tag: tag), shuffle: shuffle);
       }
     } catch (_, __) {
       errorLoading = true;

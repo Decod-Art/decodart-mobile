@@ -14,7 +14,19 @@ class FetchGeolocatedException implements Exception {
   @override
   String toString() => 'FetchGeolocatedException: $message';
 }
-
+/// Fetches all geolocated items within the specified latitude and longitude bounds.
+///
+/// This method sends a GET request to the server to retrieve a list of geolocated items
+/// within the specified latitude and longitude bounds.
+///
+/// [minLatitude] specifies the minimum latitude of the bounding box.
+/// [maxLatitude] specifies the maximum latitude of the bounding box.
+/// [minLongitude] specifies the minimum longitude of the bounding box.
+/// [maxLongitude] specifies the maximum longitude of the bounding box.
+///
+/// Returns a list of [GeolocatedListItem] objects if the request is successful.
+///
+/// Throws a [FetchGeolocatedException] if there is an error during the request or if the server returns an error.
 Future<List<GeolocatedListItem>>  fetchAllOnMap({
   required double minLatitude,
   required double maxLatitude,
@@ -31,18 +43,12 @@ Future<List<GeolocatedListItem>>  fetchAllOnMap({
     );
     logger.d(uri);
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        // Handle timeout
-        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      final results = jsonDecode(response.body);
-      List<GeolocatedListItem> listItems = results['data'].map((item) => GeolocatedListItem.fromJson(item))
-                                                          .toList()
-                                                          .cast<GeolocatedListItem>();
-      return listItems;
+      return jsonDecode(response.body).map((item) => GeolocatedListItem.fromJson(item))
+                                      .toList()
+                                      .cast<GeolocatedListItem>();
     } else {
       throw FetchGeolocatedException("Error from server: ${response.statusCode}");
     }
@@ -53,6 +59,20 @@ Future<List<GeolocatedListItem>>  fetchAllOnMap({
   }
 }
 
+/// Fetches geolocated items around the specified location.
+///
+/// This method sends a GET request to the server to retrieve a list of geolocated items
+/// around the specified latitude and longitude.
+///
+/// [limit] specifies the maximum number of items to retrieve (default is 10).
+/// [offset] specifies the offset for pagination (default is 0).
+/// [query] is a search string to filter the items.
+/// [latitude] specifies the latitude of the location (default is 43.612286).
+/// [longitude] specifies the longitude of the location (default is 3.880830).
+///
+/// Returns a list of [GeolocatedListItem] objects if the request is successful.
+///
+/// Throws a [FetchGeolocatedException] if there is an error during the request or if the server returns an error.
 Future<List<GeolocatedListItem>>  fetchAroundMe({
   int limit=10,
   int offset=0,
@@ -72,18 +92,12 @@ Future<List<GeolocatedListItem>>  fetchAroundMe({
     );
     logger.d(uri);
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        // Handle timeout
-        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      final results = jsonDecode(response.body);
-      List<GeolocatedListItem> listItems = results['data'].map((item) => GeolocatedListItem.fromJson(item))
-                                                          .toList()
-                                                          .cast<GeolocatedListItem>();
-      return listItems;
+      return jsonDecode(response.body).map((item) => GeolocatedListItem.fromJson(item))
+                                      .toList()
+                                      .cast<GeolocatedListItem>();
     } else {
       throw FetchGeolocatedException('Error from server: ${response.statusCode}');
     }

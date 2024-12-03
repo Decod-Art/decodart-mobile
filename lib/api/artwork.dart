@@ -11,7 +11,7 @@ import 'package:decodart/util/logger.dart' show logger;
 /// fetchArtworkById
 /// fetchArtworkByImage
 
-/// FetchArtworkException is raised for any failed API call
+/// FetchArtworkException is raised for any failed API call and Json format error
 class FetchArtworkException implements Exception {
   final String message;
   FetchArtworkException(this.message);
