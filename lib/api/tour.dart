@@ -15,6 +15,20 @@ class FetchTourException implements Exception {
   String toString() => 'FetchTourException: $message';
 }
 
+/// Fetches all tours with the specified parameters.
+///
+/// This method sends a GET request to the server to retrieve a list of tours
+/// based on the provided parameters.
+///
+/// [limit] specifies the maximum number of tours to retrieve (default is 10).
+/// [offset] specifies the offset for pagination (default is 0).
+/// [museumId] is the identifier of the museum to filter the tours.
+/// [isExhibition] specifies whether to filter tours that are exhibitions (default is false).
+/// [query] is a search string to filter the tours.
+///
+/// Returns a list of [TourListItem] objects if the request is successful.
+///
+/// Throws a [FetchTourException] if there is an error during the request or if the server returns an error.
 Future<List<TourListItem>>  fetchAllTours({
   int limit=10,
   int offset=0,
@@ -34,19 +48,13 @@ Future<List<TourListItem>>  fetchAllTours({
     );
     logger.d(uri);
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        // Handle timeout
-        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      final tours = jsonDecode(response.body);
-      return tours['data'].map((tour) => TourListItem.fromJson(tour))
-                          .toList()
-                          .cast<TourListItem>();
+      return jsonDecode(response.body).map((tour) => TourListItem.fromJson(tour))
+                                      .toList()
+                                      .cast<TourListItem>();
     } else {
-      logger.e('Error from server: ${response.statusCode}');
       throw FetchTourException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
@@ -56,14 +64,23 @@ Future<List<TourListItem>>  fetchAllTours({
   }
 }
 
+/// Fetches a tour by its unique identifier.
+///
+/// This method sends a GET request to the server to retrieve the details
+/// of a tour specified by its unique identifier [id].
+///
+/// [id] is the unique identifier of the tour to retrieve.
+///
+/// Returns a [Tour] object if the request is successful.
+///
+/// Throws a [FetchTourException] if there is an error during the request or if the server returns an error.
 Future<Tour> fetchTourById(int id) async {
   try {
     final uri = Uri.parse('$hostName/tours/$id');
     logger.d(uri);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
-      Map<String, dynamic> json = jsonDecode(response.body)['data'];
-      return Tour.fromJson(json);
+      return Tour.fromJson(jsonDecode(response.body)['data']);
     } else {
       throw FetchTourException('Failed to load tour: ${response.statusCode}');
     }

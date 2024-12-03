@@ -16,6 +16,20 @@ class FetchRoomsException implements Exception {
   String toString() => 'FetchRoomsException: $message';
 }
 
+/// Fetches rooms with the specified parameters.
+///
+/// This method sends a GET request to the server to retrieve a list of rooms
+/// based on the provided parameters.
+///
+/// [limit] specifies the maximum number of rooms to retrieve (default is 5).
+/// [offset] specifies the offset for pagination (default is 0).
+/// [query] is a search string to filter the rooms.
+/// [museum] is the foreign key of the museum to filter the rooms.
+///
+/// Returns a list of [RoomListItem] objects if the request is successful.
+///
+/// Throws a [FetchRoomsException] if there is an error during the request or if the server returns an error.
+
 Future<List<RoomListItem>> fetchRooms({
     int limit=5,
     int offset=0,
@@ -36,19 +50,13 @@ Future<List<RoomListItem>> fetchRooms({
   logger.d(uri);
   try {
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        // Handle timeout
-        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
 
     if (response.statusCode == 200) {
-      // Si la requête a réussi, décodez le corps de la réponse
-      final List<dynamic> data = jsonDecode(response.body)['data'];
-      return data.map((item) => RoomListItem.fromJson(item))
-                 .toList()
-                 .cast<RoomListItem>();
+      return jsonDecode(response.body)['data'].map((item) => RoomListItem.fromJson(item))
+                                              .toList()
+                                              .cast<RoomListItem>();
     } else {
       throw FetchRoomsException('Erreur de requête: ${response.statusCode}');
     }

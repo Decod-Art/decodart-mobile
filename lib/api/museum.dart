@@ -4,6 +4,9 @@ import 'package:decodart/util/online.dart' show hostName;
 import 'package:http/http.dart' as http;
 import 'dart:convert' show jsonDecode;
 
+// fetchAllMuseums
+// fetchMuseumById
+
 class FetchMuseumException implements Exception {
   final String message;
   FetchMuseumException(this.message);
@@ -12,6 +15,18 @@ class FetchMuseumException implements Exception {
   String toString() => 'FetchMuseumException: $message';
 }
 
+/// Fetches all museums with the specified parameters.
+///
+/// This method sends a GET request to the server to retrieve a list of museums
+/// based on the provided parameters.
+///
+/// [limit] specifies the maximum number of museums to retrieve (default is 10).
+/// [offset] specifies the offset for pagination (default is 0).
+/// [query] is a search string to filter the museums.
+///
+/// Returns a list of [MuseumListItem] objects if the request is successful.
+///
+/// Throws a [FetchMuseumException] if there is an error during the request or if the server returns an error.
 Future<List<MuseumListItem>>  fetchAllMuseums({
   int limit=10,
   int offset=0,
@@ -27,20 +42,13 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
     );
     logger.d(uri);
     final response = await http.get(uri).timeout(
-      Duration(seconds: 5),
-      onTimeout: () {
-        // Handle timeout
-        return http.Response('Request timed out', 408); // 408 is the HTTP status code for Request Timeout
-      },
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      final museums = jsonDecode(response.body);
-      List<MuseumListItem> listItems = museums['data'].map((museum) => MuseumListItem.fromJson(museum))
-                                                      .toList()
-                                                      .cast<MuseumListItem>();
-      return listItems;
+      return jsonDecode(response.body).map((museum) => MuseumListItem.fromJson(museum))
+                                      .toList()
+                                      .cast<MuseumListItem>();
     } else {
-      logger.e('Error from server: ${response.statusCode}');
       throw FetchMuseumException('Error from server: ${response.statusCode}');
     }
   } catch (e, stackTrace) {
@@ -50,14 +58,25 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
   } 
 }
 
+/// Fetches a museum by its unique identifier.
+///
+/// This method sends a GET request to the server to retrieve the details
+/// of a museum specified by its unique identifier [id].
+///
+/// [id] is the unique identifier of the museum to retrieve.
+///
+/// Returns a [Museum] object if the request is successful.
+///
+/// Throws a [FetchMuseumException] if there is an error during the request or if the server returns an error.
 Future<Museum> fetchMuseumById(int id) async {
   try {
     final uri = Uri.parse('$hostName/museums/$id');
     logger.d(uri);
-    final response = await http.get(uri);
+    final response = await http.get(uri).timeout(
+      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
+    );
     if (response.statusCode == 200) {
-      Map<String, dynamic> json = jsonDecode(response.body)['data'];
-      return Museum.fromJson(json);
+      return Museum.fromJson(jsonDecode(response.body)['data']);
     } else {
       throw FetchMuseumException('Failed to load museum: ${response.statusCode}');
     }
