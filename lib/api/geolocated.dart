@@ -46,9 +46,9 @@ Future<List<GeolocatedListItem>>  fetchAllOnMap({
       Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      return jsonDecode(response.body).map((item) => GeolocatedListItem.fromJson(item))
-                                      .toList()
-                                      .cast<GeolocatedListItem>();
+      return jsonDecode(response.body)['data'].map((item) => GeolocatedListItem.fromJson(item))
+                                              .toList()
+                                              .cast<GeolocatedListItem>();
     } else {
       throw FetchGeolocatedException("Error from server: ${response.statusCode}");
     }
@@ -95,9 +95,9 @@ Future<List<GeolocatedListItem>>  fetchAroundMe({
       Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      return jsonDecode(response.body).map((item) => GeolocatedListItem.fromJson(item))
-                                      .toList()
-                                      .cast<GeolocatedListItem>();
+      return jsonDecode(response.body)['data'].map((item) => GeolocatedListItem.fromJson(item))
+                                              .toList()
+                                              .cast<GeolocatedListItem>();
     } else {
       throw FetchGeolocatedException('Error from server: ${response.statusCode}');
     }

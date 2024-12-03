@@ -8,8 +8,11 @@ class MenuController {
   static const String gameArtworkHistoryName = 'gameArtworkHistory';
 
   Future<void> openBoxes () async {
-    await HiveService().openBox<GameData>(gameDataBoxName);
-    await HiveService().openBox<List>(gameArtworkHistoryName);
+    final service = HiveService();
+    await Future.wait([
+      service.openBox<GameData>(gameDataBoxName),
+      service.openBox<List>(gameArtworkHistoryName),
+    ]);
   }
 
   Future<void> reset () async {
@@ -40,5 +43,4 @@ class MenuController {
       .get('history', defaultValue: [])
       !.cast<ArtworkListItem>();
   }
-
 }

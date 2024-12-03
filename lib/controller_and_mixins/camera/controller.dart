@@ -20,6 +20,7 @@ typedef OnSearchStart = VoidCallback;
 typedef OnSearchResults=void Function(List<ArtworkListItem>);
 typedef FutureVoidCallback=Future<void>Function();
 
+/// Controller for managing the camera and search functionality.
 class DecodCameraController {
   String? errorMessage;
 
@@ -67,12 +68,15 @@ class DecodCameraController {
     _afterSearch = fct;
   }
 
-  bool get canTakePicture => errorMessage == null&&isLoaded;
+  bool get canTakePicture => errorMessage == null && isLoaded;
 
   bool get hasError => errorMessage != null;
 
   bool get isSearching => _isSearching;
 
+  /// Takes a picture and performs the search.
+  ///
+  /// Throws a [DecodCameraException] if the camera is not initialized.
   Future<void> takePicture() async {
     if (canTakePicture){
       _isSearching = true;
@@ -112,6 +116,10 @@ class DecodCameraController {
     if(_isLoaded)onInit?.call();
   }
 
+  /// Initializes the camera.
+  ///
+  /// Requests camera permissions and initializes the camera controller.
+  /// Sets an error message if the initialization fails.
   Future<void> init() async {
     try {
       final cameras = await availableCameras();

@@ -51,9 +51,9 @@ Future<List<TourListItem>>  fetchAllTours({
       Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      return jsonDecode(response.body).map((tour) => TourListItem.fromJson(tour))
-                                      .toList()
-                                      .cast<TourListItem>();
+      return jsonDecode(response.body)['data'].map((tour) => TourListItem.fromJson(tour))
+                                              .toList()
+                                              .cast<TourListItem>();
     } else {
       throw FetchTourException('Error from server: ${response.statusCode}');
     }

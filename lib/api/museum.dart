@@ -45,9 +45,9 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
       Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408)
     );
     if (response.statusCode == 200) {
-      return jsonDecode(response.body).map((museum) => MuseumListItem.fromJson(museum))
-                                      .toList()
-                                      .cast<MuseumListItem>();
+      return jsonDecode(response.body)['data'].map((museum) => MuseumListItem.fromJson(museum))
+                                              .toList()
+                                              .cast<MuseumListItem>();
     } else {
       throw FetchMuseumException('Error from server: ${response.statusCode}');
     }
