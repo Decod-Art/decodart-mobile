@@ -18,25 +18,18 @@ class TourListItem extends AbstractItem implements AbstractListItem {
       required this.image
   });
 
-  factory TourListItem.fromJson(Map<String, dynamic> json) {
-    return TourListItem(
-      uid: json['uid'],
-      name: json['name'],
-      subtitle: json['subtitle'],
-      image: ImageOnline.fromJson(json['image']));
-  }
+  factory TourListItem.fromJson(Map<String, dynamic> json) => TourListItem(
+    uid: json['uid'],
+    name: json['name'],
+    subtitle: json['subtitle'],
+    image: ImageOnline.fromJson(json['image'])
+  );
 
   @override
   String get title => name;
 
   @override
-  Map<String, dynamic> toJson() {
-      return {
-        ...super.toJson(),
-        'subtitle': subtitle,
-        'image': image.toJson()
-      };
-    }
+  Map<String, dynamic> toJson() => {...super.toJson(), 'subtitle': subtitle, 'image': image.toJson()};
 }
 
 class Tour extends TourListItem {
@@ -62,31 +55,26 @@ class Tour extends TourListItem {
 
 
 
-  factory Tour.fromJson(Map<String, dynamic> json) {
-    return Tour(
-      uid: json['uid'],
-      name: json['name'],
-      description: json['description'],
-      subtitle: json['subtitle'],
-      isExhibition: json['isexhibition'],
-      startDate: json['startdate'] != null ? DateTime.parse(json['startdate']) : null,
-      endDate: json['enddate'] != null ? DateTime.parse(json['enddate']) : null,
-      museum: json['museum']!=null?MuseumForeignKey.fromJson(json['museum']):null,
-      image: ImageOnline.fromJson(json['image']),
-      artworks: (json['artworks'] as List).map((item) => ArtworkForeignKey.fromJson(item)).toList()
-    );
-  }
-
+  factory Tour.fromJson(Map<String, dynamic> json) => Tour(
+    uid: json['uid'],
+    name: json['name'],
+    description: json['description'],
+    subtitle: json['subtitle'],
+    isExhibition: json['isexhibition'],
+    startDate: json['startdate'] != null ? DateTime.parse(json['startdate']) : null,
+    endDate: json['enddate'] != null ? DateTime.parse(json['enddate']) : null,
+    museum: json['museum']!=null?MuseumForeignKey.fromJson(json['museum']):null,
+    image: ImageOnline.fromJson(json['image']),
+    artworks: (json['artworks'] as List).map((item) => ArtworkForeignKey.fromJson(item)).toList()
+  );
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'description': description,
-      'isexhibition': isExhibition,
-      'startdate': startDate?.toString(),
-      'enddate': endDate?.toString(),
-      'museum': museum?.toJson(),
-      'artworks': artworks.map((item) => item.toJson()).toList()
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'description': description,
+    'isexhibition': isExhibition,
+    'startdate': startDate?.toString(),
+    'enddate': endDate?.toString(),
+    'museum': museum?.toJson(),
+    'artworks': artworks.map((item) => item.toJson()).toList()
+  };
 }
