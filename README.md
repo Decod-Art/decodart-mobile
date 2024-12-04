@@ -33,7 +33,7 @@ The project is structured as follows:
   - `view/`: Views and widgets of the application.
   - `widgets/`: Reusable UI components.
 - `test/`: Contains unit and integration tests.
-- `assets/`: Contains resources such as images and configuration files.
+- `images/`: Contains images used in the app.
 
 ## Contribution
 Contributions are welcome! To contribute, please follow the steps below:
