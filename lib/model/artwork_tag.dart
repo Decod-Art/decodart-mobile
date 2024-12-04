@@ -2,17 +2,12 @@ import 'package:decodart/model/abstract_item.dart';
 
 class ArtworkTagCategory  extends UnnamedAbstractItem  {
   final String name;
-  const ArtworkTagCategory({
-    super.uid,
-    required this.name
-  });
+  const ArtworkTagCategory({super.uid, required this.name});
 
-  factory ArtworkTagCategory.fromJson(Map<String, dynamic> json) {
-    return ArtworkTagCategory(
-      uid: json['uid'],
-      name: json['name']
-    );
-  }
+  factory ArtworkTagCategory.fromJson(Map<String, dynamic> json) => ArtworkTagCategory(
+    uid: json['uid'],
+    name: json['name']
+  );
 }
 
 class ArtworkTag extends UnnamedAbstractItem {
@@ -26,12 +21,10 @@ class ArtworkTag extends UnnamedAbstractItem {
     required this.description
   });
 
-  factory ArtworkTag.fromJson(Map<String, dynamic> json) {
-    return ArtworkTag(
-      uid: json['uid'],
-      name: json['name'],
-      description: json['description'],
-      category: ArtworkTagCategory.fromJson(json['category'])
-    );
-  }
+  factory ArtworkTag.fromJson(Map<String, dynamic> json) => ArtworkTag(
+    uid: json['uid'],
+    name: json['name'],
+    description: json['description'],
+    category: ArtworkTagCategory.fromJson(json['category'])
+  );
 }

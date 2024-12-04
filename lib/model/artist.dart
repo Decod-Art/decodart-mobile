@@ -4,27 +4,19 @@ import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 
 
 class ArtistForeignKey extends AbstractItem {
-  const ArtistForeignKey({
-    super.uid,
-    required super.name
-  });
-  factory ArtistForeignKey.fromJson(Map<String, dynamic> json) {
-    return ArtistForeignKey(
-      uid: json['uid'],
-      name: json['name']);
-  }
+  const ArtistForeignKey({super.uid, required super.name});
 
-  factory ArtistForeignKey.fromHive(hive.ArtistForeignKey artist) {
-    return ArtistForeignKey(
-      uid: artist.uid,
-      name: artist.name);
-  }
+  factory ArtistForeignKey.fromJson(Map<String, dynamic> json) => ArtistForeignKey(
+    uid: json['uid'],
+    name: json['name']
+  );
 
-  hive.ArtistForeignKey toHive(){
-    return hive.ArtistForeignKey(
-      uid: uid!,
-      name: name);
-  }
+  factory ArtistForeignKey.fromHive(hive.ArtistForeignKey artist) => ArtistForeignKey(
+    uid: artist.uid,
+    name: artist.name
+  );
+
+  hive.ArtistForeignKey toHive() => hive.ArtistForeignKey(uid: uid!, name: name);
 }
 
 class Artist extends ArtistForeignKey {
@@ -51,33 +43,29 @@ class Artist extends ArtistForeignKey {
     this.ulangetty,
     required this.image});
 
-  factory Artist.fromJson(Map<String, dynamic> json) {
-    return Artist(
-      uid: json['uid'],
-      name: json['name'],
-      biography: json['biography'],
-      birth: json['birth'],
-      death: json['death'],
-      birthLocation: json['birthlocation'],
-      deathLocation: json['deathlocation'],
-      activityLocation: json['activitylocation'],
-      ulangetty: json['ulangetty'],
-      image: ImageOnline.fromJson(json['image'])
-    );
-  }
+  factory Artist.fromJson(Map<String, dynamic> json) => Artist(
+    uid: json['uid'],
+    name: json['name'],
+    biography: json['biography'],
+    birth: json['birth'],
+    death: json['death'],
+    birthLocation: json['birthlocation'],
+    deathLocation: json['deathlocation'],
+    activityLocation: json['activitylocation'],
+    ulangetty: json['ulangetty'],
+    image: ImageOnline.fromJson(json['image'])
+  );
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'biography': biography,
-      'birth': birth,
-      'death': death,
-      'birthlocation': birthLocation,
-      'deathlocation': deathLocation,
-      'activitylocation': activityLocation,
-      'ulangetty': ulangetty,
-      'image': image.toJson()
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'biography': biography,
+    'birth': birth,
+    'death': death,
+    'birthlocation': birthLocation,
+    'deathlocation': deathLocation,
+    'activitylocation': activityLocation,
+    'ulangetty': ulangetty,
+    'image': image.toJson()
+  };
 }

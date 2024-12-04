@@ -11,7 +11,7 @@ enum DecodQuestionType {
   boundingbox
 }
 
-// DecodQuestion are handled separately for ListItems elements
+// DecodQuestion are handled differently for ListItems elements
 // Thus, it does not implements AbstractListItem as it does not
 // contain a subtitle getter/attribute
 class DecodQuestionListItem extends AbstractItem {
@@ -22,19 +22,14 @@ class DecodQuestionListItem extends AbstractItem {
     required this.image
   });
 
-  factory DecodQuestionListItem.fromJson(Map<String, dynamic> json) {
-    return DecodQuestionListItem(
-      uid: json['uid'],
-      name: json['name'],
-      image: ImageOnline.fromJson(json['image']));
-  }
+  factory DecodQuestionListItem.fromJson(Map<String, dynamic> json) => DecodQuestionListItem(
+    uid: json['uid'],
+    name: json['name'],
+    image: ImageOnline.fromJson(json['image'])
+  );
+
   @override
-  Map<String, dynamic> toJson(){
-    return {
-      ...super.toJson(),
-      'image': image.toJson()
-    };
-  }
+  Map<String, dynamic> toJson() => {...super.toJson(), 'image': image.toJson()};
 }
 
 class DecodQuestion extends DecodQuestionListItem {
@@ -56,45 +51,38 @@ class DecodQuestion extends DecodQuestionListItem {
     required this.tags
   });
 
-  factory DecodQuestion.fromJson(Map<String, dynamic>json) {
-    return DecodQuestion(
-      uid: json['uid'],
-      name: json['name'],
-      image: ImageOnline.fromJson(json['image']),
-      question: json['question'],
-      questionType: DecodQuestionType.values.firstWhere((e) => e.toString().split('.').last == json['question_type']),
-      answers: (json['answers'] as List).map((item)=>DecodAnswer.fromJson(item)).toList(),
-      showImage: json['showimage'],
-      artwork: json['artwork']!=null?ArtworkForeignKey.fromJson(json['artwork']):null,
-      tags: (json['tags'] as List).map((item) => DecodTag.fromJson(item)).toList()
-    );
-  }
+  factory DecodQuestion.fromJson(Map<String, dynamic>json) => DecodQuestion(
+    uid: json['uid'],
+    name: json['name'],
+    image: ImageOnline.fromJson(json['image']),
+    question: json['question'],
+    questionType: DecodQuestionType.values.firstWhere((e) => e.toString().split('.').last == json['question_type']),
+    answers: (json['answers'] as List).map((item)=>DecodAnswer.fromJson(item)).toList(),
+    showImage: json['showimage'],
+    artwork: json['artwork']!=null?ArtworkForeignKey.fromJson(json['artwork']):null,
+    tags: (json['tags'] as List).map((item) => DecodTag.fromJson(item)).toList()
+  );
 
   DecodAnswer? get correctAnswer {
     DecodAnswer? answer;
-    int i = 0;
-    while (i< answers.length && answer == null) {
+    for (int i = 0 ; i < answers.length && answer == null ; i++) {
       if (answers[i].isCorrect){
         answer = answers[i];
       }
-      i++;
     }
     return answer;
   }
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'question': question,
-      'question_type': questionType.toString().split('.').last,
-      'answers': answers.map((item) => item.toJson()).toList(),
-      'showimage': showImage,
-      if (artwork != null)
-        'artwork': artwork!.toJson(),
-      'tags': tags.map((item) => item.toJson()).toList()
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'question': question,
+    'question_type': questionType.toString().split('.').last,
+    'answers': answers.map((item) => item.toJson()).toList(),
+    'showimage': showImage,
+    if (artwork != null) 'artwork': artwork!.toJson(),
+    'tags': tags.map((item) => item.toJson()).toList()
+  };
 
   DecodQuestion shuffleAnswers() {
     List<DecodAnswer> shuffledAnswers = List.from(answers);
@@ -123,39 +111,28 @@ class DecodAnswer extends UnnamedAbstractItem {
     this.text,
     this.isCorrect = true
   });
-  factory DecodAnswer.fromJson(Map<String, dynamic>json) {
-    return DecodAnswer(
-      uid: json['uid'],
-      image: json['image']!=null?ImageOnline.fromJson(json['image']):null,
-      text: json['text'],
-      isCorrect: json['iscorrect']
-    );
-  }
+  factory DecodAnswer.fromJson(Map<String, dynamic>json) => DecodAnswer(
+    uid: json['uid'],
+    image: json['image']!=null?ImageOnline.fromJson(json['image']):null,
+    text: json['text'],
+    isCorrect: json['iscorrect']
+  );
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      if (image != null)
-        'image': image!.toJson(),
-      if (text != null)
-        'text': text,
-      'iscorrect': isCorrect
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    if (image != null) 'image': image!.toJson(),
+    if (text != null) 'text': text,
+    'iscorrect': isCorrect
+  };
 }
 
 class DecodTag extends UnnamedAbstractItem {
   final String name;
-  const DecodTag({
-    super.uid,
-    required this.name,
-  });
+  const DecodTag({super.uid, required this.name});
 
-  factory DecodTag.fromJson(Map<String, dynamic> json) {
-    return DecodTag(
-      uid: json['uid'],
-      name: json['name']
-    );
-  }
+  factory DecodTag.fromJson(Map<String, dynamic> json) => DecodTag(
+    uid: json['uid'],
+    name: json['name']
+  );
 }
