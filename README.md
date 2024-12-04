@@ -1,5 +1,10 @@
 # Decod'Art
 
+[![Open Issues](https://img.shields.io/github/issues/your-username/decodart-mobile)](https://github.com/your-username/decodart-mobile/issues)
+[![Latest Release](https://img.shields.io/github/v/release/your-username/decodart-mobile)](https://github.com/your-username/decodart-mobile/releases)
+[![License](https://img.shields.io/github/license/your-username/decodart-mobile)](https://github.com/your-username/decodart-mobile/blob/main/LICENSE)
+
+
 ## Introduction
 Decod'Art is an innovative mobile application that allows users to discover and interact with artworks in a fun and educational way. Through questions and challenges, users can deepen their knowledge of art and artists.
 
