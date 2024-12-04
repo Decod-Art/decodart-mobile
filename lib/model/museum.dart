@@ -4,54 +4,45 @@ import 'package:decodart/model/image.dart' show ImageOnline, AbstractImage;
 
 
 class MuseumForeignKey extends AbstractItem {
-  const MuseumForeignKey({
-    super.uid,
-    required super.name
-  });
-  factory MuseumForeignKey.fromJson(Map<String,dynamic>json) {
-    return MuseumForeignKey(
-      uid: json['uid'],
-      name: json['name']);
-  }
+  const MuseumForeignKey({super.uid, required super.name});
+
+  factory MuseumForeignKey.fromJson(Map<String,dynamic>json) => MuseumForeignKey(
+    uid: json['uid'],
+    name: json['name']
+  );
 }
 
 
 class MuseumListItem extends MuseumForeignKey implements AbstractListItem {
   @override
   final AbstractImage image;
+
   final String city;
+
   const MuseumListItem({
     super.uid,
     required super.name,
     required this.image,
     required this.city
   });
-  factory MuseumListItem.fromJson(Map<String, dynamic> json) {
-    return MuseumListItem(
-      uid: json['uid'],
-      name: json['name'],
-      image: ImageOnline.fromJson(json['image']),
-      city: json['city']
-    );
-  }
+
+  factory MuseumListItem.fromJson(Map<String, dynamic> json) => MuseumListItem(
+    uid: json['uid'],
+    name: json['name'],
+    image: ImageOnline.fromJson(json['image']),
+    city: json['city']
+  );
   
-  factory MuseumListItem.fromGeolocatedListItem(GeolocatedListItem item) {
-    return MuseumListItem(
-      uid: item.uid,
-      name: item.title,
-      city: item.subtitle,
-      image: item.image
-    );
-  }
+  factory MuseumListItem.fromGeolocatedListItem(GeolocatedListItem item) => MuseumListItem(
+    uid: item.uid,
+    name: item.title,
+    city: item.subtitle,
+    image: item.image
+  );
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'image': image.toJson(),
-      'city': city
-    };
-  }
+  Map<String, dynamic> toJson() => {...super.toJson(), 'image': image.toJson(), 'city': city};
+
   @override
   String get subtitle => city;
 
@@ -82,33 +73,30 @@ class Museum extends MuseumListItem {
     required this.hasTours
     });
 
-  factory Museum.fromJson(Map<String, dynamic> json) {
-    return Museum(
-      uid: json['uid'],
-      name: json['name'],
-      description: json['description'],
-      city: json['city'],
-      country: json['country'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      image: ImageOnline.fromJson(json['image']),
-      hasExhibitions: json['hasexhibitions'],
-      hasCollection: json['hascollection'],
-      hasTours: json['hastours'],
-    );
-  }
-  @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'description': description,
-      'country': country,
-      'latitude': latitude,
-      'longitude': longitude,
-    };
-  }
+  factory Museum.fromJson(Map<String, dynamic> json) => Museum(
+    uid: json['uid'],
+    name: json['name'],
+    description: json['description'],
+    city: json['city'],
+    country: json['country'],
+    latitude: json['latitude'],
+    longitude: json['longitude'],
+    image: ImageOnline.fromJson(json['image']),
+    hasExhibitions: json['hasexhibitions'],
+    hasCollection: json['hascollection'],
+    hasTours: json['hastours'],
+  );
 
-  String get descriptionText {
+  @override
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'description': description,
+    'country': country,
+    'latitude': latitude,
+    'longitude': longitude,
+  };
+
+  String get descriptionShortened {
     final lines = description.split('\n');
 
     final filteredLines = lines

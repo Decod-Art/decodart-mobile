@@ -10,14 +10,13 @@ class RoomForeignKey extends AbstractItem {
     required super.name
   });
 
-  factory RoomForeignKey.fromJson(Map<String, dynamic> json) {
-    return RoomForeignKey(
-      uid: json['uid'],
-      name: json['name']);
-  }
+  factory RoomForeignKey.fromJson(Map<String, dynamic> json) => RoomForeignKey(
+    uid: json['uid'],
+    name: json['name']
+  );
 }
 
-class RoomListItem extends AbstractItem {
+class RoomListItem extends RoomForeignKey {
   final String description;
   final List<ArtworkListItem> artworks;
 
@@ -28,24 +27,19 @@ class RoomListItem extends AbstractItem {
     required this.artworks
   });
 
-  factory RoomListItem.fromJson(Map<String, dynamic> json) {
-    return RoomListItem(
-      uid: json['uid'],
-      name: json['name'],
-      description: json['description'],
-      artworks: json['artworkPreview']!=null
-        ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
-                                 .toList()
-                                 .cast<ArtworkListItem>()
-        : const[]);
-  }
+  factory RoomListItem.fromJson(Map<String, dynamic> json) => RoomListItem(
+    uid: json['uid'],
+    name: json['name'],
+    description: json['description'],
+    artworks: json['artworkPreview']!=null
+      ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
+                              .toList()
+                              .cast<ArtworkListItem>()
+      : const[]
+    );
+
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'description': description
-    };
-  }
+  Map<String, dynamic> toJson() => {...super.toJson(),'description': description};
 }
 
 class Room extends RoomListItem {
@@ -60,36 +54,30 @@ class Room extends RoomListItem {
     required this.museum,
     required super.artworks});
 
-  factory Room.fromJson(Map<String, dynamic> json) {
-    return Room(
-      uid: json['uid'],
-      name: json['name'],
-      description: json['description'],
-      museum: MuseumForeignKey.fromJson(json['museum']),
-      image: json['image'] != null
-        ? ImageOnline.fromJson(json['image'])
-        : null,
-      artworks: json['artworkPreview']!=null
-        ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
-                                .toList()
-                                .cast<ArtworkListItem>()
-        : const[]
-    );
-  }
+  factory Room.fromJson(Map<String, dynamic> json) => Room(
+    uid: json['uid'],
+    name: json['name'],
+    description: json['description'],
+    museum: MuseumForeignKey.fromJson(json['museum']),
+    image: json['image'] != null
+      ? ImageOnline.fromJson(json['image'])
+      : null,
+    artworks: json['artworkPreview']!=null
+      ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
+                              .toList()
+                              .cast<ArtworkListItem>()
+      : const[]
+  );
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      if (image != null) 'image': image!.toJson(),
-      'museum': museum.toJson()
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    if (image != null) 'image': image!.toJson(),
+    'museum': museum.toJson()
+  };
 
   bool get hasImage => image != null;
 
   @override
-  String toString() {
-    return "Salle $name";
-  }
+  String toString() => "Salle $name";
 }

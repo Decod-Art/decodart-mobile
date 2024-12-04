@@ -82,7 +82,7 @@ class _MuseumViewState extends State<MuseumView>  {
         Padding(
           padding: const EdgeInsets.only(top: 15, left: 15, right: 15, bottom: 5),
           child: Text(
-            widget.museum.descriptionText,
+            widget.museum.descriptionShortened,
             maxLines: 4,
             overflow: TextOverflow.ellipsis,
           )
