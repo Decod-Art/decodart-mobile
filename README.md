@@ -3,8 +3,12 @@
 ## Introduction
 Decod'Art is an innovative mobile application that allows users to discover and interact with artworks in a fun and educational way. Through questions and challenges, users can deepen their knowledge of art and artists.
 
-<img src="images/screenshot.png" alt="Decod'Art Screenshot" width="300" style="display:inline-block; margin-right: 10px;">
-<img src="images/screenshot2.png" alt="Decod'Art Screenshot" width="300" style="display:inline-block;">
+<table>
+  <tr>
+    <td><img src="images/screenshot.png" alt="Decod'Art Screenshot" width="300"></td>
+    <td><img src="images/screenshot2.png" alt="Decod'Art Screenshot" width="300"></td>
+  </tr>
+</table>
 ## Installation
 To install the Decod'Art application, follow the steps below:
 
