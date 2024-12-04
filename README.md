@@ -1,66 +1,60 @@
 # Decod'Art
+
 ## Introduction
+Decod'Art is an innovative mobile application that allows users to discover and interact with artworks in a fun and educational way. Through questions and challenges, users can deepen their knowledge of art and artists.
 
 ## Installation
+To install the Decod'Art application, follow the steps below:
+
+1. Clone the repository:
+    ```sh
+    git clone https://github.com/your-username/decodart-mobile.git
+    ```
+2. Navigate to the project directory:
+    ```sh
+    cd decodart-mobile
+    ```
+3. Install the dependencies:
+    ```sh
+    flutter pub get
+    ```
+4. Run the application on an emulator or physical device:
+    ```sh
+    flutter run
+    ```
 
 ## Code structure
+The project is structured as follows:
 
-Install into a project : 
+- `lib/`: Contains the main source code of the application.
+  - `api/`: Manages API calls.
+  - `controller_and_mixins/`: Controllers and mixins for state/widget management.
+  - `model/`: Data models used in the application. It contains both model for the API and the local Hive database
+  - `view/`: Views and widgets of the application.
+  - `widgets/`: Reusable UI components.
+- `test/`: Contains unit and integration tests.
+- `assets/`: Contains resources such as images and configuration files.
 
-```
-#!/bin/bash
+## Contribution
+Contributions are welcome! To contribute, please follow the steps below:
 
-if [ "$#" -ne 2 ]; then
-    echo "Usage: $0 source_directory target_directory"
-    exit 1
-fi
+1. Fork the repository (Optional for accepted members).
+2. Create a branch for your feature or bug fix:
+    ```sh
+    git checkout -b my-new-feature
+    ```
+3. Commit your changes:
+    ```sh
+    git commit -m "Add a new feature"
+    ```
+4. Push your branch:
+    ```sh
+    git push origin my-new-feature
+    ```
+5. Open a Pull Request.
 
-source_directory=$1;
-target_directory=$2;
+## License
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for more details.
 
-rsync -av --relative "$source_directory"/. "$target_directory"
-```
-
-## L'interface principale
-5 onglets (détaillés plus bas) :
-- Vue carte
-- Vue liste
-- Recherche visuelle (appareil photo)
-- Vue liste de parcours de visites
-- Décoder à l'infini
-
-## Vue carte
-Il s'agit de visualiser les objets géolocalisés :
-- les musées, églises, etc. qui contiennent des œuvres à voir,
-- des œuvres directement disponibles dans la rue (e.g. une statue, une fontaine, une façade à l'architecture notable)
-
-Lorsqu'on clique sur un pin de type musée, on ouvre la vue musée, sinon, la vue œuvre (explication plus bas).
-
-## Vue liste
-
-Il y a trois sous-onglets : 
-- les objets présents sur la carte,
-- les œuvres d'arts (en excluant les musées donc mais également des œuvres non géolocalisées car dans un musée),
-- Les musées.
-
-## La recherche visuelle
-
-On prend en photo une œuvre et :
-- Elle n'est pas reconnue et on affiche un message,
-- Elle reconnue de manière unique et on l'affiche
-- Elle est reconnue plusieurs fois (e.g. copie par des élèves de l'œuvre d'un maître) et on affiche la liste des choix possibles.. Cliquer sur un élément de la liste ouvre la vue de l'œuvre.
-
-## Vue parcours
-
-On affiche une liste de parcours de visite.
-
-## Vue décoder à l'infini
-
-Une vue (pas encore construite), qui permet de décoder des œuvres à l'infini.. Décoder une œuvre est expliqué dans la partie sur la vue détaillée d'une œuvre.
-
-## Vues détaillées
-### Vue parcours détaillé
-On affiche une page contenant du texte, des images et des boutons. Les boutons sont des liens vers des œuvres de la base de données qu'on ouvre en vue détaillée.
-
-### Vue musée détaillé
-On affiche 1, 2 ou 3 boutons "œuvres", "expositions" et "parcours de visite" en fonction de s'il y a du contenu disponible (on n'affiche pas exposition s'il n'y a pas d'exposition). Exposition et parcours ouvrent la vue parcours. Œuvre ouvre la 
+## Contact
+For any questions or suggestions, please contact the development team at maximiliense@gmail.com.
