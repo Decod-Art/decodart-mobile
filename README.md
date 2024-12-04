@@ -1,8 +1,8 @@
 # Decod'Art
 
-[![Open Issues](https://img.shields.io/github/issues/your-username/decodart-mobile)](https://github.com/your-username/decodart-mobile/issues)
-[![Latest Release](https://img.shields.io/github/v/release/your-username/decodart-mobile)](https://github.com/your-username/decodart-mobile/releases)
-[![License](https://img.shields.io/github/license/your-username/decodart-mobile)](https://github.com/your-username/decodart-mobile/blob/main/LICENSE)
+[![Open Issues](https://img.shields.io/github/issues/maximiliense/decodart-mobile)](https://github.com/your-username/decodart-mobile/issues)
+[![Latest Release](https://img.shields.io/github/v/release/maximiliense/decodart-mobile)](https://github.com/your-username/decodart-mobile/releases)
+[![License](https://img.shields.io/github/license/maximiliense/decodart-mobile)](https://github.com/your-username/decodart-mobile/blob/main/LICENSE)
 
 
 ## Introduction
