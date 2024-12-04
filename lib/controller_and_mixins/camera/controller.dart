@@ -29,7 +29,7 @@ class DecodCameraController {
 
   final VoidCallback? onInit;
 
-  // This are user functions to execute at steps during
+  // These are user functions to execute at steps during
   //  the image search procedure
   FutureVoidCallback? _beforeSearch;
   AfterPictureTaken? _onSearch;
