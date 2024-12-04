@@ -82,7 +82,7 @@ class GeolocatedSummaryWidget extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            item.descriptionText,
+            item.descriptionShortened,
             maxLines: 5, // Maximum de 5 lignes
             overflow: TextOverflow.ellipsis, // Points de suspension si le texte est trop long
             style: const TextStyle(

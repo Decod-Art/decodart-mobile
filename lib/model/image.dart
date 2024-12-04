@@ -5,9 +5,20 @@ import 'dart:typed_data' show Uint8List;
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart' show Offset;
 
+/// An exception that is thrown when an error occurs while fetching an image.
+class FetchImageException implements Exception {
+  final String message;
+
+  /// Constructs a [FetchImageException] with the given error [message].
+  FetchImageException(this.message);
+
+  @override
+  String toString() => 'FetchImageException: $message';
+}
 
 abstract class AbstractImage extends UnnamedAbstractItem {
   final List<BoundingBox>? boundingBoxes;
+
   const AbstractImage({
     super.uid,
     this.boundingBoxes
@@ -20,12 +31,9 @@ abstract class AbstractImage extends UnnamedAbstractItem {
   String get path;
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'boundingboxes': boundingBoxes?.map((item) => item.toJson()).toList()
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(), 'boundingboxes': boundingBoxes?.map((item) => item.toJson()).toList()
+  };
 
   AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes);
 
@@ -34,16 +42,14 @@ abstract class AbstractImage extends UnnamedAbstractItem {
 
 class ImageOnline extends AbstractImage {
   final String _path;
+
   @override
   Uint8List? data;
 
   ImageOnline(
     String path,
-    {
-      super.uid,
-      super.boundingBoxes,
-      this.data
-    }):_path = path;
+    {super.uid, super.boundingBoxes, this.data}
+  ):_path = path;
 
   @override
   String get path => checkUrlForCdn(_path)!;
@@ -53,54 +59,44 @@ class ImageOnline extends AbstractImage {
     if (response.statusCode == 200) {
       data = response.bodyBytes;
     } else {
-      throw Exception('Failed to load image data');
+      throw FetchImageException('Failed to load image data');
     }
   }
 
   @override
   bool get isDownloaded => data != null;
 
-  factory ImageOnline.fromJson(Map<String, dynamic>json) {
-    return ImageOnline(
-      json['path'],
-      uid: json['uid'],
-      boundingBoxes: json['boundingboxes']?.map((boundingBoxesJson) => BoundingBox.fromJson(boundingBoxesJson))
-                                           .toList()
-                                           .cast<BoundingBox>()
-    );
-  }
+  factory ImageOnline.fromJson(Map<String, dynamic>json) => ImageOnline(
+    json['path'],
+    uid: json['uid'],
+    boundingBoxes: json['boundingboxes']?.map((boundingBoxesJson) => BoundingBox.fromJson(boundingBoxesJson))
+                                         .toList()
+                                         .cast<BoundingBox>()
+  );
 
-  factory ImageOnline.fromHive(hive.Image image) {
-    return ImageOnline(
-      image.path,
-      uid: image.uid,
-      boundingBoxes: image.boundingBoxes?.map((item) => BoundingBox.fromHive(item)).toList(),
-      data: image.data
-      );
-  }
+  factory ImageOnline.fromHive(hive.Image image) =>ImageOnline(
+    image.path,
+    uid: image.uid,
+    boundingBoxes: image.boundingBoxes?.map((item) => BoundingBox.fromHive(item)).toList(),
+    data: image.data
+  );
 
-  hive.Image toHive({saveBoundingBox=true}) {
-    return hive.Image(
-      uid: uid!,
-      boundingBoxes: saveBoundingBox?boundingBoxes?.map((item) => item.toHive()).toList():null,
-      path: path,
-      data: data!);
-  }
+  hive.Image toHive({saveBoundingBox=true}) => hive.Image(
+    uid: uid!,
+    boundingBoxes: saveBoundingBox?boundingBoxes?.map((item) => item.toHive()).toList():null,
+    path: path,
+    data: data!
+  );
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'path': _path,
-    };
-  }
+  Map<String, dynamic> toJson() => {...super.toJson(), 'path': _path};
+
   @override
-  AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes) {
-    return ImageOnline(
-      _path,
-      uid: uid,
-      boundingBoxes: boundingBoxes);
-  }
+  AbstractImage copyWithNewBoundingBoxes(List<BoundingBox>? boundingBoxes) => ImageOnline(
+    _path,
+    uid: uid,
+    boundingBoxes: boundingBoxes
+  );
 }
 
 class BoundingBox extends UnnamedAbstractItem{
@@ -118,55 +114,44 @@ class BoundingBox extends UnnamedAbstractItem{
     this.description = ""
   });
 
-  factory BoundingBox.fromJson(Map<String, dynamic> json) {
-    return BoundingBox(
-      x: json['x'],
-      y: json['y'],
-      width: json['width'],
-      height: json['height'],
-      label: json['label'],
-      description: json['description']);
-  }
+  factory BoundingBox.fromJson(Map<String, dynamic> json) => BoundingBox(
+    x: json['x'],
+    y: json['y'],
+    width: json['width'],
+    height: json['height'],
+    label: json['label'],
+    description: json['description']
+  );
 
-  factory BoundingBox.fromHive(hive.BoundingBox boundingBox) {
-    return BoundingBox(
-      x: boundingBox.x,
-      y: boundingBox.y,
-      width: boundingBox.width,
-      height: boundingBox.height);
-  }
+  factory BoundingBox.fromHive(hive.BoundingBox boundingBox) => BoundingBox(
+    x: boundingBox.x,
+    y: boundingBox.y,
+    width: boundingBox.width,
+    height: boundingBox.height
+  );
 
-  hive.BoundingBox toHive(){
-    return hive.BoundingBox(
-      uid: uid,
-      x: x,
-      y: y,
-      width: width,
-      height: height);
-  }
+  hive.BoundingBox toHive() => hive.BoundingBox(
+    uid: uid,
+    x: x,
+    y: y,
+    width: width,
+    height: height
+  );
 
   @override
-  Map<String, dynamic> toJson() {
-    return {
-      ...super.toJson(),
-      'x': x,
-      'y': y,
-      'width': width,
-      'height': height,
-      'label': label,
-      'description': description
-    };
-  }
+  Map<String, dynamic> toJson() => {
+    ...super.toJson(),
+    'x': x,
+    'y': y,
+    'width': width,
+    'height': height,
+    'label': label,
+    'description': description
+  };
 
-  Offset get startPoint {
-    return Offset(x, y);
-  }
+  Offset get startPoint => Offset(x, y);
 
-  Offset get endPoint {
-    return Offset(x+width, y+height);
-  }
+  Offset get endPoint => Offset(x+width, y+height);
 
-  Offset get center {
-    return Offset(x+width/2, y+height/2);
-  }
+  Offset get center => Offset(x+width/2, y+height/2);
 }

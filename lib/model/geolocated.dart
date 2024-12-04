@@ -5,10 +5,13 @@ import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 class GeolocatedListItem extends AbstractItem implements AbstractListItem {
   final double latitude;
   final double longitude;
+
   @override
   final String subtitle;
+
   @override
   final AbstractImage image;
+
   final bool isMuseum;
   final String description;
 
@@ -28,7 +31,7 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
 
   String get city => subtitle;
 
-  String get descriptionText {
+  String get descriptionShortened {
     final lines = description.split('\n');
 
     final filteredLines = lines
@@ -41,24 +44,19 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
     return filteredLines.join('\n');
   }
 
-  factory GeolocatedListItem.fromJson(Map<String, dynamic> json) {
-    return GeolocatedListItem(
-      uid: json['uid'],
-      title: json['title'],
-      subtitle: json['subtitle'], 
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      image: ImageOnline.fromJson(json['image']),
-      isMuseum: json['ismuseum'],
-      description: json['description']);
-  }
+  factory GeolocatedListItem.fromJson(Map<String, dynamic> json) => GeolocatedListItem(
+    uid: json['uid'],
+    title: json['title'],
+    subtitle: json['subtitle'], 
+    latitude: json['latitude'],
+    longitude: json['longitude'],
+    image: ImageOnline.fromJson(json['image']),
+    isMuseum: json['ismuseum'],
+    description: json['description']
+  );
 
-  LatLng get coordinates {
-    return LatLng(latitude, longitude);
-  }
+  LatLng get coordinates => LatLng(latitude, longitude);
 
   @override
-  String toString() {
-    return "[UID: $uid], [title: $title], [coordinates: $coordinates]";
-  }
+  String toString() => "[UID: $uid], [title: $title], [coordinates: $coordinates]";
 }

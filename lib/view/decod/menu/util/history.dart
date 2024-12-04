@@ -71,9 +71,7 @@ class DecodedHistoryState extends State<DecodedHistory> {
                     ListWithThumbnail(
                       items: decoded, 
                       onPress: (item) async {
-                      showWidgetInModal(
-                        context,
-                        (context) => FutureArtworkView(artwork: item));
+                      showWidgetInModal(context, (context) => FutureArtworkView(artwork: item));
                       }
                     )
                   ],
