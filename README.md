@@ -14,6 +14,7 @@ Decod'Art is an innovative mobile application that allows users to discover and 
     <td><img src="images/screenshot2.png" alt="Decod'Art Screenshot" width="300"></td>
   </tr>
 </table>
+
 ## Installation
 To install the Decod'Art application, follow the steps below:
 
