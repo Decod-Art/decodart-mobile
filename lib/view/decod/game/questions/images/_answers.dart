@@ -2,6 +2,15 @@ import 'package:decodart/model/decod.dart' show DecodAnswer;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
 
+/// A widget that displays a list of possible answers for an image-based question in the Decod game.
+/// 
+/// The `Answers` widget is a stateless widget that shows a list of possible answers in the form of images. The user can select an answer, and the widget will call the `onPress` callback with the index of the selected answer.
+/// 
+/// Attributes:
+/// 
+/// - `selected` (optional): An [int] representing the index of the selected answer. Defaults to -1 (no answer selected).
+/// - `onPress` (required): A [void Function(int)] callback that is called when an answer is selected, with the index of the selected answer.
+/// - `answers` (required): A [List] of [DecodAnswer] objects representing the possible answers.
 class Answers extends StatelessWidget {
   final int selected;
   final void Function(int) onPress;

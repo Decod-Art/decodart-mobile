@@ -2,21 +2,20 @@ import 'package:decodart/model/image.dart';
 import 'package:flutter/material.dart' show Colors, LayoutBuilder;
 import 'package:flutter/cupertino.dart';
 
+/// A custom painter that draws a circle at a given point on the canvas.
+/// The color of the circle depends on whether the point is within a bounding box and whether the user is currently drawing.
 class ImagePainter extends CustomPainter {
   final Offset point;
   final bool isIn;
-  final bool isDrawing;
 
-  ImagePainter(this.point, this.isIn, this.isDrawing);
+  ImagePainter(this.point, this.isIn);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isDrawing
-        ?Colors.blue.withOpacity(0.2)
-        :isIn
-          ?Colors.green.withOpacity(0.4)
-          :Colors.red.withOpacity(0.4)
+      ..color = isIn
+        ?Colors.green.withOpacity(0.4)
+        :Colors.red.withOpacity(0.4)
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 20.0;
 
@@ -29,6 +28,17 @@ class ImagePainter extends CustomPainter {
   }
 }
 
+/// A widget that displays an image with bounding boxes for a "Find Me" question in the Decod game.
+/// The user must find and select the correct objects within the image by tapping on them.
+/// The widget provides feedback for correct and incorrect selections and calculates the points based on the number of correct selections.
+/// 
+/// Attributes:
+/// 
+/// - `image` (required): An [AbstractImage] object representing the image with bounding boxes.
+/// - `foundCorrect` (required): A [void Function(int)] callback that is called when a correct object is found.
+/// - `foundIncorrect` (required): A [void Function()] callback that is called when an incorrect object is selected.
+/// - `isOver` (required): A [bool] indicating whether the game is over.
+/// - `isCorrect` (required): A [bool] indicating whether the last selection was correct.
 class ImageDrawingWidget extends StatefulWidget {
   final AbstractImage image;
   final void Function(int) foundCorrect;
@@ -55,7 +65,6 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
 
   bool scaling = false;
   
-  bool isDrawing = false;
   List<Offset> points = [];
   List<bool> isCorrect = [];
   final GlobalKey _imageKey = GlobalKey();
@@ -96,15 +105,16 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
     bool isIn = false;
     int i = 0;
     final offset = Offset((constraints.maxWidth-width)/2,(constraints.maxHeight-height)/2);
+    final pos = points.last - offset;
+    final x = pos.dx/width;
+    final y = pos.dy/height;
     while (i < (widget.image.boundingBoxes?.length??0) && !isIn) {
       final bb = widget.image.boundingBoxes![i];
-      final pos = points.last - offset;
-      final dx = pos.dx/width;
-      final dy = pos.dy/height;
-        if (bb.x+bb.width > dx && dx >bb.x && bb.y+bb.height > dy && dy >bb.y){
-          isIn = true;
-          isCorrect.last = true;
-        }
+      // is the last point x, y in the bounding box
+      if (bb.x+bb.width > x && x >bb.x && bb.y+bb.height > y && y >bb.y){
+        isIn = true;
+        isCorrect.last = true;
+      }
       i++;
     }
     if (!isIn) {
@@ -228,22 +238,18 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
                     for(int i = 0; i < points.length;i++)
                       CustomPaint(
                         size: Size(constraints.maxWidth, constraints.maxHeight),
-                        painter: ImagePainter(
-                          points[i],
-                          isCorrect[i],
-                          i==points.length-1&&isDrawing),
+                        painter: ImagePainter(points[i], isCorrect[i]),
                       ),
                     GestureDetector(
                       behavior: HitTestBehavior.translucent,
                       onTapUp: !widget.isOver
                         ?( details){
+                          // The users is answering only
+                          // if he's not scaling/zooming
                           if (!scaling){
                             points.add(details.localPosition);
                             isCorrect.add(false);
-                            setState(() {
-                              isDrawing = false;
-                              _isLastIn(constraints);
-                            });
+                            setState(() {_isLastIn(constraints);});
                           }
                         }
                         : null,

@@ -2,20 +2,29 @@ import 'package:decodart/view/decod/game/questions/images/_answers.dart' show An
 import 'package:flutter/cupertino.dart';
 import 'package:decodart/view/decod/game/questions/abstract_question.dart' show AbstractQuestionWidget;
 
+/// A widget that displays an image-based question in the Decod game.
+/// 
+/// The `ImageQuestion` is a stateful widget that shows a question and a list of possible answers in the form of images.
+/// The user can select an answer, and the widget will call the `submitPoints` callback with the points gained.
+/// 
+/// Attributes:
+/// 
+/// - `submitPoints` (required): An [OnQuestionOver] callback that is called when the question is over, with the number of points gained.
+/// - `question` (required): A [DecodQuestion] object representing the question details.
 class ImageQuestion extends AbstractQuestionWidget {
   const ImageQuestion({
     super.key,
     required super.submitPoints,
-    required super.question
-    });
+    required super.question,
+  });
 
   @override
   State<StatefulWidget> createState() => _ImageQuestionState();
 }
 
 class _ImageQuestionState extends State<ImageQuestion> {
-  bool clickable = true;
-  int selectedAnswer = -1;
+  bool clickable = true; // If the user already answered, then answers become unclickable
+  int selectedAnswer = -1; // Index of the selected answer. -1 is not selected answer
 
   @override
   void didUpdateWidget(covariant ImageQuestion oldWidget) {
@@ -39,18 +48,16 @@ class _ImageQuestionState extends State<ImageQuestion> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      widget.question.question, // Remplacez par le contenu de votre question
-                      style: const TextStyle(fontSize: 24),
-                    ),
-                  ]
+                    // Display the question text
+                    Text(widget.question.question, style: const TextStyle(fontSize: 24)),
+                  ],
                 ),
-              )
+              ),
             ),
             Expanded(
               flex: 13,
               child: Padding(
-                padding: const EdgeInsets.only(left:15, right: 15, bottom: 15),
+                padding: const EdgeInsets.only(left: 15, right: 15, bottom: 15),
                 child: Answers(
                   selected: selectedAnswer,
                   onPress: (index) {
@@ -59,12 +66,13 @@ class _ImageQuestionState extends State<ImageQuestion> {
                         selectedAnswer = index;
                         clickable = false;
                       });
-                      widget.submitPoints(widget.question.answers[index].isCorrect ? 1 : 0);
+                      // In image questions, the user can only get 0 or 1 point
+                      widget.submitPoints(widget.question.answers[selectedAnswer].isCorrect ? 1 : 0);
                     }
                   },
-                  answers: widget.question.answers
-                )
-              )
+                  answers: widget.question.answers,
+                ),
+              ),
             ),
           ],
         );

@@ -4,6 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:decodart/view/decod/game/questions/abstract_question.dart' show AbstractQuestionWidget;
 import 'package:flutter/services.dart';
 
+/// A widget that displays a "Find Me" question in the Decod game.
+/// 
+/// The `FindMeQuestion` is a stateful widget that shows an image with bounding boxes. The user must find and select the correct objects within the image.
+/// The widget provides feedback for correct and incorrect selections and calculates the points based on the number of correct selections.
+/// 
+/// Attributes:
+/// 
+/// - `submitPoints` (required): An [OnQuestionOver] callback that is called when the question is over, with the number of points gained.
+/// - `question` (required): A [DecodQuestion] object representing the question details.
 class FindMeQuestion extends AbstractQuestionWidget {
 
   const FindMeQuestion({
@@ -16,9 +25,11 @@ class FindMeQuestion extends AbstractQuestionWidget {
   State<AbstractQuestionWidget> createState() => _BoundingBoxQuestionState();
 }
 
+const int numberOfErrorsAllowed = 2;
+
 class _BoundingBoxQuestionState extends State<FindMeQuestion> {
-  final int numberOfErrorsAllowed = 2;
   bool isOver = false;
+  // found is a bool list saying if a specific object in the image has been found
   late List<bool> found;
   late int tries;
   
@@ -29,7 +40,8 @@ class _BoundingBoxQuestionState extends State<FindMeQuestion> {
   }
 
   void _initQuestion() {
-    found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_)=>false);
+    // initialize found to false
+    found = List.generate(widget.question.answers[0].image!.boundingBoxes!.length, (_) => false);
     tries = numberOfErrorsAllowed;
   }
 
@@ -42,24 +54,15 @@ class _BoundingBoxQuestionState extends State<FindMeQuestion> {
     }
   }
 
-  bool foundEverything() {
-    return found.every((element) => element);
-  }
+  bool get foundEverything => found.every((element) => element);
 
   void foundCorrect(int index) {
     HapticFeedback.mediumImpact();
-    if (found[index]) {
-      // already true
-    } else {
-      found[index] = true;
-    }
-    if(foundEverything()) {
-      isOver = true;
-    }
+    found[index] = true; // note that found might already be true
+    
+    if(foundEverything) isOver = true;
     setState(() {});
-    if(isOver) {
-      computePoints();
-    }
+    if(isOver) computePoints();
   }
 
   void computePoints() {
@@ -78,9 +81,11 @@ class _BoundingBoxQuestionState extends State<FindMeQuestion> {
     }
   }
 
-  Widget _finalMessage() {
+  Widget get finalMessage {
     if(isOver){
-      return foundEverything()?const Text("🎉", style: TextStyle(fontSize: 35),):const Text("❌", style: TextStyle(fontSize: 35));
+      return foundEverything 
+        ? const Text("🎉", style: TextStyle(fontSize: 35))
+        : const Text("❌", style: TextStyle(fontSize: 35));
     }
     else {
       return Container();
@@ -111,7 +116,7 @@ class _BoundingBoxQuestionState extends State<FindMeQuestion> {
             SizedBox(
               height: 45,
               child: Center(
-                child: _finalMessage()
+                child: finalMessage
               )
             ),
             Expanded(
@@ -123,7 +128,7 @@ class _BoundingBoxQuestionState extends State<FindMeQuestion> {
                   foundCorrect: foundCorrect,
                   foundIncorrect: foundIncorrect,
                   isOver: isOver,
-                  isCorrect: foundEverything(),
+                  isCorrect: foundEverything,
                 )
               )
 
