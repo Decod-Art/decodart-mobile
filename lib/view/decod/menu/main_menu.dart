@@ -1,29 +1,19 @@
-import 'package:decodart/api/decod.dart' show fetchTags;
-import 'package:decodart/model/decod.dart' show DecodTag;
 import 'package:decodart/view/decod/menu/util/history.dart' show DecodedHistory;
 import 'package:decodart/view/decod/menu/util/stats/stats.dart' show StatsWidget;
 import 'package:decodart/view/decod/menu/util/train_to_decod/train_to_decod.dart' show TrainToDecod;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
-class DecodMainMenuView extends StatefulWidget {
+/// A widget that represents the main menu view for the Decod feature.
+/// 
+/// The `DecodMainMenuView` is a stateless widget that displays the main menu for the Decod feature.
+/// It includes statistics, a history of decoded items, and a training section.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
+class DecodMainMenuView extends StatelessWidget {
   const DecodMainMenuView({super.key});
-
-  @override
-  State<DecodMainMenuView> createState() => DecodMainMenuViewState();
-}
-
-class DecodMainMenuViewState extends State<DecodMainMenuView> {
-  late final Future<List<DecodTag>> tags;
-
-  @override
-  void initState(){
-    super.initState();
-    // This is to preload categories...
-    // The rest of the loading is handled in
-    // the TrainToDecod class...
-    tags = fetchTags();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +26,7 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
           const StatsWidget(),
           const Expanded(
             flex: 3,
+            // DecodedHistory is a scrollable widget of the artworks that have been decoded
             child: DecodedHistory(),
           ),
           Container(
@@ -44,9 +35,7 @@ class DecodMainMenuViewState extends State<DecodMainMenuView> {
             height: 100,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-              child: TrainToDecod(
-                tags: tags
-              )
+              child: const TrainToDecod()
             )
           )
         ]

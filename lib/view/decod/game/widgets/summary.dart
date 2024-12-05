@@ -1,16 +1,20 @@
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
 import 'package:flutter/cupertino.dart';
 
+/// A widget that displays a summary of a question in the Decod game.
+/// 
+/// The `SummaryWidget` is a stateless widget that shows the details of a question, including the question number, the question text, the correct answer, and whether the user's answer was correct.
+/// 
+/// Attributes:
+/// 
+/// - `number` (required): An [int] representing the question number.
+/// - `question` (required): A [DecodQuestion] object representing the question details.
+/// - `isCorrect` (required): A [bool] indicating whether the user's answer was correct.
 class SummaryWidget extends StatelessWidget {
   final int number;
   final DecodQuestion question;
   final bool isCorrect;
-  const SummaryWidget({
-    super.key,
-    required this.number,
-    required this.question,
-    required this.isCorrect
-  });
+  const SummaryWidget({super.key, required this.number, required this.question, required this.isCorrect});
 
   @override
   Widget build(BuildContext context) {
@@ -29,14 +33,8 @@ class SummaryWidget extends StatelessWidget {
               Container(
               width: 110,
               height: 110,
-              decoration: BoxDecoration(
-                color: CupertinoColors.systemGrey6,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Image.network(
-                question.image.path,
-                fit: BoxFit.contain,
-              ),
+              decoration: BoxDecoration(color: CupertinoColors.systemGrey6, borderRadius: BorderRadius.circular(8.0)),
+              child: Image.network(question.image.path, fit: BoxFit.contain,),
             ),
               const SizedBox(width: 8.0),
               Expanded(
@@ -46,9 +44,7 @@ class SummaryWidget extends StatelessWidget {
                   children: [
                     Text(
                       'Question #$number',
-                      style: const TextStyle(
-                        color: CupertinoColors.systemGrey,
-                      ),
+                      style: const TextStyle(color: CupertinoColors.systemGrey),
                     ),
                     const SizedBox(height: 4.0),
                     Text(question.question),
@@ -59,10 +55,7 @@ class SummaryWidget extends StatelessWidget {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                     if (question.questionType == DecodQuestionType.text)
-                      Text(
-                        question.correctAnswer!.text!,
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      Text(question.correctAnswer!.text!, style: const TextStyle(fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -72,10 +65,7 @@ class SummaryWidget extends StatelessWidget {
           Positioned(
             top: 0,
             right: 0,
-            child: Text(
-              isCorrect?'✅':'❌',
-              style: const TextStyle(fontSize: 24),
-            ),
+            child: Text(isCorrect?'✅':'❌', style: const TextStyle(fontSize: 24)),
           ),
         ],
       ),

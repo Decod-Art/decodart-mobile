@@ -2,6 +2,15 @@ import 'package:decodart/model/decod.dart' show DecodQuestion;
 import 'package:decodart/view/decod/game/widgets/summary.dart' show SummaryWidget;
 import 'package:flutter/cupertino.dart';
 
+/// A widget that displays the end screen of the Decod game.
+/// 
+/// The `EndingWidget` is a stateless widget that shows the total points scored, a summary of the questions and their results, and a button to finish the game.
+/// 
+/// Attributes:
+/// 
+/// - `totalPoints` (required): A [double] representing the total points scored by the user.
+/// - `questions` (required): A [List] of [DecodQuestion] objects representing the questions asked during the game.
+/// - `results` (required): A [List] of [bool] values indicating whether each question was answered correctly.
 class EndingWidget extends StatelessWidget {
   final double totalPoints;
   final List<DecodQuestion> questions;
@@ -12,16 +21,6 @@ class EndingWidget extends StatelessWidget {
     required this.questions,
     required this.results
   });
-
-  List<Widget> _summary(BuildContext context){
-    return List.generate(
-      questions.length,
-      (index) => SummaryWidget
-      (number: index+1,
-      question: questions[index],
-      isCorrect: results[index]));
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -45,7 +44,14 @@ class EndingWidget extends StatelessWidget {
           flex: 4,
           child: SingleChildScrollView(
             child: Column(
-              children: _summary(context),
+              children: List.generate(
+                questions.length,
+                (index) => SummaryWidget(
+                  number: index+1,
+                  question: questions[index],
+                  isCorrect: results[index]
+                )
+              )
             )
           )
         ),

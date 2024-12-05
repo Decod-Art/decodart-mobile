@@ -13,6 +13,15 @@ import 'package:decodart/view/decod/game/questions/text/text.dart' show TextQues
 import 'package:decodart/view/decod/game/questions/findMe/find_me.dart' show FindMeQuestion;
 import 'package:decodart/view/decod/game/questions/images/image.dart' show ImageQuestion;
 
+/// A widget that manages the Decod game.
+/// 
+/// The `DecodManager` is a stateful widget that handles the initialization, question fetching, and game logic for the Decod game.
+/// It displays different types of questions (image, text, bounding box) and provides feedback for correct and incorrect answers.
+/// 
+/// Attributes:
+/// 
+/// - `artwork` (optional): An [Artwork] object representing the artwork to be decoded.
+/// - `tag` (optional): A [DecodTag] object representing the category of the questions.
 class DecodManager extends StatefulWidget {
   final Artwork? artwork;
   final DecodTag? tag;
@@ -30,6 +39,15 @@ class _DecodManagerState extends State<DecodManager> {
     super.initState();
     controller = GameController(artwork: widget.artwork, tag: widget.tag);
     _initManager();
+  }
+
+  Future<void> _initManager () async {
+    // Controller init opens the 
+    // hive boxes related to the decod game
+    // _fetchQuestions clear the data of the controller
+    // which should be empty at the beginning
+    // and load questions from the API
+    await Future.wait([controller.init(), _fetchQuestions()]);
   }
 
   void _correctAnswer() async {
@@ -50,13 +68,10 @@ class _DecodManagerState extends State<DecodManager> {
     setState(() {});
   }
 
-  Future<void> _initManager () async {
-    await controller.init();
-    _fetchQuestions();
-  }
-
   void _validateQuestion(double points, {int duration=1}) {
+    // Points should be a number between 0 and 1
     if (points >= 1) {
+      // The answer is considered valid
       _correctAnswer();
       controller.setCurrentQuestionToCorrect();
     } else {
@@ -64,9 +79,7 @@ class _DecodManagerState extends State<DecodManager> {
     }
     controller.points += points;
     controller.saveScore();
-    Future.delayed(Duration(seconds: duration), () {
-      setState(() {controller.nextQuestion();});
-    });
+    Future.delayed(Duration(seconds: duration), () => setState(() {controller.nextQuestion();}));
   }
 
   Widget _showQuestion() {

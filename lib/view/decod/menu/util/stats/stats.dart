@@ -5,6 +5,14 @@ import 'package:decodart/view/decod/menu/util/stats/_stat_content.dart' show Sta
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+/// A widget that displays the statistics for the Decod feature.
+/// 
+/// The `StatsWidget` is a stateful widget that shows the user's game statistics.
+/// It uses a `MenuController` to manage the data and a `ValueListenableBuilder` to update the UI when the data changes.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class StatsWidget extends StatefulWidget {
   const StatsWidget({super.key});
 
@@ -37,6 +45,9 @@ class StatsWidgetState extends State<StatsWidget> {
     setState(() {});
   }
 
+  GameData get score => controller.score;
+  bool get hasPlayed => score.hasPlayed;
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -44,18 +55,9 @@ class StatsWidgetState extends State<StatsWidget> {
       child: controller.isNotOpened
         ? const Center(child: CupertinoActivityIndicator())
         : ValueListenableBuilder(
+            // The ValueListenableBuilder should update the stats content as soon as the box gets updated
             valueListenable: controller.gameDataBox.listenable(),
-            builder: (context, Box<GameData> box, _) {
-              final GameData score = controller.score;
-              if (score.hasPlayed) {
-                return StatContent(
-                  score: score,
-                  onReset: reset
-                );
-              } else {
-                return const EmptyStat();
-              }
-            }
+            builder: (context, Box<GameData> box, _) => hasPlayed ? StatContent(score: controller.score, onReset: reset) : const EmptyStat()
           )
     );
   }

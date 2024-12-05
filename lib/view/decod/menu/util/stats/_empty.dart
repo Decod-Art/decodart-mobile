@@ -9,10 +9,7 @@ class EmptyStat extends StatelessWidget {
       width: double.infinity,
       height: 200,
       padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: CupertinoColors.systemGrey6,
-        borderRadius: BorderRadius.circular(16.0),
-      ),
+      decoration: BoxDecoration(color: CupertinoColors.systemGrey6, borderRadius: BorderRadius.circular(16.0)),
       child: const Center(
         child: Text(
           "Décodez pour apprendre à mieux reconnaître les symboles dans l'art 🕵️",

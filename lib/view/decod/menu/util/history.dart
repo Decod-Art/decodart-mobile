@@ -8,6 +8,14 @@ import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+/// A widget that displays the history of decoded artworks.
+/// 
+/// The `DecodedHistory` is a stateful widget that retrieves and displays a list of decoded artworks from a Hive database.
+/// It shows the artworks in a list with thumbnails and allows users to tap on an item to view detailed information in a modal.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class DecodedHistory extends StatefulWidget{
   const DecodedHistory({super.key});
 
@@ -48,12 +56,12 @@ class DecodedHistoryState extends State<DecodedHistory> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: controller.isNotOpened
-        ? const Center(
-            child: CupertinoActivityIndicator(),
-          )
+        ? const Center(child: CupertinoActivityIndicator())
         : ValueListenableBuilder(
           valueListenable: controller.decodedArtworkHistoryBox.listenable(),
           builder: (context, __, _) {
+            // if the listener detected a change in the box,
+            // call _fetchHistory to reload the content of the history list
             _fetchHistory();
             return decoded.isEmpty
               ? Container()
@@ -64,16 +72,9 @@ class DecodedHistoryState extends State<DecodedHistory> {
                       padding: EdgeInsets.only(left: 16, bottom: 15),
                       child: Text(
                         'Œuvres décodées',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500)),
+                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w500))
                       ),
-                    ListWithThumbnail(
-                      items: decoded, 
-                      onPress: (item) async {
-                      showWidgetInModal(context, (context) => FutureArtworkView(artwork: item));
-                      }
-                    )
+                    ListWithThumbnail(items: decoded, onPress: (item) => showWidgetInModal(context, (context) => FutureArtworkView(artwork: item)))
                   ],
                 );
           }
