@@ -1,12 +1,18 @@
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/view/artwork/util/decod_button.dart' show DecodButton;
-import 'package:decodart/widgets/component/button/button_list.dart' show ButtonListWidget;
-import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
+import 'package:decodart/view/artwork/util/tags.dart' show ArtworkTags;
 import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
 import 'package:decodart/widgets/component/gallery/gallery.dart' show ImageGallery;
-import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:flutter/cupertino.dart';
 
+/// A widget that displays detailed information about an artwork.
+/// 
+/// The `ArtworkView` is a stateless widget that presents various details about an artwork, including its title, artist, year, tags, and images.
+/// It also provides buttons for additional information and interactions.
+/// 
+/// Attributes:
+/// 
+/// - `artwork` (required): An [Artwork] object that contains all the details about the artwork, including title, artist, year, tags, images, and descriptions.
 class ArtworkView extends StatelessWidget {
   final Artwork artwork;
   const ArtworkView({
@@ -39,47 +45,7 @@ class ArtworkView extends StatelessWidget {
           )
         ),
         const SizedBox(height: 20),
-        ButtonListWidget(
-          buttons: [
-            if (artwork.artist.hasBiography)
-              ChevronButtonWidget(
-                text: "À propos de l'artiste",
-                icon: const Icon(
-                  CupertinoIcons.person_circle,
-                  color: CupertinoColors.activeBlue,
-                ),
-                onPressed: (){
-                  showWidgetInModal(
-                    context,
-                    (context) => ContentWidget(
-                      items: artwork.artist.biography,
-                      edges: const EdgeInsets.all(15)
-                    )
-                  );
-                },
-              ),
-            for(final tag in artwork.sortedTags) ... [
-              ChevronButtonWidget(
-                text: tag.name,
-                icon: Image.asset(
-                  _tagIconPath(tag.category.name),
-                  width: 24,
-                  height: 24,
-                  color: CupertinoColors.activeBlue, // Optionnel : pour colorer l'icône
-                ),
-                onPressed: (){
-                  showWidgetInModal(
-                    context,
-                    (context) => ContentWidget(
-                      items: tag.description,
-                      edges: const EdgeInsets.all(15)
-                    )
-                  );
-                },
-              )
-            ]
-          ],
-        ),
+        ArtworkTags(artwork: artwork),
         const SizedBox(height: 5),
         if(artwork.hasDecodQuestion)
           DecodButton(artwork: artwork),
@@ -95,18 +61,5 @@ class ArtworkView extends StatelessWidget {
           ),
       ],
     );
-  }
-}
-
-String _tagIconPath(String name){
-  switch (name) {
-    case "Technique artistique":
-      return "images/icons/paintbrush_pointed.png";
-    case "Sujet":
-      return "images/icons/photo_artframe.png";
-    case "Mouvement artistique":
-      return "person_crop_square";
-    default:
-      return "images/icons/text_book_closed.png";
   }
 }

@@ -4,6 +4,14 @@ import 'package:decodart/view/artwork/artwork.dart' show ArtworkView;
 import 'package:decodart/widgets/util/wait_future.dart' show WaitFutureWidget;
 import 'package:flutter/cupertino.dart';
 
+/// A widget that displays an artwork view after fetching the artwork data asynchronously.
+/// 
+/// The `FutureArtworkView` is a stateless widget that uses a `WaitFutureWidget` to fetch artwork data by its ID.
+/// Once the data is fetched, it displays the artwork using the `ArtworkView` widget.
+/// 
+/// Attributes:
+/// 
+/// - `artwork` (required): An [ArtworkListItem] that contains the initial artwork data, including the unique identifier (UID) used to fetch the full artwork details.
 class FutureArtworkView extends StatelessWidget {
   final ArtworkListItem artwork;
   const FutureArtworkView({
@@ -13,8 +21,7 @@ class FutureArtworkView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return WaitFutureWidget(
-      fetch: () => fetchArtworkById(artwork.uid!),
-      builder: (artwork) => ArtworkView(artwork: artwork)
+      fetch: () => fetchArtworkById(artwork.uid!), builder: (artwork) => ArtworkView(artwork: artwork)
     );
   }
 }
