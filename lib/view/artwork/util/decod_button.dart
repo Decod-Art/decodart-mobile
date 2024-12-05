@@ -60,5 +60,4 @@ class DecodButton extends StatelessWidget {
       ]
     );
   }
-  
 }
