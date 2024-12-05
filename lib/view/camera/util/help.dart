@@ -1,5 +1,13 @@
 import 'package:flutter/cupertino.dart';
 
+/// A widget that provides help information on how to scan an artwork.
+/// 
+/// The `HelpView` is a stateless widget that displays a series of steps to guide the user on how to use the scanning feature.
+/// Each step is represented by a `_HelpItem` widget that includes a number, an icon, and a description.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class HelpView extends StatelessWidget {
   const HelpView({super.key});
 

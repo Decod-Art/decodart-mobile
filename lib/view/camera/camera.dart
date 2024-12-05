@@ -6,21 +6,27 @@ import 'package:decodart/view/camera/util/recent.dart' show RecentScan;
 import 'package:flutter/cupertino.dart';
 
 
+/// A widget that displays a camera view for scanning and recent scans.
+/// 
+/// The `CameraView` is a stateless widget that provides a camera interface for scanning and displays recent scans.
+/// It also includes a help button that shows a modal with help information.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class CameraView extends StatelessWidget {
   const CameraView({super.key});
 
   @override
   Widget build(BuildContext context) {    
-    double screenHeight = MediaQuery.of(context).size.height;
-    double containerHeight = screenHeight * 4 / 7;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double containerHeight = screenHeight * 4 / 7;
     return DecodPageScaffold(
       title: "Scanner",
       smallTitle: true,
       leading: CupertinoButton(
         padding: EdgeInsets.zero,
-        onPressed: () {
-          showWidgetInModal(context, (context) => const HelpView());
-        },
+        onPressed: () => showWidgetInModal(context, (context) => const HelpView()),
         child: const Icon(CupertinoIcons.info_circle, size: 24),
       ),
       children: [

@@ -1,19 +1,27 @@
 import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
-import 'package:decodart/model/image.dart';
+import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
 import 'package:decodart/controller_and_mixins/camera/controller.dart' show DecodCameraController;
 import 'package:decodart/view/camera/util/camera/core_camera.dart' show CoreCamera;
 import 'package:decodart/view/camera/util/results/no_result.dart' show NoResultWidget;
-import 'package:decodart/view/camera/util/results/result.dart' show ResultsWidget;
+import 'package:decodart/view/camera/util/results/result.dart' show ResultWidget;
 import 'package:decodart/view/camera/util/results/results.dart' show ResultsView;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
 import 'package:visibility_detector/visibility_detector.dart' show VisibilityDetector, VisibilityInfo;
 import 'package:flutter/cupertino.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+/// A widget that provides a camera interface for scanning artworks and displaying results.
+/// 
+/// The `Camera` is a stateful widget that uses a camera to scan artworks and display the results.
+/// It handles the camera initialization, scanning process, and displaying results in a modal or a small popup.
+/// 
+/// Attributes:
+/// 
+/// - `height` (optional): A [double] representing the height of the camera container. Defaults to [double.infinity].
 class Camera extends StatefulWidget {
   final double height;//containerHeight
   const Camera({super.key, this.height=double.infinity});
@@ -21,6 +29,8 @@ class Camera extends StatefulWidget {
   @override
   State<Camera> createState() => _CameraState();
 }
+
+final int maxRecentSaved = 10;
 
 class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
   late final DecodCameraController controller;
@@ -36,7 +46,6 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
   late AnimationController _animationController;
   late Animation<Offset> _offsetAnimation;
 
-  static const int maxRecentSaved = 10;
   Box<List>? recentScanBox;
 
   @override
@@ -55,11 +64,9 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     ); 
   }
 
-  void _cameraInitialized() {
-    // this this so that the camera button get updated with the fact
-    // that the camera has been initialized (i.e. the button should become active)
-    setState(() {});
-  }
+  // this this so that the camera button get updated with the fact
+  // that the camera has been initialized (i.e. the button should become active)
+  void _cameraInitialized() => setState(() {});
 
   @override
   void dispose() {
@@ -79,19 +86,15 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
   }
 
   void _showResults(List<ArtworkListItem> artworks) {
-    setState(() {});
+    setState(() {}); // TODO test if required
     if (artworks.length == 1) {
       artworkFound = artworks.first;
-      _animationController.forward(); // this shows the small popup
+      // this shows the small popup
+      _animationController.forward();
     } else if (artworks.isNotEmpty){
-      showWidgetInModal(
-        context,
-        (context) => ResultsView(results: artworks)
-      );
+      showWidgetInModal(context, (context) => ResultsView(results: artworks));
     } else {
-      setState(() {
-        noResult = true;
-      });
+      setState(() {noResult = true;});
     }
   }
 
@@ -101,9 +104,11 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     var recentList = recentScanBox?.get('recent', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList != null) {
+      // Download the data from the images
       await Future.wait(items.map((item) => (item.image as ImageOnline).downloadImageData()));
       recentList.insertAll(0, items.map((item)=> item.toHive()).toList());
       if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);
+      // This should trigger any listener over the value of the box
       recentScanBox?.put('recent', recentList);
     }
   }
@@ -129,7 +134,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                     onVisibilityChanged: (VisibilityInfo info){
                       setState(() {
                         hideCamera=info.visibleFraction == 0;
-                        if (hideCamera)controller.dispose();
+                        if (hideCamera)controller.dispose(); // TODO test if this should be removed
                       });
                     },
                     child: hideCamera
@@ -147,15 +152,14 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                     child: SlideTransition(
                       position: _offsetAnimation,
                       child: Center(
-                        child: ResultsWidget(
+                        child: ResultWidget(
                           artwork: artworkFound!,
                           onPressed: () {
+                            // The artwork needs to be retrieved
+                            // because resetSearch will set artworkFound to null
                             final artwork = artworkFound!;
                             _resetSearch();
-                            showWidgetInModal(
-                              context,
-                              (context) => FutureArtworkView(artwork: artwork)
-                            );
+                            showWidgetInModal(context, (context) => FutureArtworkView(artwork: artwork));
                           },
                         ),
                       ),
@@ -173,11 +177,9 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
             onPressed: controller.takePicture
           )
         else
-          NoResultWidget(onPressed: (){
-            setState(() {
-              noResult=false;
-            });
-          }),
+          // On pressed, the noResults get false
+          // and the button of the camera shows again
+          NoResultWidget(onPressed: () => setState(() {noResult=false;})),
       ],
     );
   }

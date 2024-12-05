@@ -1,6 +1,16 @@
 import 'package:flutter/cupertino.dart';
 
 
+/// A widget that represents a camera button for capturing images.
+/// 
+/// The `CameraButtonWidget` is a stateless widget that displays a circular button for taking pictures.
+/// It also shows a loading indicator when a search is in progress.
+/// 
+/// Attributes:
+/// 
+/// - `canTakePicture` (required): A [bool] indicating whether the button is enabled for taking pictures.
+/// - `isSearching` (required): A [bool] indicating whether a search is in progress.
+/// - `onPressed` (required): A [VoidCallback] that is called when the button is pressed.
 class CameraButtonWidget extends StatelessWidget {
   final bool canTakePicture;
   final bool isSearching;

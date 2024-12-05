@@ -1,11 +1,19 @@
 import 'dart:io' show File;
 
-import 'package:decodart/controller_and_mixins/camera/controller.dart' as decod show DecodCameraController;
+import 'package:decodart/controller_and_mixins/camera/controller.dart' show DecodCameraController;
 import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
 
+/// A widget that provides the core camera functionality for capturing images.
+/// 
+/// The `CoreCamera` is a stateful widget that initializes the camera, handles the image capture process, and displays the camera preview.
+/// It also manages the display of a preview image and a blink effect when a picture is taken.
+/// 
+/// Attributes:
+/// 
+/// - `controller` (required): A [DecodCameraController] that manages the camera operations.
 class CoreCamera extends StatefulWidget {
-  final decod.DecodCameraController controller;
+  final DecodCameraController controller;
   const CoreCamera({
     super.key,
     required this.controller
@@ -16,7 +24,7 @@ class CoreCamera extends StatefulWidget {
 }
 
 class CoreCameraState extends State<CoreCamera> {
-
+  // The frozen image that will show when the image is taken
   Image? preview;
   
   double _opacity = 0; // the blink when taking the picture

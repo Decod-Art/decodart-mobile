@@ -3,11 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show CircleAvatar;
 
 
-class ResultsWidget extends StatelessWidget {
+class ResultWidget extends StatelessWidget {
   final ArtworkListItem artwork;
   final VoidCallback onPressed;
 
-  const ResultsWidget({
+  const ResultWidget({
     super.key,
     required this.artwork,
     required this.onPressed});
