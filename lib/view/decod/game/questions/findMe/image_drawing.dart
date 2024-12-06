@@ -1,4 +1,4 @@
-import 'package:decodart/model/image.dart';
+import 'package:decodart/model/image.dart' show AbstractImage;
 import 'package:flutter/material.dart' show Colors, LayoutBuilder;
 import 'package:flutter/cupertino.dart';
 
@@ -6,16 +6,14 @@ import 'package:flutter/cupertino.dart';
 /// The color of the circle depends on whether the point is within a bounding box and whether the user is currently drawing.
 class ImagePainter extends CustomPainter {
   final Offset point;
-  final bool isIn;
+  final bool isCorrect;
 
-  ImagePainter(this.point, this.isIn);
+  ImagePainter(this.point, this.isCorrect);
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = isIn
-        ?Colors.green.withOpacity(0.4)
-        :Colors.red.withOpacity(0.4)
+      ..color = (isCorrect ? Colors.green : Colors.red).withOpacity(0.4)
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 20.0;
 
@@ -41,10 +39,12 @@ class ImagePainter extends CustomPainter {
 /// - `isCorrect` (required): A [bool] indicating whether the last selection was correct.
 class ImageDrawingWidget extends StatefulWidget {
   final AbstractImage image;
+  /// Returns the index of the bounding box the use clicked on
   final void Function(int) foundCorrect;
+  /// Indicates that the user clicked outside of any boundingbox
   final void Function() foundIncorrect;
-  final bool isOver;
-  final bool isCorrect;
+
+  final bool readOnly;
   
 
   const ImageDrawingWidget({
@@ -52,8 +52,7 @@ class ImageDrawingWidget extends StatefulWidget {
     required this.image,
     required this.foundCorrect,
     required this.foundIncorrect,
-    required this.isOver,
-    required this.isCorrect,
+    required this.readOnly
   });
 
   @override
@@ -67,8 +66,12 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   
   List<Offset> points = [];
   List<bool> isCorrect = [];
+
+  /// keys permit to locate the correct position
+  /// of the bounding boxes which are in relative coordinates
   final GlobalKey _imageKey = GlobalKey();
   final GlobalKey _containerKey = GlobalKey();
+  
   late Offset offset;
   Offset _startFocalPoint = Offset.zero;
   
@@ -76,11 +79,6 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   Matrix4 currentTransformation = Matrix4.identity();
 
   final double _zoomMax = 4, _zoomMin = 1;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void didUpdateWidget(covariant ImageDrawingWidget oldWidget) {
@@ -106,8 +104,10 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
     int i = 0;
     final offset = Offset((constraints.maxWidth-width)/2,(constraints.maxHeight-height)/2);
     final pos = points.last - offset;
+    // x and y represents the relative coordinate of the click in the image
     final x = pos.dx/width;
     final y = pos.dy/height;
+    // we loop over the bounding box until we find the image
     while (i < (widget.image.boundingBoxes?.length??0) && !isIn) {
       final bb = widget.image.boundingBoxes![i];
       // is the last point x, y in the bounding box
@@ -242,16 +242,16 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
                       ),
                     GestureDetector(
                       behavior: HitTestBehavior.translucent,
-                      onTapUp: !widget.isOver
-                        ?( details){
-                          // The users is answering only
-                          // if he's not scaling/zooming
-                          if (!scaling){
-                            points.add(details.localPosition);
-                            isCorrect.add(false);
-                            setState(() {_isLastIn(constraints);});
+                      onTapUp: !widget.readOnly
+                        ? (details){
+                            // The users is answering only
+                            // if he's not scaling/zooming
+                            if (!scaling){
+                              points.add(details.localPosition);
+                              isCorrect.add(false);
+                              setState(() {_isLastIn(constraints);});
+                            }
                           }
-                        }
                         : null,
                       onScaleStart: (details){scaling = true;_onScaleStart(details);},
                       onScaleUpdate: (details) {_onScaleUpdate(details, constraints);},

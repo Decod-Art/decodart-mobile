@@ -127,8 +127,7 @@ class _BoundingBoxQuestionState extends State<FindMeQuestion> {
                   image: widget.question.answers[0].image!,
                   foundCorrect: foundCorrect,
                   foundIncorrect: foundIncorrect,
-                  isOver: isOver,
-                  isCorrect: foundEverything,
+                  readOnly: isOver
                 )
               )
 
