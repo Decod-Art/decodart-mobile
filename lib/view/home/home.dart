@@ -6,6 +6,14 @@ import 'package:decodart/view/camera/camera.dart' show CameraView;
 import 'package:decodart/view/explore/explore.dart' show ExploreView;
 import 'package:decodart/view/decod/menu/main_menu.dart' show DecodMainMenuView;
 
+/// A widget that represents the home page of the Decod app.
+/// 
+/// The `HomePage` is a stateful widget that displays a tab bar with four tabs: Map, Scanner, Explore, and Decod.
+/// Each tab displays a different view when selected.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class HomePage extends StatefulWidget {
 
   const HomePage({super.key});
@@ -78,7 +86,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   set tab (int index) {
-    _tabController.index = index; // Ou utilisez _tabController.animateTo(index);
+    _tabController.index = index;
   }
 
   @override

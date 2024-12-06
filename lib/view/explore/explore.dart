@@ -14,6 +14,14 @@ import 'package:decodart/widgets/component/error/error.dart' show ErrorView;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
+/// A widget that displays the explore view in the Decod app.
+/// 
+/// The `ExploreView` is a stateful widget that shows various categories of items (artworks, museums, tours, and geolocated items) in a list format.
+/// It fetches data from different APIs and displays the items in content blocks. The user can search for items and navigate to detailed views of the items.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class ExploreView extends StatefulWidget {
   const ExploreView({super.key});
 
@@ -88,9 +96,7 @@ class _ExploreViewState extends State<ExploreView> {
       smallTitle: false,
       onSearch: (String value) {
         _filter = value;
-        if (value.isEmpty) {
-          _filter = null;
-        }
+        if (value.isEmpty) _filter = null;
         _setFetcher();
         setState(() {});
       },
@@ -104,22 +110,14 @@ class _ExploreViewState extends State<ExploreView> {
                   onPressed: (item) => navigateToGeoLocated(item as GeolocatedListItem, context),
                   itemType: (item) => item.isMuseum ? ItemType.museum : ItemType.artwork,
                   title: 'Autour de moi',
-                  onError: (_, __) {
-                    setState(() {
-                      errorAroundMe = true;
-                    });
-                  },
+                  onError: (_, __) => setState(() {errorAroundMe = true;})
                 ),
                 ContentBlock(
                   fetch: fetchAllArtworks,
                   secondaryFetch: _artworkListItemFetcher.call,
                   onPressed: (item) => navigateToArtwork(item as ArtworkListItem, context),
                   title: 'Œuvres',
-                  onError: (_, __) {
-                    setState(() {
-                      errorArtwork = true;
-                    });
-                  }
+                  onError: (_, __) => setState(() {errorArtwork = true;})
                 ),
                 ContentBlock(
                   fetch: fetchAllMuseums,
@@ -127,11 +125,7 @@ class _ExploreViewState extends State<ExploreView> {
                   onPressed: (item) => navigateToMuseum(item as MuseumListItem, context),
                   itemType: (item) => ItemType.museum,
                   title: 'Musées',
-                  onError: (_, __) {
-                    setState(() {
-                      errorMuseum = true;
-                    });
-                  }
+                  onError: (_, __) => setState(() {errorMuseum = true;})
                 ),
                 ContentBlock(
                   fetch: fetchAllTours,
@@ -139,11 +133,7 @@ class _ExploreViewState extends State<ExploreView> {
                   onPressed: (item) => navigateToTour(item as TourListItem, context),
                   itemType: (item) => ItemType.tour,
                   title: 'Visites',
-                  onError: (_, __) {
-                    setState(() {
-                      errorTour = true;
-                    });
-                  }
+                  onError: (_, __) => setState(() {errorTour = true;})
                 ),
               ]
             )

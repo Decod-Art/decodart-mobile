@@ -10,6 +10,14 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_animations/flutter_map_animations.dart' show AnimatedMapController;
 import 'package:latlong2/latlong.dart' show LatLng;
 
+/// A widget that displays a map view in the Decod app.
+/// 
+/// The `MapView` is a stateful widget that shows a map with markers representing geolocated items.
+/// It fetches data from an API and displays the items as markers on the map. The user can interact with the map and select markers to view more details.
+/// 
+/// Attributes:
+/// 
+/// - `key` (optional): A [Key] to uniquely identify the widget.
 class MapView extends StatefulWidget{
   const MapView({super.key});
 
@@ -17,7 +25,7 @@ class MapView extends StatefulWidget{
   State<MapView> createState() => _MapViewState();
 }
 
-
+/// A custom marker class that includes a unique identifier (UID).
 class MarkerWithUID extends Marker {
   final int uid;
   const MarkerWithUID({
@@ -36,15 +44,12 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
 
   // position of the modal window
   final GlobalKey modalKey = GlobalKey();
-  bool showSearchButton = true;
 
   @override
   void initState() {
     super.initState();
     mapController.mapController.mapEventStream.listen(_onMapMoved);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadMarkers();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadMarkers());
   }
 
   @override
@@ -53,11 +58,11 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     super.dispose();
   }
   void _onMapMoved(MapEvent event) {
-    if (event is MapEventMoveEnd||event is MapEventDoubleTapZoomEnd) {
-      _loadMarkers();
-    }
+    if (event is MapEventMoveEnd||event is MapEventDoubleTapZoomEnd) _loadMarkers();
   }
 
+  /// This function aims at moving the map to center it on the
+  /// selected marker
   void _moveMap(GeolocatedListItem item) {
      WidgetsBinding.instance.addPostFrameCallback((_) {
       final RenderBox? modalBox = modalKey.currentContext?.findRenderObject() as RenderBox?;
