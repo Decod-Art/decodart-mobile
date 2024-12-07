@@ -30,6 +30,10 @@ class ExploreView extends StatefulWidget {
 }
 
 class _ExploreViewState extends State<ExploreView> {
+  // The fetcher are encapsulated in methods so that when the build method is called
+  // to regenerate the widget, the Widgets that gets reconstructed don't receive a new "item"
+  // (i.e.) a new fetcher... They are the same object with just an updated parameter...
+  // Otherwise the widgets get reconstructed each time something happens that change the fetcher
   late DataFetcher<GeolocatedListItem> _geolocatedListItemFetcher;
   bool errorAroundMe = false;
   late DataFetcher<ArtworkListItem> _artworkListItemFetcher;
