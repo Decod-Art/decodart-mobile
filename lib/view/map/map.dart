@@ -125,7 +125,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       }
       setState(() {});
     } catch(e) {
-      logger.e("Failed reloading the markers... Keeping current markers: $e");
+      logger.e("Failed collecting new markers... Keeping current markers: $e");
     }
   }
 
