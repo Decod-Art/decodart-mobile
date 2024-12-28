@@ -61,7 +61,7 @@ class MuseumMapController extends AbstractListController<RoomListItem>{
     for (int i = fetchers.length ; i < items.length ; i++) {
       fetchers.add(
         ({int limit=10, int offset=0, String? query}) {
-          return fetchAllArtworks(limit: limit, offset: offset, museumId: museum.uid, room: items[i].name, query: query);
+          return fetchAllArtworks(limit: limit, offset: offset, museumId: museum.uid, roomId: items[i].uid!, query: query);
         }
       );
       // Initial values to avoid calling multiple times the API.. while we have a set of artworks already loaded.

@@ -35,7 +35,7 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
     int offset=0,
     String? query,
     int? museumId,
-    String? room}) async {
+    int? roomId}) async {
 
   try {
     final Uri uri = Uri.parse('$hostName/artworks').replace(
@@ -44,7 +44,7 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
         'offset': '$offset',
         if (query != null) 'query': query,
         if (museumId != null) 'museumId': '$museumId',
-        if (room != null) 'room': room
+        if (roomId != null) 'roomId': roomId.toString()
       },
     );
     logger.d(uri);

@@ -1,4 +1,4 @@
-const String host = 'localhost';
+const String host = '192.168.1.23';
 
 /// The base URL for the host server.
 const String hostName = 'http://$host:8000';

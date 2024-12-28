@@ -31,8 +31,8 @@ class RoomListItem extends RoomForeignKey {
     uid: json['uid'],
     name: json['name'],
     description: json['description'],
-    artworks: json['artworkPreview']!=null
-      ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
+    artworks: json['artwork_preview']!=null
+      ? json['artwork_preview'].map((item) => ArtworkListItem.fromJson(item))
                               .toList()
                               .cast<ArtworkListItem>()
       : const[]
@@ -62,8 +62,8 @@ class Room extends RoomListItem {
     image: json['image'] != null
       ? ImageOnline.fromJson(json['image'])
       : null,
-    artworks: json['artworkPreview']!=null
-      ? json['artworkPreview'].map((item) => ArtworkListItem.fromJson(item))
+    artworks: json['artwork_preview']!=null
+      ? json['artwork_preview'].map((item) => ArtworkListItem.fromJson(item))
                               .toList()
                               .cast<ArtworkListItem>()
       : const[]
