@@ -82,7 +82,7 @@ class ImageOnline extends AbstractImage {
   );
 
   hive.Image toHive({saveBoundingBox=true}) => hive.Image(
-    uid: uid!,
+    uid: uid,
     boundingBoxes: saveBoundingBox?boundingBoxes?.map((item) => item.toHive()).toList():null,
     path: path,
     data: data!

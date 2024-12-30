@@ -2,6 +2,7 @@ import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/image.dart' show ImageOnline;
+import 'package:decodart/util/logger.dart';
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
 import 'package:decodart/controller_and_mixins/camera/controller.dart' show DecodCameraController;
@@ -99,6 +100,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
   }
 
   Future<void> _saveResults(List<ArtworkListItem> items) async {
+    print("saving results");
     // saving up to maxRecentSaved elements in the hive box
     recentScanBox ??= await Hive.openBox<List>('recentScan');
     var recentList = recentScanBox?.get('recent', defaultValue: [])
@@ -106,10 +108,15 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     if (recentList != null) {
       // Download the data from the images
       await Future.wait(items.map((item) => (item.image as ImageOnline).downloadImageData()));
-      recentList.insertAll(0, items.map((item)=> item.toHive()).toList());
-      if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);
-      // This should trigger any listener over the value of the box
-      recentScanBox?.put('recent', recentList);
+      
+      try {
+        recentList.insertAll(0, items.map((item) => item.toHive()).toList());
+        if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);
+        // This should trigger any listener over the value of the box
+        recentScanBox?.put('recent', recentList);
+      } catch (e) {
+        logger.e(e);
+      }
     }
   }
 

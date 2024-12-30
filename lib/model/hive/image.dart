@@ -37,7 +37,7 @@ class BoundingBox {
 @HiveType(typeId: 2)
 class Image {
   @HiveField(0, defaultValue: 0)
-  final int uid;
+  final int? uid;
   @HiveField(1, defaultValue: null)
   final List<BoundingBox>? boundingBoxes;
   @HiveField(2)
