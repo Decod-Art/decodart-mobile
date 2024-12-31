@@ -34,7 +34,7 @@ class HelpView extends StatelessWidget {
           _HelpItem(
             number: '3',
             iconPath: 'images/icons/clock.png',
-            description: 'Après avoir scanné une œuvre, elle est automatiquement sauvegardée dans vos scans récents, dans l\'onglet "Scanner".',
+            description: 'Après avoir scanné une œuvre et cliqué sur le bon résultat, elle est automatiquement sauvegardée dans vos scans récents, dans l\'onglet "Scanner".',
             size: 35
           ),
         ],

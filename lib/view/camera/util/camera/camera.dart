@@ -61,7 +61,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
       onInit: _cameraInitialized,
       onSearchStart: _resetSearch,
       runSearch: fetchArtworkByImage,
-      onSearchEnd: _onSearchEnd
+      onSearchEnd: _showResults
     ); 
   }
 
@@ -81,42 +81,40 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
     setState(() {});
   }
 
-  void _onSearchEnd(List<ArtworkListItem> artworks) {
-    _saveResults(artworks);
-    _showResults(artworks);
-  }
-
   void _showResults(List<ArtworkListItem> artworks) {
-    setState(() {}); // TODO test if required
+    // required
+    // e.g. the button of the camera should refresh and stop
+    // loading
+    setState(() {});
     if (artworks.length == 1) {
       artworkFound = artworks.first;
       // this shows the small popup
       _animationController.forward();
     } else if (artworks.isNotEmpty){
-      showWidgetInModal(context, (context) => ResultsView(results: artworks));
+      showWidgetInModal(context, (context) => ResultsView(results: artworks, onPressed: _saveResult,));
     } else {
       setState(() {noResult = true;});
     }
   }
 
-  Future<void> _saveResults(List<ArtworkListItem> items) async {
-    print("saving results");
-    // saving up to maxRecentSaved elements in the hive box
+  Future<void> _saveResult(ArtworkListItem item) async {
+    logger.d("Saving artwork ${item.uid} to recently scanned");
     recentScanBox ??= await Hive.openBox<List>('recentScan');
     var recentList = recentScanBox?.get('recent', defaultValue: [])
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList != null) {
-      // Download the data from the images
-      await Future.wait(items.map((item) => (item.image as ImageOnline).downloadImageData()));
-      
       try {
-        recentList.insertAll(0, items.map((item) => item.toHive()).toList());
-        if (recentList.length > maxRecentSaved) recentList.removeRange(maxRecentSaved, recentList.length);
+        await (item.image as ImageOnline).downloadImageData();
+        final hive.ArtworkListItem hiveItem = item.toHive();
+        if (recentList.remove(hiveItem)) logger.d("Item previously scanned");
+        recentList.insert(0, hiveItem);
+        
         // This should trigger any listener over the value of the box
         recentScanBox?.put('recent', recentList);
       } catch (e) {
         logger.e(e);
       }
+
     }
   }
 
@@ -139,10 +137,7 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                   child: VisibilityDetector(
                     key: const Key('camera-view-key'),
                     onVisibilityChanged: (VisibilityInfo info){
-                      setState(() {
-                        hideCamera=info.visibleFraction == 0;
-                        if (hideCamera)controller.dispose(); // TODO test if this should be removed
-                      });
+                      setState(() {hideCamera=info.visibleFraction == 0;});
                     },
                     child: hideCamera
                       ? Container()
@@ -166,6 +161,9 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                             // because resetSearch will set artworkFound to null
                             final artwork = artworkFound!;
                             _resetSearch();
+                            // if the user clicks on the item, we suppose that it's been
+                            // correctly identified... thus we save it
+                            _saveResult(artwork);
                             showWidgetInModal(context, (context) => FutureArtworkView(artwork: artwork));
                           },
                         ),

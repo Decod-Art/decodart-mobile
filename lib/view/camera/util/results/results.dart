@@ -6,9 +6,11 @@ import 'package:flutter/cupertino.dart';
 
 class ResultsView extends StatelessWidget {
   final List<ArtworkListItem> results;
+  final void Function(ArtworkListItem) onPressed;
   const ResultsView({
     super.key,
-    required this.results
+    required this.results,
+    required this.onPressed
     });
 
   @override
@@ -42,6 +44,7 @@ class ResultsView extends StatelessWidget {
         ),
         const SizedBox(height: 20),
         ListWithThumbnail(items: results, onPress: (item) async {
+          onPressed(item);
           showWidgetInModal(
             context,
             (context) => FutureArtworkView(artwork: item)

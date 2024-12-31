@@ -23,4 +23,14 @@ class ArtworkListItem extends HiveObject {
     required this.artist,
     required this.image
   });
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ArtworkListItem) return false;
+    return uid == other.uid;
+  }
+
+  @override
+  int get hashCode => uid.hashCode;
 }
