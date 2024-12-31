@@ -29,7 +29,6 @@ class MuseumView extends StatefulWidget {
 }
 
 class _MuseumViewState extends State<MuseumView>  {
-  final ScrollController _scrollController = ScrollController();
   late final SearchableDataFetcher<ArtworkListItem> _fetchCollection;
   late final SearchableDataFetcher<TourListItem> _fetchExhibition;
   late final SearchableDataFetcher<TourListItem> _fetchTour;
@@ -52,7 +51,6 @@ class _MuseumViewState extends State<MuseumView>  {
 
   @override
   void dispose() {
-    _scrollController.dispose();
     super.dispose();
   }
 
