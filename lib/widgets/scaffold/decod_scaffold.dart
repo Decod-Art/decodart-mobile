@@ -35,6 +35,9 @@ class DecodPageScaffold extends StatefulWidget {
   // before changing the style (more transparent) of the navigation bar
   final double? threshold;
 
+  // Indicates whether the current view can pop from the navigation stack.
+  final bool canPop;
+
   const DecodPageScaffold({
     super.key,
     this.children,
@@ -48,7 +51,8 @@ class DecodPageScaffold extends StatefulWidget {
     this.child,
     this.showTrailing=true,
     this.withScrolling=false,
-    this.threshold});
+    this.threshold,
+    this.canPop=true});
     
       @override
       State<DecodPageScaffold> createState() => _DecodPageScaffoldState();
@@ -96,6 +100,7 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
         trailing: widget.showTrailing
           ? AproposButton()
           : null,
+        canPop: widget.canPop,
       ),
       withScrolling: widget.withScrolling,
       controller: _scrollController,
@@ -116,7 +121,8 @@ class _DecodPageScaffoldState extends State<DecodPageScaffold> {
       threshold: widget.threshold,
       builder: widget.builder,
       childCount: widget.childCount,
-      children: widget.children,
+      canPop: widget.canPop,
+      children: widget.children
     );
   }
 

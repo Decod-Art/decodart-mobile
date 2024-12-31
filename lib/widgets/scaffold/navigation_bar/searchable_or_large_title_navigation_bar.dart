@@ -19,6 +19,7 @@ class SearchableOrLargeTitleNavigationBar extends StatefulWidget {
   final Widget? middle;
   final Widget? trailing;
   final bool? transitionBetweenRoutes;
+  final bool canPop;
 
   const SearchableOrLargeTitleNavigationBar(
       {super.key,
@@ -31,7 +32,8 @@ class SearchableOrLargeTitleNavigationBar extends StatefulWidget {
       required this.title,
       this.previousPageTitle,
       this.middle,
-      this.trailing});
+      this.trailing,
+      this.canPop=true});
 
   @override
   State<SearchableOrLargeTitleNavigationBar> createState() => _NavState();
@@ -138,7 +140,7 @@ class _NavState extends State<SearchableOrLargeTitleNavigationBar> {
             ),
         ],
       ),
-      leading: Navigator.of(context).canPop()
+      leading: Navigator.of(context).canPop() && ModalRoute.of(context)?.settings.name != null && widget.canPop
         ? CupertinoNavigationBarBackButton(
             onPressed: () {
               Navigator.pop(context);

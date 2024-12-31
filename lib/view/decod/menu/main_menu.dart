@@ -20,6 +20,7 @@ class DecodMainMenuView extends StatelessWidget {
     return DecodPageScaffold(
       title: 'Décoder',
       smallTitle: true,
+      canPop: false,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

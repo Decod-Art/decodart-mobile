@@ -134,6 +134,7 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
     return DecodPageScaffold(
       title: 'Carte',
       smallTitle: true,
+      canPop: false,
       child: FlutterMap(
         mapController: mapController.mapController,
         options: const MapOptions(

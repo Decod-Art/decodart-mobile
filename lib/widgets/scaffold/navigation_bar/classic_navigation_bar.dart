@@ -8,13 +8,15 @@ class ClassicNavigationBar extends StatefulWidget implements ObstructingPreferre
   final Widget? trailing;
   final Widget? leading;
   final double? threshold;
+  final bool canPop;
   const ClassicNavigationBar({
     super.key,
     required this.scrollController,
     required this.title,
     this.trailing,
     this.leading,
-    this.threshold});
+    this.threshold,
+    this.canPop=true});
 
   @override
   State<ClassicNavigationBar> createState() => _ClassicNavigationBarState();
@@ -55,7 +57,7 @@ class _ClassicNavigationBarState extends State<ClassicNavigationBar> {
   Widget build(BuildContext context) {
     return CupertinoNavigationBar(
       leading: widget.leading?? (
-        Navigator.of(context).canPop()
+        Navigator.of(context).canPop() && ModalRoute.of(context)?.settings.name != null && widget.canPop
           ? CupertinoNavigationBarBackButton(
               onPressed: () {
                 Navigator.pop(context);

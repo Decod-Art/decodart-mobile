@@ -16,6 +16,7 @@ class SearchableOrLargeTitleScaffold extends StatefulWidget {
   final int? childCount;
   final Function(String)? onSearch;
   final double? threshold;
+  final bool canPop;
 
   const SearchableOrLargeTitleScaffold(
       {super.key,
@@ -31,7 +32,8 @@ class SearchableOrLargeTitleScaffold extends StatefulWidget {
       this.previousPageTitle,
       this.trailing,
       this.leading,
-      this.threshold});
+      this.threshold,
+      this.canPop=true});
 
   @override
   State<SearchableOrLargeTitleScaffold> createState() => _NavState();
@@ -103,6 +105,7 @@ class _NavState extends State<SearchableOrLargeTitleScaffold>{
             leading: widget.leading,
             trailing: widget.trailing,
             threshold: widget.threshold,
+            canPop: widget.canPop,
           )
         : null,
       child:  CustomScrollView(
@@ -119,6 +122,7 @@ class _NavState extends State<SearchableOrLargeTitleScaffold>{
               onSearch: widget.onSearch,
               trailing: widget.trailing,
               previousPageTitle: widget.previousPageTitle,
+              canPop: widget.canPop
             ),
           SliverSafeArea(
             top: hasClassicNavigationBar,
