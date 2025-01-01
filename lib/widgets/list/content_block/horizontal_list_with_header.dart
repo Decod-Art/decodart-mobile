@@ -14,6 +14,7 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
   final void Function(Object, StackTrace)? onError;
   final ItemType Function(T) itemType;
   final List<T> initialValues;
+  final bool loadingDelay;
   const LazyHorizontalListWithHeader({
     super.key,
     required this.name,
@@ -22,7 +23,8 @@ class LazyHorizontalListWithHeader<T extends AbstractListItem> extends StatefulW
     required this.itemType,
     required this.onTitlePressed,
     this.initialValues = const [],
-    this.onError
+    this.onError,
+    this.loadingDelay=false
     });
     
     @override
@@ -47,7 +49,7 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
       scrollController: scrollController
     );
     controller.addListener(checkIfNeedsLoading);
-    updateView(250);
+    updateView(widget.loadingDelay ? 250 : null);
   }
 
   @override
@@ -69,7 +71,7 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
     });
   }
 
-  bool get showContent => (controller.isNotEmpty || controller.hasMore) && (!controller.failed||controller.firstTimeLoading);
+  bool get showContent => (controller.isNotEmpty || controller.hasMore) && !controller.failed;
 
   Future<void> checkIfNeedsLoading() async {
     if (controller.shouldReload) loadMoreItems();

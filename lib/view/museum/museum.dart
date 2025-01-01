@@ -123,6 +123,7 @@ class _MuseumViewState extends State<MuseumView>  {
             itemType: (item) => ItemType.tour,
             onPressed: (item) => navigateToTour(item as TourListItem, context, modal: widget.useModal),
             isModal: widget.useModal,
+            loadingDelay: true,
           ),
         if (widget.museum.hasCollection)
           ContentBlock(
@@ -130,6 +131,7 @@ class _MuseumViewState extends State<MuseumView>  {
             fetch: _fetchCollection,
             onPressed: (item) => navigateToArtwork(item as ArtworkListItem, context, modal: widget.useModal),
             isModal: widget.useModal,
+            loadingDelay: true,
           ),
         if (widget.museum.hasTours)
           ContentBlock(
@@ -138,6 +140,7 @@ class _MuseumViewState extends State<MuseumView>  {
             itemType: (item) => ItemType.tour,
             onPressed: (item) => navigateToTour(item as TourListItem, context, modal: widget.useModal),
             isModal: widget.useModal,
+            loadingDelay: true,
           ),
         const SizedBox(height: 35)
       ],

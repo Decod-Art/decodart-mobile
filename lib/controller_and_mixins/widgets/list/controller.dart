@@ -29,8 +29,8 @@ abstract class AbstractListController<T> {
     _failedLoading = true;
     _isLoading = false;
     _retry = false;
-    await Future.delayed(Duration(seconds: waitBeforeRetry));
-    _retry = true;
+    // await Future.delayed(Duration(seconds: waitBeforeRetry));
+    // _retry = true;
   }
 
   /// Completes the loading state.

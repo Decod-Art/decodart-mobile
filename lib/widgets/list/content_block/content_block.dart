@@ -24,6 +24,9 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
   final List<T> initialValues;
   // Error when fetching new data for the list
   final void Function(Object, StackTrace)? onError;
+
+  // Wait some time (ms) before starting the loading
+  final bool loadingDelay;
   const ContentBlock({
     super.key,
     required this.title,
@@ -33,7 +36,8 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
     this.secondaryFetch,
     this.itemType=defaultItemTypeFct,
     this.initialValues = const [],
-    this.onError});
+    this.onError,
+    this.loadingDelay=false});
 
   @override
   Widget build(BuildContext context){
@@ -44,6 +48,7 @@ class ContentBlock<T extends AbstractListItem> extends StatelessWidget {
       itemType: itemType,
       initialValues: initialValues,
       onError: onError,
+      loadingDelay: loadingDelay,
       onTitlePressed: (){
         if (isModal) {
           showListInModal(

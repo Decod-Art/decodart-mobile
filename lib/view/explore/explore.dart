@@ -109,41 +109,37 @@ class _ExploreViewState extends State<ExploreView> {
         hasNoError
           ? Column(// Column so that it is a single widget in the scaffold.. And queries only done once.
               children: [
-                if (!errorAroundMe) 
-                  ContentBlock(
-                    fetch: fetchAroundMe,
-                    secondaryFetch: _geolocatedListItemFetcher.call,          
-                    onPressed: (item) => navigateToGeoLocated(item as GeolocatedListItem, context),
-                    itemType: (item) => item.isMuseum ? ItemType.museum : ItemType.artwork,
-                    title: 'Autour de moi',
-                    onError: (_, __) => setState(() {errorAroundMe = true;})
-                  ),
-                if (!errorArtwork)
-                  ContentBlock(
-                    fetch: fetchAllArtworks,
-                    secondaryFetch: _artworkListItemFetcher.call,
-                    onPressed: (item) => navigateToArtwork(item as ArtworkListItem, context),
-                    title: 'Œuvres',
-                    onError: (_, __) => setState(() {errorArtwork = true;})
-                  ),
-                if (!errorMuseum)
-                  ContentBlock(
-                    fetch: fetchAllMuseums,
-                    secondaryFetch: _museumListItemFetcher.call,
-                    onPressed: (item) => navigateToMuseum(item as MuseumListItem, context),
-                    itemType: (item) => ItemType.museum,
-                    title: 'Musées',
-                    onError: (_, __) => setState(() {errorMuseum = true;})
-                  ),
-                if (!errorTour)
-                  ContentBlock(
-                    fetch: fetchAllTours,
-                    secondaryFetch: _tourListItemFetcher.call,
-                    onPressed: (item) => navigateToTour(item as TourListItem, context),
-                    itemType: (item) => ItemType.tour,
-                    title: 'Visites',
-                    onError: (_, __) => setState(() {errorTour = true;})
-                  ),
+                ContentBlock(
+                  fetch: fetchAroundMe,
+                  secondaryFetch: _geolocatedListItemFetcher.call,          
+                  onPressed: (item) => navigateToGeoLocated(item as GeolocatedListItem, context),
+                  itemType: (item) => item.isMuseum ? ItemType.museum : ItemType.artwork,
+                  title: 'Autour de moi',
+                  onError: (_, __) => setState(() {errorAroundMe = true;})
+                ),
+                ContentBlock(
+                  fetch: fetchAllArtworks,
+                  secondaryFetch: _artworkListItemFetcher.call,
+                  onPressed: (item) => navigateToArtwork(item as ArtworkListItem, context),
+                  title: 'Œuvres',
+                  onError: (_, __) => setState(() {errorArtwork = true;})
+                ),
+                ContentBlock(
+                  fetch: fetchAllMuseums,
+                  secondaryFetch: _museumListItemFetcher.call,
+                  onPressed: (item) => navigateToMuseum(item as MuseumListItem, context),
+                  itemType: (item) => ItemType.museum,
+                  title: 'Musées',
+                  onError: (_, __) => setState(() {errorMuseum = true;})
+                ),
+                ContentBlock(
+                  fetch: fetchAllTours,
+                  secondaryFetch: _tourListItemFetcher.call,
+                  onPressed: (item) => navigateToTour(item as TourListItem, context),
+                  itemType: (item) => ItemType.tour,
+                  title: 'Visites',
+                  onError: (_, __) => setState(() {errorTour = true;})
+                ),
               ]
             )
           : ErrorView(onPress: _reset)
