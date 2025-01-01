@@ -10,6 +10,7 @@ class FullScreenPDFViewer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: Colors.black,
       navigationBar: CupertinoNavigationBar(
         backgroundColor: Colors.black, // Fond sombre pour la barre de navigation
         middle: const Text('Plan du musée', style: TextStyle(color: Colors.white)),
