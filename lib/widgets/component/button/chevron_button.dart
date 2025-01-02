@@ -13,6 +13,8 @@ class ChevronButtonWidget extends StatelessWidget {
   final double subtitleFontSize;
   final double marginRight;
   final VoidCallback onPressed;
+  final bool chevronDown;
+  final bool leadingSpace;
   const ChevronButtonWidget({
     super.key,
     this.icon,
@@ -26,7 +28,9 @@ class ChevronButtonWidget extends StatelessWidget {
     this.subtitleFontSize=15,
     this.marginRight=10,
     required this.onPressed,
-    this.subtitle
+    this.subtitle,
+    this.chevronDown=false,
+    this.leadingSpace=false
     });
 
   @override
@@ -37,6 +41,8 @@ class ChevronButtonWidget extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 15),
+          if (leadingSpace)
+            const SizedBox(width: 16),
           if (icon!=null) ...[
             icon!,
             const SizedBox(width: 14)
@@ -69,7 +75,9 @@ class ChevronButtonWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Icon(
-                  CupertinoIcons.right_chevron,
+                  chevronDown
+                    ? CupertinoIcons.chevron_down
+                    : CupertinoIcons.right_chevron,
                   color: chevronColor,
                   size: 20,
                   fill: 0,
