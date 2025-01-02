@@ -3,6 +3,7 @@ import 'package:decodart/widgets/component/button/button_list.dart' show ButtonL
 import 'package:decodart/widgets/component/button/chevron_button.dart' show ChevronButtonWidget;
 import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
 import 'package:decodart/widgets/navigation/modal.dart' show showWidgetInModal;
+import 'package:decodart/widgets/navigation/navigate_to_items.dart';
 import 'package:flutter/cupertino.dart';
 
 class ArtworkTags extends StatelessWidget {
@@ -27,6 +28,19 @@ class ArtworkTags extends StatelessWidget {
                   edges: const EdgeInsets.all(15)
                 )
               );
+            },
+          ),
+        if (artwork.hasMuseum)
+          ChevronButtonWidget(
+            text: artwork.museum.name,
+            icon: Image.asset(
+              'images/icons/museum.png',
+              width: 24,
+              height: 24,
+              color: CupertinoColors.activeBlue,
+            ),
+            onPressed: (){
+              navigateToMuseum(artwork.museum, context, modal: true);
             },
           ),
         for(final tag in artwork.sortedTags) ... [

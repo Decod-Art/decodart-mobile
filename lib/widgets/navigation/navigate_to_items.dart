@@ -1,7 +1,7 @@
 
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
-import 'package:decodart/model/museum.dart' show MuseumListItem;
+import 'package:decodart/model/museum.dart' show MuseumListItem, MuseumForeignKey;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/museum/future_museum.dart' show FutureMuseumView;
@@ -22,7 +22,7 @@ void navigateToArtwork(ArtworkListItem item, BuildContext context, {bool modal=f
   _navigateToWidget((context) => FutureArtworkView(artwork: item), context, modal: modal, threshold: 55);
 }
 
-void navigateToMuseum(MuseumListItem item, BuildContext context, {bool modal=false}) {
+void navigateToMuseum(MuseumForeignKey item, BuildContext context, {bool modal=false}) {
   _navigateToWidget((context) => FutureMuseumView(museum: item, useModal: modal), context, modal: modal);
 }
 

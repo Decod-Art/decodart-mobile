@@ -96,7 +96,6 @@ class Artwork extends AbstractItem {
   final String country;
   final int sortYear;
   final Artist artist;
-  final MuseumForeignKey? museum;
   final List<AbstractImage> images;
   final bool hasDecodQuestion;
   final List<ArtworkTag> tags;
@@ -111,7 +110,6 @@ class Artwork extends AbstractItem {
     this.room,
     required this.description,
     required this.artist,
-    this.museum,
     this.latitude,
     this.longitude,
     required this.city,
@@ -129,7 +127,6 @@ class Artwork extends AbstractItem {
     height: json['height'],
     depth: json['depth'],
     title: json['title'],
-    museum: (json['museum']!=null)?MuseumForeignKey.fromJson(json['museum']):null,
     room: json['room']!=null?RoomForeignKey.fromJson(json['room']):null,
     artist: Artist.fromJson(json['artist']),
     latitude: json['latitude'],
@@ -158,7 +155,6 @@ class Artwork extends AbstractItem {
     'height': height,
     'depth': depth,
     'title': title,
-    'museum': museum?.toJson(),
     'room': room?.toJson(),
     'artist': artist.toJson(),
     'latitude': latitude,
@@ -171,6 +167,9 @@ class Artwork extends AbstractItem {
   };
 
   String get title => name;
+
+  bool get hasMuseum => room?.museum != null;
+  MuseumForeignKey get museum => room!.museum!;
 
   // to extract a preview of the artwork (recent, decoded, etc.)
   ArtworkListItem get listItem => ArtworkListItem(

@@ -1,18 +1,21 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 
 class RoomForeignKey extends AbstractItem {
-
+  final MuseumForeignKey? museum;
   const RoomForeignKey({
     super.uid,
-    required super.name
+    required super.name,
+    required this.museum
   });
 
   factory RoomForeignKey.fromJson(Map<String, dynamic> json) => RoomForeignKey(
     uid: json['uid'],
-    name: json['name']
+    name: json['name'],
+    museum: json['museum'] != null
+      ? MuseumForeignKey.fromJson(json['museum'])
+      : null
   );
 }
 
@@ -25,7 +28,7 @@ class RoomListItem extends RoomForeignKey {
     required super.name,
     required this.description,
     required this.artworks
-  });
+  }) : super(museum: null);
 
   factory RoomListItem.fromJson(Map<String, dynamic> json) => RoomListItem(
     uid: json['uid'],
@@ -40,44 +43,4 @@ class RoomListItem extends RoomForeignKey {
 
   @override
   Map<String, dynamic> toJson() => {...super.toJson(),'description': description};
-}
-
-class Room extends RoomListItem {
-  final AbstractImage? image;
-  final MuseumForeignKey museum;
-
-  const Room({
-    super.uid,
-    required super.name,
-    required super.description,
-    this.image,
-    required this.museum,
-    required super.artworks});
-
-  factory Room.fromJson(Map<String, dynamic> json) => Room(
-    uid: json['uid'],
-    name: json['name'],
-    description: json['description'],
-    museum: MuseumForeignKey.fromJson(json['museum']),
-    image: json['image'] != null
-      ? ImageOnline.fromJson(json['image'])
-      : null,
-    artworks: json['artwork_preview']!=null
-      ? json['artwork_preview'].map((item) => ArtworkListItem.fromJson(item))
-                              .toList()
-                              .cast<ArtworkListItem>()
-      : const[]
-  );
-
-  @override
-  Map<String, dynamic> toJson() => {
-    ...super.toJson(),
-    if (image != null) 'image': image!.toJson(),
-    'museum': museum.toJson()
-  };
-
-  bool get hasImage => image != null;
-
-  @override
-  String toString() => "Salle $name";
 }
