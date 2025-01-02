@@ -27,15 +27,24 @@ class MapView extends StatefulWidget{
 
 /// A custom marker class that includes a unique identifier (UID).
 class MarkerWithUID extends Marker {
-  final int uid;
+  final GeolocatedListItem item;
   const MarkerWithUID({
     required super.point,
     required super.child,
-    required this.uid,
+    required this.item,
     super.width,
     super.height
   });
-  
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final MarkerWithUID otherItem = other as MarkerWithUID;
+    return otherItem.item == item;
+  }
+
+  @override
+  int get hashCode => item.hashCode;
 }
 
 class _MapViewState extends State<MapView> with TickerProviderStateMixin {
@@ -92,26 +101,30 @@ class _MapViewState extends State<MapView> with TickerProviderStateMixin {
       // because it must not reconstruct markers that were already available.
       // To avoid blinking effects
       final visibleRegion = mapController.mapController.camera.visibleBounds;
-      final newItems = await fetchAllOnMap(
+
+      final List<GeolocatedListItem> newItems = await fetchAllOnMap(
         minLatitude: visibleRegion.south - buffer * (visibleRegion.north-visibleRegion.south),
         maxLatitude: visibleRegion.north + buffer * (visibleRegion.north-visibleRegion.south),
         minLongitude: visibleRegion.west - buffer * (visibleRegion.east-visibleRegion.west),
         maxLongitude: visibleRegion.east + buffer * (visibleRegion.east-visibleRegion.west)
       );
-      final newUids = newItems.map((item) => item.uid).toSet();
-
-      List<MarkerWithUID> updatedMarkers = [];
+      
+      // first we add the marker in newList that are already 
+      // displayed... We retrieve them from the previous "markers" list
+      List<MarkerWithUID> newMarkerList = [];
       for (int i = 0; i < markers.length; i++) {
-        if (newUids.contains(markers[i].uid)) {
-          updatedMarkers.add(markers[i]);
+        if (newItems.contains(markers[i].item)) {
+          newMarkerList.add(markers[i]);
         }
       }
-      markers = updatedMarkers;
+      markers = newMarkerList;
 
+      // Second we add all markers that are not already available in
+      // newMarkerList (i.e. the new "markers" list)
       for (var item in newItems) {
-        if (!markers.any((existingItem) => existingItem.uid == item.uid)) {
+        if (!markers.any((existingItem) => existingItem.item == item)) {
           markers.add(MarkerWithUID(
-            uid: item.uid!,
+            item: item,
             point: item.coordinates,
             width: 80,
             height: 80,

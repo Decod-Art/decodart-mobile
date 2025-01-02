@@ -109,6 +109,10 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
         if (recentList.remove(hiveItem)) logger.d("Item previously scanned");
         recentList.insert(0, hiveItem);
         
+        if (recentList.length > maxRecentSaved) {
+          recentList = recentList.sublist(0, maxRecentSaved);
+        }
+
         // This should trigger any listener over the value of the box
         recentScanBox?.put('recent', recentList);
       } catch (e) {

@@ -37,8 +37,6 @@ class DecodMarkerUI extends StatelessWidget {
   // to obtain info about the modal window
   final GlobalKey modalKey;
 
-  int get uid => item.uid!;
-
   const DecodMarkerUI({super.key, required this.onPress, required this.item, required this.modalKey});
 
   @override

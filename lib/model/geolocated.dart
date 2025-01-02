@@ -59,4 +59,15 @@ class GeolocatedListItem extends AbstractItem implements AbstractListItem {
 
   @override
   String toString() => "[UID: $uid], [title: $title], [coordinates: $coordinates]";
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (runtimeType != other.runtimeType) return false;
+    final GeolocatedListItem otherItem = other as GeolocatedListItem;
+    return uid == otherItem.uid && isMuseum == otherItem.isMuseum;
+  }
+
+  @override
+  int get hashCode => Object.hash(uid, isMuseum);
 }
