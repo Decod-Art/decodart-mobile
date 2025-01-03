@@ -102,7 +102,7 @@ class GameController extends MenuController {
 
     if (history != null && !history.any((item) => item.uid == artwork!.uid)) {
       var preview = artwork!.listItem;
-      if (preview.image.isDownloaded) {
+      if (!preview.image.isDownloaded) {
         await preview.image.downloadImageData();
       }
       history.insert(0, preview.toHive());
