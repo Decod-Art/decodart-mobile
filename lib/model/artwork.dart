@@ -3,7 +3,7 @@ import 'package:decodart/model/artist.dart' show Artist, ArtistForeignKey;
 import 'package:decodart/model/artwork_tag.dart' show ArtworkTag;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
+import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 import 'package:decodart/model/room.dart' show RoomForeignKey;
 import 'package:decodart/widgets/component/formatted_content/_util.dart' show ArtworkButtonContent;
@@ -15,7 +15,7 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
   final ArtistForeignKey artist;
 
   @override
-  final AbstractImage image;
+  final ImageOnline image;
 
   const ArtworkListItem({
     super.uid,
@@ -55,7 +55,7 @@ class ArtworkListItem extends AbstractItem implements AbstractListItem {
     uid: uid!,
     title: title,
     artist: artist.toHive(),
-    image: (image as ImageOnline).toHive(saveBoundingBox: false)
+    image: (image).toHive(saveBoundingBox: false)
   );
 
   @override
@@ -96,7 +96,7 @@ class Artwork extends AbstractItem {
   final String country;
   final int sortYear;
   final Artist artist;
-  final List<AbstractImage> images;
+  final List<ImageOnline> images;
   final bool hasDecodQuestion;
   final List<ArtworkTag> tags;
 

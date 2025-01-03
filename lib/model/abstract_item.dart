@@ -1,4 +1,4 @@
-import 'package:decodart/model/image.dart' show AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline;
 
 
 /// A base abstract class for items.
@@ -30,7 +30,7 @@ abstract class AbstractListItem implements UnnamedAbstractItem {
   String get subtitle;
 
   /// The image associated with the item.
-  AbstractImage get image;
+  ImageOnline get image;
 }
 
 /// An abstract class representing a named item, extending [UnnamedAbstractItem].

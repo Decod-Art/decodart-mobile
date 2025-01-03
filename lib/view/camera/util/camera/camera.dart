@@ -1,8 +1,7 @@
 import 'package:decodart/api/artwork.dart' show fetchArtworkByImage;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
 import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
-import 'package:decodart/model/image.dart' show ImageOnline;
-import 'package:decodart/util/logger.dart';
+import 'package:decodart/util/logger.dart' show logger;
 import 'package:decodart/view/artwork/future_artwork.dart' show FutureArtworkView;
 import 'package:decodart/view/camera/util/camera/button.dart' show CameraButtonWidget;
 import 'package:decodart/controller_and_mixins/camera/controller.dart' show DecodCameraController;
@@ -104,7 +103,9 @@ class _CameraState extends State<Camera> with SingleTickerProviderStateMixin{
                                   ?.cast<hive.ArtworkListItem>();
     if (recentList != null) {
       try {
-        await (item.image as ImageOnline).downloadImageData();
+        if (!item.image.isDownloaded) {
+          await item.image.downloadImageData();
+        }
         final hive.ArtworkListItem hiveItem = item.toHive();
         if (recentList.remove(hiveItem)) logger.d("Item previously scanned");
         recentList.insert(0, hiveItem);

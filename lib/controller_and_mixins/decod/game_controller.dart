@@ -6,7 +6,6 @@ import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType, DecodTag;
 import 'package:decodart/model/hive/decod.dart' show GameData;
-import 'package:decodart/model/image.dart' show ImageOnline;
 
 
 
@@ -103,7 +102,9 @@ class GameController extends MenuController {
 
     if (history != null && !history.any((item) => item.uid == artwork!.uid)) {
       var preview = artwork!.listItem;
-      await (preview.image as ImageOnline).downloadImageData();
+      if (preview.image.isDownloaded) {
+        await preview.image.downloadImageData();
+      }
       history.insert(0, preview.toHive());
       decodedArtworkHistoryBox.put('history', history);
     }

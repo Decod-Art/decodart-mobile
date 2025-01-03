@@ -1,10 +1,11 @@
-import 'package:decodart/model/image.dart' show AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline;
+import 'package:decodart/widgets/component/image/image.dart';
 import 'package:decodart/widgets/list/util/item_type.dart' show ItemType;
 import 'package:flutter/cupertino.dart';
 
 class ThumbnailWidget extends StatelessWidget {
   final String title;
-  final AbstractImage image;
+  final ImageOnline image;
   final VoidCallback onPressed;
   final ItemType itemType;
   const ThumbnailWidget({
@@ -50,19 +51,20 @@ class ThumbnailWidget extends StatelessWidget {
         child: Stack(
           children: [
             // Image de fond
-            Image.network(
-              image.path,
-              width: 180,
-              height: 250,
-              fit: BoxFit.cover,
-            ),
+            DecodImage(image, width: 180, height: 250, fit: BoxFit.cover),
+            // Image.network(
+            //   image.path,
+            //   width: 180,
+            //   height: 250,
+            //   fit: BoxFit.cover,
+            // ),
             // Icône du pinceau en haut à droite
             Positioned(
               top: 8,
               right: 8,
               child: Container(
                 decoration: BoxDecoration(
-                  color: CupertinoColors.black.withOpacity(0.5),
+                  color: CupertinoColors.black.withValues(alpha: 0.5),
                   shape: BoxShape.circle,
                 ),
                 padding: const EdgeInsets.all(8.0),
@@ -81,8 +83,8 @@ class ThumbnailWidget extends StatelessWidget {
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      CupertinoColors.black.withOpacity(0.0),
-                      CupertinoColors.black.withOpacity(0.9),
+                      CupertinoColors.black.withValues(alpha: 0.0),
+                      CupertinoColors.black.withValues(alpha: 0.9),
                     ],
                   ),
                 ),

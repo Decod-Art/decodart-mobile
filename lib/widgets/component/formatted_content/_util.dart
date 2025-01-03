@@ -1,5 +1,5 @@
 import 'package:decodart/util/online.dart' show checkUrlForCdn;
-import 'package:decodart/model/image.dart';
+import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Theme;
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -28,7 +28,7 @@ class TextContent extends AbstractFormattedContent {
 class ArtworkButtonContent extends AbstractFormattedContent {
   final String title;
   final String subtitle;
-  final AbstractImage image;
+  final ImageOnline image;
   final int uid;
   const ArtworkButtonContent({required this.title, required this.subtitle, required this.image, required this.uid});
 }

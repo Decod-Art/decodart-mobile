@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
 import 'package:decodart/model/artwork.dart' show ArtworkForeignKey;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
+import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/model/museum.dart' show MuseumForeignKey;
 
 
@@ -9,7 +9,7 @@ class TourListItem extends AbstractItem implements AbstractListItem {
   final String subtitle;
 
   @override
-  final AbstractImage image;
+  final ImageOnline image;
 
   const TourListItem({
       super.uid,

@@ -1,20 +1,10 @@
+import 'package:decodart/api/image.dart' show fetchImageData;
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
 import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/hive/image.dart' as hive;
 import 'dart:typed_data' show Uint8List;
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart' show Offset;
-
-/// An exception that is thrown when an error occurs while fetching an image.
-class FetchImageException implements Exception {
-  final String message;
-
-  /// Constructs a [FetchImageException] with the given error [message].
-  FetchImageException(this.message);
-
-  @override
-  String toString() => 'FetchImageException: $message';
-}
+import 'package:mutex/mutex.dart' show Mutex;
 
 abstract class AbstractImage extends UnnamedAbstractItem {
   final List<BoundingBox>? boundingBoxes;
@@ -41,6 +31,7 @@ abstract class AbstractImage extends UnnamedAbstractItem {
 }
 
 class ImageOnline extends AbstractImage {
+  final Mutex mutex = Mutex();
   final String _path;
 
   @override
@@ -55,16 +46,24 @@ class ImageOnline extends AbstractImage {
   String get path => checkUrlForCdn(_path)!;
 
   Future<void> downloadImageData() async {
-    final response = await http.get(Uri.parse(path));
-    if (response.statusCode == 200) {
-      data = response.bodyBytes;
-    } else {
-      throw FetchImageException('Failed to load image data');
+    await mutex.acquire();
+    try {
+      if (!hasData) {
+        data = await fetchImageData(path);
+      }
+    } finally {
+      mutex.release();
     }
+  }
+
+  void clearImageData() {
+    data = null;
   }
 
   @override
   bool get isDownloaded => data != null;
+
+  bool get hasData => isDownloaded;
 
   factory ImageOnline.fromJson(Map<String, dynamic>json) => ImageOnline(
     json['path'],

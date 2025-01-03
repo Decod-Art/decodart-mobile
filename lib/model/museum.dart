@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
-import 'package:decodart/model/image.dart' show ImageOnline, AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline;
 
 
 class MuseumForeignKey extends AbstractItem {
@@ -15,7 +15,7 @@ class MuseumForeignKey extends AbstractItem {
 
 class MuseumListItem extends MuseumForeignKey implements AbstractListItem {
   @override
-  final AbstractImage image;
+  final ImageOnline image;
 
   final String city;
 
