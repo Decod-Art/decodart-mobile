@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/util/logger.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,7 +9,7 @@ class DecodImage extends StatefulWidget {
   final double? width;
   final double? height;
   final BoxFit? fit;
-  final bool deleteContentOnDispose;
+  final bool keepDataAfterDownload;
   const DecodImage(
     this.image, 
     {
@@ -15,7 +17,7 @@ class DecodImage extends StatefulWidget {
       this.width,
       this.height,
       this.fit,
-      this.deleteContentOnDispose=false
+      this.keepDataAfterDownload=false
     }
   );
   
@@ -27,12 +29,14 @@ class DecodImage extends StatefulWidget {
 class _DecodImageState extends State<DecodImage> {
   bool _isLoading = true;
   bool _hasFailed = false;
+  late final Uint8List imageData;
 
   @override
   void initState() {
     super.initState();
-    if (widget.image.isDownloaded) {
+    if (image.isDownloaded) {
       _isLoading = false;
+      imageData = image.data!;
     } else {
       downloadContent();
     }
@@ -41,15 +45,12 @@ class _DecodImageState extends State<DecodImage> {
 
   @override
   void dispose() {
-    if (widget.deleteContentOnDispose) {
-      image.clearImageData();
-    }
     super.dispose();
   }
 
   Future<void> downloadContent() async {
     try {
-      await image.downloadImageData();
+      imageData = await image.downloadImageData(keep: widget.keepDataAfterDownload);
     }catch(e) {
       _hasFailed = true;
       logger.e(e);
@@ -84,7 +85,7 @@ class _DecodImageState extends State<DecodImage> {
             fit: fit,
           )
         : Image.memory(
-            image.data!,
+            imageData,
             width: width,
             height: height,
             fit: fit,

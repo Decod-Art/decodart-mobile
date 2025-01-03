@@ -45,12 +45,14 @@ class ImageOnline extends AbstractImage {
   @override
   String get path => checkUrlForCdn(_path)!;
 
-  Future<void> downloadImageData() async {
+  Future<Uint8List> downloadImageData({keep=true}) async {
     await mutex.acquire();
     try {
-      if (!hasData) {
-        data = await fetchImageData(path);
+      final Uint8List data = hasData ? this.data! : await fetchImageData(path);
+      if (!hasData && keep) {
+         this.data = data;
       }
+      return data;
     } finally {
       mutex.release();
     }

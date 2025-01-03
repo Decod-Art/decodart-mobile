@@ -71,7 +71,7 @@ class LazyHorizontalListWithHeaderState<T extends AbstractListItem> extends Stat
     });
   }
 
-  bool get showContent => (controller.isNotEmpty || controller.hasMore) && !controller.failed;
+  bool get showContent => controller.isNotEmpty || (controller.hasMore && !controller.failed);
 
   Future<void> checkIfNeedsLoading() async {
     if (controller.shouldReload) loadMoreItems();
