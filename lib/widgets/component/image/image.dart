@@ -29,18 +29,21 @@ class DecodImage extends StatefulWidget {
 class _DecodImageState extends State<DecodImage> {
   bool _isLoading = true;
   bool _hasFailed = false;
-  late final Uint8List imageData;
+  late Uint8List imageData;
 
   @override
   void initState() {
     super.initState();
-    if (image.isDownloaded) {
-      _isLoading = false;
-      imageData = image.data!;
-    } else {
-      downloadContent();
-    }
+    checkImage();
 
+  }
+
+    @override
+  void didUpdateWidget(covariant DecodImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.image != oldWidget.image) {
+      checkImage();
+    }
   }
 
   @override
@@ -48,7 +51,17 @@ class _DecodImageState extends State<DecodImage> {
     super.dispose();
   }
 
+  void checkImage() {
+    if (image.isDownloaded) {
+      _isLoading = false;
+      imageData = image.data!;
+    } else {
+      downloadContent();
+    }
+  }
+
   Future<void> downloadContent() async {
+    setState(() {_isLoading = true;});
     try {
       imageData = await image.downloadImageData(keep: widget.keepDataAfterDownload);
     }catch(e) {
@@ -66,6 +79,7 @@ class _DecodImageState extends State<DecodImage> {
   double? get width => widget.width;
   double? get height => widget.height;
   BoxFit? get fit => widget.fit;
+
   @override
   Widget build(BuildContext context) {
     return _isLoading
@@ -73,9 +87,9 @@ class _DecodImageState extends State<DecodImage> {
         width: width,
         height: height,
         color: CupertinoColors.systemGrey5,
-        child: Center(
-          child: CupertinoActivityIndicator(),
-        ),
+        // child: Center(
+        //   child: CupertinoActivityIndicator(),
+        // ),
       )
     : _hasFailed
         ? Image.asset(

@@ -98,6 +98,16 @@ class ImageOnline extends AbstractImage {
     uid: uid,
     boundingBoxes: boundingBoxes
   );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! ImageOnline) return false;
+    return _path == other._path;
+  }
+
+  @override
+  int get hashCode => _path.hashCode;
 }
 
 class BoundingBox extends UnnamedAbstractItem{
