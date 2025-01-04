@@ -1,3 +1,4 @@
+import 'package:decodart/api/offline.dart';
 import 'package:decodart/model/tour.dart' show TourListItem, Tour;
 import 'package:decodart/util/online.dart' show hostName;
 import 'package:decodart/util/logger.dart' show logger;
@@ -34,8 +35,13 @@ Future<List<TourListItem>>  fetchAllTours({
   int offset=0,
   int? museumId,
   bool isExhibition=false,
-  String? query
+  String? query,
+  bool canUseOffline=true
 }) async {
+  if (OfflineManager.useOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchAllTours(limit: limit, offset: offset, isExhibition: isExhibition, query: query);
+  }
   try {
     final Uri uri = Uri.parse('$hostName/tours').replace(
       queryParameters: {
@@ -74,7 +80,11 @@ Future<List<TourListItem>>  fetchAllTours({
 /// Returns a [Tour] object if the request is successful.
 ///
 /// Throws a [FetchTourException] if there is an error during the request or if the server returns an error.
-Future<Tour> fetchTourById(int id) async {
+Future<Tour> fetchTourById(int id, {bool canUseOffline=true}) async {
+  if (OfflineManager.useOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchTourById(id);
+  }
   try {
     final uri = Uri.parse('$hostName/tours/$id');
     logger.d(uri);

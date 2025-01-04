@@ -1,4 +1,5 @@
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType;
+import 'package:decodart/widgets/component/image/image.dart' show DecodImage;
 import 'package:flutter/cupertino.dart';
 
 /// A widget that displays a summary of a question in the Decod game.
@@ -34,7 +35,7 @@ class SummaryWidget extends StatelessWidget {
               width: 110,
               height: 110,
               decoration: BoxDecoration(color: CupertinoColors.systemGrey6, borderRadius: BorderRadius.circular(8.0)),
-              child: Image.network(question.image.path, fit: BoxFit.contain,),
+              child: DecodImage(question.image, fit: BoxFit.contain,),
             ),
               const SizedBox(width: 8.0),
               Expanded(

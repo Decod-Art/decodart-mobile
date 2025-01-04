@@ -1,6 +1,6 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, UnnamedAbstractItem;
 import 'package:decodart/model/artwork.dart' show ArtworkForeignKey;
-import 'package:decodart/model/image.dart' show AbstractImage, ImageOnline;
+import 'package:decodart/model/image.dart' show ImageOnline;
 
 import 'dart:math';
 
@@ -15,7 +15,7 @@ enum DecodQuestionType {
 // Thus, it does not implements AbstractListItem as it does not
 // contain a subtitle getter/attribute
 class DecodQuestionListItem extends AbstractItem {
-  final AbstractImage image;
+  final ImageOnline image;
   const DecodQuestionListItem({
     super.uid,
     required super.name,
@@ -102,7 +102,7 @@ class DecodQuestion extends DecodQuestionListItem {
 }
 
 class DecodAnswer extends UnnamedAbstractItem {
-  final AbstractImage? image;
+  final ImageOnline? image;
   final String? text;
   final bool isCorrect;
   const DecodAnswer({

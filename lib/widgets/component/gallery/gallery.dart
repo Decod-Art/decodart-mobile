@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:decodart/model/image.dart' show AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/widgets/component/gallery/full_screen_gallery.dart' show FullScreenImageGallery;
 import 'package:decodart/widgets/component/gallery/util/info_gallery.dart' show InfoGallery;
 import 'package:decodart/widgets/component/gallery/util/page_indicator.dart' show PageIndicator;
+import 'package:decodart/widgets/component/image/image.dart';
 import 'package:flutter/cupertino.dart';
 
 class ImageGallery extends StatefulWidget {
-  final List<AbstractImage> images;
+  final List<ImageOnline> images;
   const ImageGallery({
     super.key,
     required this.images,
@@ -30,23 +31,9 @@ class _ImageGalleryState extends State<ImageGallery> {
     _loadImageSizes();
   }
 
-  Future<Size> _getImageSize(String imageUrl) async {
-    final Completer<Size> completer = Completer();
-    final Image image = Image.network(imageUrl);
-    image.image.resolve(const ImageConfiguration()).addListener(
-      ImageStreamListener((ImageInfo info, bool _) {
-        completer.complete(Size(
-          info.image.width.toDouble(),
-          info.image.height.toDouble(),
-        ));
-      }),
-    );
-    return completer.future;
-  }
-
   Future<void> _loadImageSizes() async {
     for (var image in widget.images) {
-      final size = await _getImageSize(image.path);
+      final size = await image.getDimension();
       sizes.add(size);
     }
     setState(() {});
@@ -105,8 +92,8 @@ class _ImageGalleryState extends State<ImageGallery> {
                     child: SizedBox(
                       width: double.infinity,
                       height: double.infinity,
-                      child: Image.network(
-                          widget.images[index].path,
+                      child: DecodImage(
+                          widget.images[index],
                           fit: BoxFit.contain
                         )
                       )

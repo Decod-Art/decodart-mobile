@@ -1,8 +1,7 @@
-import 'dart:typed_data';
-
 import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/util/logger.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 class DecodImage extends StatefulWidget {
   final ImageOnline image;
@@ -10,6 +9,8 @@ class DecodImage extends StatefulWidget {
   final double? height;
   final BoxFit? fit;
   final bool keepDataAfterDownload;
+  final AlignmentGeometry alignment;
+  final VoidCallback? onLoading;
   const DecodImage(
     this.image, 
     {
@@ -17,7 +18,9 @@ class DecodImage extends StatefulWidget {
       this.width,
       this.height,
       this.fit,
-      this.keepDataAfterDownload=false
+      this.keepDataAfterDownload=false,
+      this.alignment=Alignment.center,
+      this.onLoading
     }
   );
   
@@ -38,7 +41,7 @@ class _DecodImageState extends State<DecodImage> {
 
   }
 
-    @override
+  @override
   void didUpdateWidget(covariant DecodImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.image != oldWidget.image) {
@@ -55,9 +58,25 @@ class _DecodImageState extends State<DecodImage> {
     if (image.isDownloaded) {
       _isLoading = false;
       imageData = image.data!;
+      _loadImage();
     } else {
       downloadContent();
     }
+  }
+
+  // This is to have a callback when the image is actually rendered
+  void _loadImage() {
+    final ImageStream imageStream = Image.memory(imageData).image.resolve(ImageConfiguration.empty);
+    final ImageStreamListener listener = ImageStreamListener((ImageInfo info, bool synchronousCall) {
+      if (mounted) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (widget.onLoading != null) {
+            widget.onLoading!();
+          }
+        });
+      }
+    });
+    imageStream.addListener(listener);
   }
 
   Future<void> downloadContent() async {
@@ -72,6 +91,11 @@ class _DecodImageState extends State<DecodImage> {
       setState(() {
         _isLoading = false;
       });
+      if (!_hasFailed) {
+        WidgetsBinding.instance.addPostFrameCallback((_)  {
+          _loadImage();
+        });
+      }
     }
   }
 
@@ -97,13 +121,14 @@ class _DecodImageState extends State<DecodImage> {
             width: width,
             height: height,
             fit: fit,
+            alignment: widget.alignment,
           )
         : Image.memory(
             imageData,
             width: width,
             height: height,
             fit: fit,
+            alignment: widget.alignment,
           );
-  }
-  
+  } 
 }

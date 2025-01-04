@@ -82,7 +82,11 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
 /// Returns an [Artwork] object if the request is successful.
 ///
 /// Throws a [FetchArtworkException] if the artwork is not found or if there is an error during the request.
-Future<Artwork> fetchArtworkById(int uid) async {
+Future<Artwork> fetchArtworkById(int uid, {canUseOffline=true}) async {
+  if (OfflineManager.useOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchArtworkById(uid);
+  }
   try {
     final uri = Uri.parse('$hostName/artworks/$uid');
     logger.d(uri);

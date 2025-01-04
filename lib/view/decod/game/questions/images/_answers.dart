@@ -1,4 +1,5 @@
 import 'package:decodart/model/decod.dart' show DecodAnswer;
+import 'package:decodart/widgets/component/image/image.dart' show DecodImage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
 
@@ -48,8 +49,8 @@ class Answers extends StatelessWidget {
                       Positioned.fill(
                         child: FittedBox(
                           fit: BoxFit.contain,
-                          child: Image.network(
-                            answers[index].image!.path,
+                          child: DecodImage(
+                            answers[index].image!,
                           )
                         )
                       ),
@@ -57,8 +58,8 @@ class Answers extends StatelessWidget {
                         child: Container(
                           color: selected == index
                               ? answers[index].isCorrect
-                                  ? Colors.green.withOpacity(0.5)
-                                  : Colors.red.withOpacity(0.5)
+                                  ? Colors.green.withValues(alpha: 0.5)
+                                  : Colors.red.withValues(alpha: 0.5)
                               : Colors.transparent,
                         ),
                       ),

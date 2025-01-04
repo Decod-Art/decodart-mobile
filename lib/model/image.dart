@@ -1,9 +1,12 @@
+import 'dart:async';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:decodart/api/image.dart' show fetchImageData;
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
 import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/hive/image.dart' as hive;
 import 'dart:typed_data' show Uint8List;
-import 'package:flutter/material.dart' show Offset;
+import 'package:flutter/material.dart' show Offset, Size;
 import 'package:mutex/mutex.dart' show Mutex;
 
 abstract class AbstractImage extends UnnamedAbstractItem {
@@ -51,11 +54,27 @@ class ImageOnline extends AbstractImage {
       final Uint8List data = hasData ? this.data! : await fetchImageData(path);
       if (!hasData && keep) {
          this.data = data;
+      } else if (keep == false){
+        this.data = null;
       }
       return data;
     } finally {
       mutex.release();
     }
+  }
+  
+  Future<Size> getDimension({keep=true}) async {
+    final imageData = await downloadImageData(keep: keep);
+    final ui.Image image = await _decodeImage(imageData);
+    return Size(image.width.toDouble(), image.height.toDouble());
+  }
+
+  Future<ui.Image> _decodeImage(Uint8List imageData) async {
+    final Completer<ui.Image> completer = Completer();
+    ui.decodeImageFromList(imageData, (ui.Image img) {
+      completer.complete(img);
+    });
+    return completer.future;
   }
 
   void clearImageData() {

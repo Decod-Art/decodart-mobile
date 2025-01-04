@@ -9,7 +9,7 @@ class InfoLogo extends StatelessWidget {
       right: 10,
       child: Container(
         decoration: BoxDecoration(
-          color: CupertinoColors.black.withOpacity(0.5),
+          color: CupertinoColors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
         padding: const EdgeInsets.all(8.0),

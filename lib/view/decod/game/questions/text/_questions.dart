@@ -1,4 +1,5 @@
 import 'package:decodart/model/decod.dart' show DecodQuestion;
+import 'package:decodart/widgets/component/image/image.dart' show DecodImage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
 
@@ -29,7 +30,7 @@ class Questions extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.grey, borderRadius: BorderRadius.circular(15)),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15),
-                  child: Image.network(question.image.path, fit: BoxFit.contain),
+                  child: DecodImage(question.image, fit: BoxFit.contain),
                 ),
               ),
             ),

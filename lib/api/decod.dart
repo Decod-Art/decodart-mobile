@@ -1,3 +1,4 @@
+import 'package:decodart/api/offline.dart';
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodTag;
 import 'package:decodart/util/online.dart' show hostName;
 import 'package:decodart/util/logger.dart' show logger;
@@ -41,7 +42,12 @@ Future<List<DecodQuestion>> fetchDecodQuestions(
   DecodTag? tag,
   String? query,
   int? seed,
-  int? uid}) async {
+  int? uid,
+  bool canUseOffline=true}) async {
+  if (OfflineManager.useOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchDecodQuestions(artworkId!);
+  }
   try {
     final Uri uri = Uri.parse('$hostName/decods/detailed').replace(
       queryParameters: {

@@ -6,6 +6,7 @@ import 'package:decodart/model/hive/artwork.dart' as hive show ArtworkListItem;
 import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/decod.dart' show DecodQuestion, DecodQuestionType, DecodTag;
 import 'package:decodart/model/hive/decod.dart' show GameData;
+import 'package:decodart/util/logger.dart';
 
 
 
@@ -51,7 +52,8 @@ class GameController extends MenuController {
       } else {
         add(await fetchDecodQuestions(tag: tag), shuffle: shuffle);
       }
-    } catch (_, __) {
+    } catch (e, __) {
+      logger.e(e);
       errorLoading = true;
     }
   }

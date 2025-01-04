@@ -1,3 +1,4 @@
+import 'package:decodart/api/offline.dart';
 import 'package:decodart/model/museum.dart' show MuseumListItem, Museum;
 import 'package:decodart/util/logger.dart' show logger;
 import 'package:decodart/util/online.dart' show hostName;
@@ -68,7 +69,11 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
 /// Returns a [Museum] object if the request is successful.
 ///
 /// Throws a [FetchMuseumException] if there is an error during the request or if the server returns an error.
-Future<Museum> fetchMuseumById(int id) async {
+Future<Museum> fetchMuseumById(int id, {canUseOffline=true}) async {
+  if (OfflineManager.useOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchMuseumById(id);
+  }
   try {
     final uri = Uri.parse('$hostName/museums/$id');
     logger.d(uri);

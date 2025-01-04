@@ -52,12 +52,6 @@ class ThumbnailWidget extends StatelessWidget {
           children: [
             // Image de fond
             DecodImage(image, width: 180, height: 250, fit: BoxFit.cover),
-            // Image.network(
-            //   image.path,
-            //   width: 180,
-            //   height: 250,
-            //   fit: BoxFit.cover,
-            // ),
             // Icône du pinceau en haut à droite
             Positioned(
               top: 8,

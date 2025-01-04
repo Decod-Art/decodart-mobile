@@ -1,11 +1,12 @@
-import 'package:decodart/model/image.dart' show AbstractImage, BoundingBox;
+import 'package:decodart/model/image.dart' show ImageOnline, BoundingBox;
+import 'package:decodart/widgets/component/image/image.dart';
 import 'package:decodart/widgets/component/image/with_area_of_interest/util/area_of_interest.dart';
 import 'package:decodart/widgets/component/image/with_area_of_interest/util/description.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ImageWithAreaOfInterest extends StatefulWidget {
-  final AbstractImage image;
+  final ImageOnline image;
 
   const ImageWithAreaOfInterest({
     super.key,
@@ -137,6 +138,8 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
 
   void _onImageLoaded(){
     final RenderBox renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
+    print("oto");
+    print("${renderBox.size.width}");
     _imageWidth = renderBox.size.width;
     _imageHeight = renderBox.size.height;
     setState(() {});
@@ -257,15 +260,14 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
               Transform(
                 transform: currentTransformation,
                 child: Center(
-                  child: Image.network(
-                    widget.image.path,
+                  child: DecodImage(
+                    widget.image,
                     key: _imageKey,
                     fit: BoxFit.contain,
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                    onLoading: () {
                       if (_imageWidth == 0 && _imageHeight == 0) {
                         WidgetsBinding.instance.addPostFrameCallback((_) => _onImageLoaded());
                       }
-                      return child;
                     },
                   )
                 )

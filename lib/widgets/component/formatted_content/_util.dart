@@ -18,6 +18,10 @@ class ImageContent extends AbstractFormattedContent {
     return checkUrlForCdn(imagePath)!;
   }
 
+  ImageOnline toOnline() {
+    return ImageOnline(imagePath);
+  }
+
 }
 
 class TextContent extends AbstractFormattedContent {

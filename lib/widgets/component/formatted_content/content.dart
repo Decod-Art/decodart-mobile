@@ -1,6 +1,7 @@
 import 'package:decodart/model/abstract_item.dart';
 import 'package:decodart/model/artwork.dart';
 import 'package:decodart/widgets/component/button/artwork_button/button.dart' show ArtworkButton;
+import 'package:decodart/widgets/component/image/image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
@@ -29,7 +30,7 @@ class ContentWidget extends StatelessWidget {
       // Cette vérification dépend de la structure de vos données.
       switch (item) {
         case ImageContent img:
-          contentWidgets.add(Image.network(img.path));
+          contentWidgets.add(DecodImage(img.toOnline()));
           break;
         case TextContent text:
           contentWidgets.add(MarkdownBody(data: text.text, styleSheet: getStyleSheet(context, alignment),));

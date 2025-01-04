@@ -1,11 +1,11 @@
-import 'package:decodart/model/image.dart' show AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/widgets/component/image/with_area_of_interest/image.dart' show ImageWithAreaOfInterest;
 import 'package:flutter/cupertino.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 
 class FullScreenImageGallery extends StatefulWidget {
-  final List<AbstractImage> images;
+  final List<ImageOnline> images;
   final int initialIndex;
 
   const FullScreenImageGallery({

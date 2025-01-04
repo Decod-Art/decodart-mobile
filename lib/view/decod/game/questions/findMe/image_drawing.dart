@@ -1,4 +1,5 @@
-import 'package:decodart/model/image.dart' show AbstractImage;
+import 'package:decodart/model/image.dart' show ImageOnline;
+import 'package:decodart/widgets/component/image/image.dart' show DecodImage;
 import 'package:flutter/material.dart' show Colors, LayoutBuilder;
 import 'package:flutter/cupertino.dart';
 
@@ -13,7 +14,7 @@ class ImagePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = (isCorrect ? Colors.green : Colors.red).withOpacity(0.4)
+      ..color = (isCorrect ? Colors.green : Colors.red).withValues(alpha: 0.4)
       ..strokeCap = StrokeCap.round
       ..strokeWidth = 20.0;
 
@@ -38,7 +39,7 @@ class ImagePainter extends CustomPainter {
 /// - `isOver` (required): A [bool] indicating whether the game is over.
 /// - `isCorrect` (required): A [bool] indicating whether the last selection was correct.
 class ImageDrawingWidget extends StatefulWidget {
-  final AbstractImage image;
+  final ImageOnline image;
   /// Returns the index of the bounding box the use clicked on
   final void Function(int) foundCorrect;
   /// Indicates that the user clicked outside of any boundingbox
@@ -83,7 +84,7 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
   @override
   void didUpdateWidget(covariant ImageDrawingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.image != widget.image) {
+    if (oldWidget.image != widget.image || oldWidget.image.boundingBoxes != widget.image.boundingBoxes) {
       points.clear();
       isCorrect.clear();
       lastTransformation = Matrix4.identity();
@@ -232,8 +233,8 @@ class _ImageDrawingWidgetState extends State<ImageDrawingWidget> {
               child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Image.network(
-                      widget.image.path,
+                    DecodImage(
+                      widget.image,
                       key: _imageKey),
                     for(int i = 0; i < points.length;i++)
                       CustomPaint(
