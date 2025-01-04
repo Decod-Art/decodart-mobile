@@ -1,3 +1,5 @@
+import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
+
 import 'package:decodart/model/image.dart' show ImageOnline;
 import 'package:decodart/util/logger.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +13,7 @@ class DecodImage extends StatefulWidget {
   final bool keepDataAfterDownload;
   final AlignmentGeometry alignment;
   final VoidCallback? onLoading;
+  final VoidCallback? onError;
   const DecodImage(
     this.image, 
     {
@@ -20,7 +23,8 @@ class DecodImage extends StatefulWidget {
       this.fit,
       this.keepDataAfterDownload=false,
       this.alignment=Alignment.center,
-      this.onLoading
+      this.onLoading,
+      this.onError
     }
   );
   
@@ -95,6 +99,8 @@ class _DecodImageState extends State<DecodImage> {
         WidgetsBinding.instance.addPostFrameCallback((_)  {
           _loadImage();
         });
+      } else {
+        widget.onError?.call();
       }
     }
   }
