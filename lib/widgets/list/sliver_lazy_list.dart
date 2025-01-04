@@ -56,7 +56,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
   Future<void> loadMoreItems() async {
     setState(() {
       controller.resetLoading();
-    });   
+    });
     await controller.fetchMore();
     if (mounted){
       setState(() {});
@@ -75,7 +75,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
       controller: controller.scrollController,
       smallTitle: true,
       onSearch: (String value) {
-        controller.query = value.isEmpty?null:value;
+        setState((){controller.query = value.isEmpty?null:value;});
         updateView();
       },
       childCount: nbElements,
@@ -86,6 +86,7 @@ class SliverLazyListViewState<T extends AbstractListItem> extends State<SliverLa
         if (index == controller.length) {
           return const Center(child: CupertinoActivityIndicator());
         }
+
         final item = controller[index];
         return Column(
           children: [

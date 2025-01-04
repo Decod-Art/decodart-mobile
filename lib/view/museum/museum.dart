@@ -1,4 +1,5 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
+import 'package:decodart/api/offline.dart';
 import 'package:decodart/api/tour.dart' show fetchAllTours;
 import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show SearchableDataFetcher;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;
@@ -6,6 +7,7 @@ import 'package:decodart/model/museum.dart' show Museum;
 import 'package:decodart/model/tour.dart' show TourListItem;
 import 'package:decodart/view/museum/map/museum_map.dart' show MuseumMap;
 import 'package:decodart/view/museum/map/museum_map_button.dart' show MuseumMapButton;
+import 'package:decodart/widgets/component/button/download.dart';
 import 'package:decodart/widgets/component/formatted_content/content.dart' show ContentWidget;
 import 'package:decodart/widgets/list/content_block/content_block.dart' show ContentBlock;
 import 'package:decodart/widgets/list/util/item_type.dart' show ItemType;
@@ -32,6 +34,7 @@ class _MuseumViewState extends State<MuseumView>  {
   late final SearchableDataFetcher<ArtworkListItem> _fetchCollection;
   late final SearchableDataFetcher<TourListItem> _fetchExhibition;
   late final SearchableDataFetcher<TourListItem> _fetchTour;
+  final OfflineManager offline = OfflineManager();
 
   @override
   void initState() {
@@ -142,7 +145,15 @@ class _MuseumViewState extends State<MuseumView>  {
             isModal: widget.useModal,
             loadingDelay: true,
           ),
-        const SizedBox(height: 35)
+        const SizedBox(height: 35),
+        if (widget.museum.hasCollection)
+          DownloadButton(
+            startDownload: () => offline.downloadMuseum(widget.museum.uid!), 
+            isAvailableOffline: () => offline.isAvailableOffline(widget.museum.uid!), 
+            isDownloading: () => offline.isDownloading(widget.museum.uid!), 
+            percentOfLoading: () => offline.percentOfLoading
+          ),
+        const SizedBox(height: 35),
       ],
     );
   }

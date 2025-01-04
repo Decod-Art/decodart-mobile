@@ -1,5 +1,6 @@
 import 'dart:typed_data' show Uint8List;
 
+import 'package:decodart/api/offline.dart';
 import 'package:decodart/util/logger.dart';
 import 'package:http/http.dart' as http;
 
@@ -14,7 +15,11 @@ class FetchImageException implements Exception {
   String toString() => 'FetchImageException: $message';
 }
 
-Future<Uint8List> fetchImageData(String path) async {
+Future<Uint8List> fetchImageData(String path, {bool canUseOffline=true}) async {
+  if (OfflineManager.useOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchImageData(path);
+  }
   try {
     final response = await http.get(Uri.parse(path));
     if (response.statusCode == 200) {

@@ -1,11 +1,19 @@
+import 'package:decodart/api/offline.dart';
 import 'package:decodart/view/apropos/util/reset_scans.dart' show ResetScansWidget;
 import 'package:decodart/view/apropos/util/tile.dart' show DecodPreferenceTile;
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
 
-class AproposView extends StatelessWidget {
+class AproposView extends StatefulWidget {
   const AproposView({super.key});
+  
+  @override
+  State<AproposView> createState()=> _AproposPageState();
 
+
+}
+
+class _AproposPageState extends State<AproposView> {
   @override
   Widget build(BuildContext context) {
     return DecodPageScaffold(
@@ -23,17 +31,23 @@ class AproposView extends StatelessWidget {
             },
           ),
           DecodPreferenceTile(
-            title: const Text('Option 1'),
+            title: const Text('Mode hors ligne'),
             trailing: CupertinoSwitch(
-              value: true,
-              onChanged: (bool value) {},
+              value: OfflineManager.useOffline,
+              onChanged: (bool value) => setState(() {OfflineManager.useOffline = value;}),
             ),
           ),
           DecodPreferenceTile(
-            title: const Text('Option 2'),
-            trailing: CupertinoSwitch(
-              value: false,
-              onChanged: (bool value) {},
+            title: const Text('Mode hors ligne'),
+            trailing: CupertinoButton(
+              child: const Text('Réinitialiser'),
+              onPressed: () {
+                final offline = OfflineManager();
+                offline.clearAll();
+                setState(() {
+                  OfflineManager.useOffline = false;
+                });
+              },
             ),
           ),
           DecodPreferenceTile(

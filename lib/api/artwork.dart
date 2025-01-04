@@ -1,4 +1,5 @@
 import 'dart:convert' show jsonDecode;
+import 'package:decodart/api/offline.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' show MediaType; // MIME
 
@@ -35,36 +36,40 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
     int offset=0,
     String? query,
     int? museumId,
-    int? roomId}) async {
-
-  try {
-    final Uri uri = Uri.parse('$hostName/artworks').replace(
-      queryParameters: {
-        'limit': '$limit',
-        'offset': '$offset',
-        if (query != null) 'query': query,
-        if (museumId != null) 'museumId': '$museumId',
-        if (roomId != null) 'roomId': roomId.toString()
-      },
-    );
-    logger.d(uri);
-    final response = await http.get(uri).timeout(
-      Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408),
-    );
-    if (response.statusCode == 200) {
-      // Note that ill-formatted json should produce an exception
-      final results = jsonDecode(response.body);
-      return results['data'].map((item) => ArtworkListItem.fromJson(item))
-                            .toList()
-                            .cast<ArtworkListItem>();
-    } else {
-      throw FetchArtworkException('Error from server: ${response.statusCode}');
-    }
-  } catch (e, stackTrace) {
-    logger.e(e);
-    logger.d(stackTrace);
-    rethrow;
-  }
+    int? roomId, 
+    bool canUseOffline=true}) async {
+      if (OfflineManager.useOffline&&canUseOffline) {
+        OfflineManager offline = OfflineManager();
+        return offline.fetchAllArtworks(limit: limit, offset: offset, query: query);
+      }
+      try {
+        final Uri uri = Uri.parse('$hostName/artworks').replace(
+          queryParameters: {
+            'limit': '$limit',
+            'offset': '$offset',
+            if (query != null) 'query': query,
+            if (museumId != null) 'museumId': '$museumId',
+            if (roomId != null) 'roomId': roomId.toString()
+          },
+        );
+        logger.d(uri);
+        final response = await http.get(uri).timeout(
+          Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408),
+        );
+        if (response.statusCode == 200) {
+          // Note that ill-formatted json should produce an exception
+          final results = jsonDecode(response.body);
+          return results['data'].map((item) => ArtworkListItem.fromJson(item))
+                                .toList()
+                                .cast<ArtworkListItem>();
+        } else {
+          throw FetchArtworkException('Error from server: ${response.statusCode}');
+        }
+      } catch (e, stackTrace) {
+        logger.e(e);
+        logger.d(stackTrace);
+        rethrow;
+      }
 }
 
 /// Fetches an artwork by its unique identifier.
