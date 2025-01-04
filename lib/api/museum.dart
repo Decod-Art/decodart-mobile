@@ -65,6 +65,7 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
 /// of a museum specified by its unique identifier [id].
 ///
 /// [id] is the unique identifier of the museum to retrieve.
+/// [canUseOffline] permits to force the API to collect data online (e.g. when downloading data for the offline mode), (default true)
 ///
 /// Returns a [Museum] object if the request is successful.
 ///

@@ -27,7 +27,8 @@ class FetchArtworkException implements Exception {
 /// [offset] specifies the offset for pagination.
 /// [query] is a search string to filter the artworks by keyword (title, artist name)
 /// [museumId] is the identifier of the museum to filter the artworks.
-/// [room] is the room name of the museum to filter the artworks.
+/// [roomId] is the room ID of the museum to filter the artworks.
+/// [canUseOffline] permits to force the API to collect data online (e.g. when downloading data for the offline mode), (default true)
 ///
 /// Returns a list of artwork items.
 /// Throws a [FetchArtworkException] if the API fails or returned an ill-formed json
@@ -78,6 +79,7 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
 /// of an artwork specified by its unique identifier [uid].
 ///
 /// [uid] is the unique identifier of the artwork to retrieve.
+/// [canUseOffline] permits to force the API to collect data online (e.g. when downloading data for the offline mode), (default true)
 ///
 /// Returns an [Artwork] object if the request is successful.
 ///

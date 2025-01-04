@@ -30,6 +30,7 @@ class FetchDecodQuestionException implements Exception {
 /// [query] is a search string to filter the questions.
 /// [seed] is used to seed the random number generator for reproducible results.
 /// [uid] is the unique identifier of the user to retrieve personalized questions.
+/// [canUseOffline] permits to force the API to collect data online (e.g. when downloading data for the offline mode), (default true)
 ///
 /// Returns a list of [DecodQuestion] objects if the request is successful.
 ///
