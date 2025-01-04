@@ -1,9 +1,7 @@
-import 'dart:nativewrappers/_internal/vm/lib/ffi_allocation_patch.dart';
-
+import 'package:flutter/foundation.dart' show Uint8List;
 import 'package:decodart/model/image.dart' show ImageOnline;
-import 'package:decodart/util/logger.dart';
+import 'package:decodart/util/logger.dart' show logger;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 
 class DecodImage extends StatefulWidget {
   final ImageOnline image;
@@ -41,7 +39,7 @@ class _DecodImageState extends State<DecodImage> {
   @override
   void initState() {
     super.initState();
-    checkImage();
+    downloadContent();
 
   }
 
@@ -49,7 +47,7 @@ class _DecodImageState extends State<DecodImage> {
   void didUpdateWidget(covariant DecodImage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.image != oldWidget.image) {
-      checkImage();
+      downloadContent();
     }
   }
 
@@ -58,26 +56,12 @@ class _DecodImageState extends State<DecodImage> {
     super.dispose();
   }
 
-  void checkImage() {
-    if (image.isDownloaded) {
-      _isLoading = false;
-      imageData = image.data!;
-      _loadImage();
-    } else {
-      downloadContent();
-    }
-  }
-
   // This is to have a callback when the image is actually rendered
   void _loadImage() {
     final ImageStream imageStream = Image.memory(imageData).image.resolve(ImageConfiguration.empty);
     final ImageStreamListener listener = ImageStreamListener((ImageInfo info, bool synchronousCall) {
       if (mounted) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (widget.onLoading != null) {
-            widget.onLoading!();
-          }
-        });
+        WidgetsBinding.instance.addPostFrameCallback((_) => widget.onLoading?.call());
       }
     });
     imageStream.addListener(listener);
@@ -96,9 +80,7 @@ class _DecodImageState extends State<DecodImage> {
         _isLoading = false;
       });
       if (!_hasFailed) {
-        WidgetsBinding.instance.addPostFrameCallback((_)  {
-          _loadImage();
-        });
+        WidgetsBinding.instance.addPostFrameCallback((_)  => _loadImage());
       } else {
         widget.onError?.call();
       }
@@ -113,14 +95,7 @@ class _DecodImageState extends State<DecodImage> {
   @override
   Widget build(BuildContext context) {
     return _isLoading
-    ? Container(
-        width: width,
-        height: height,
-        color: CupertinoColors.systemGrey5,
-        // child: Center(
-        //   child: CupertinoActivityIndicator(),
-        // ),
-      )
+    ? SizedBox(width: width, height: height)
     : _hasFailed
         ? Image.asset(
             'images/img_404.jpeg',

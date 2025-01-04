@@ -1,9 +1,8 @@
 import 'package:decodart/model/image.dart' show ImageOnline, BoundingBox;
-import 'package:decodart/widgets/component/image/image.dart';
-import 'package:decodart/widgets/component/image/with_area_of_interest/util/area_of_interest.dart';
-import 'package:decodart/widgets/component/image/with_area_of_interest/util/description.dart';
+import 'package:decodart/widgets/component/image/image.dart' show DecodImage;
+import 'package:decodart/widgets/component/image/with_area_of_interest/util/area_of_interest.dart' show AreaOfInterest;
+import 'package:decodart/widgets/component/image/with_area_of_interest/util/description.dart' show Description;
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class ImageWithAreaOfInterest extends StatefulWidget {
   final ImageOnline image;
@@ -138,8 +137,6 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
 
   void _onImageLoaded(){
     final RenderBox renderBox = _imageKey.currentContext!.findRenderObject() as RenderBox;
-    print("oto");
-    print("${renderBox.size.width}");
     _imageWidth = renderBox.size.width;
     _imageHeight = renderBox.size.height;
     setState(() {});
