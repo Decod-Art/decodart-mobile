@@ -14,12 +14,17 @@ class FetchImageException implements Exception {
   @override
   String toString() => 'FetchImageException: $message';
 }
-
+/// Fetch the imageData online or offline if option is set
+/// canUseOffline is to permit the app to download "offline" data
+/// even when the option is set to True by the user
 Future<Uint8List> fetchImageData(String path, {bool canUseOffline=true}) async {
+  // Offline Mode
   if (OfflineManager.useOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchImageData(path);
   }
+
+  // Online mode
   try {
     final response = await http.get(Uri.parse(path));
     if (response.statusCode == 200) {
