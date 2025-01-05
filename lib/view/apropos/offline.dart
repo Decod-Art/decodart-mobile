@@ -26,8 +26,8 @@ class _OfflineOptionViewState extends State<OfflineOptionView> {
           DecodPreferenceTile(
             title: const Text('Activé'),
             trailing: CupertinoSwitch(
-              value: OfflineManager.useOffline,
-              onChanged: (bool value) => setState(() {OfflineManager.useOffline = value;}),
+              value: OfflineManager.appIsOffline,
+              onChanged: (bool value) => setState(() {OfflineManager.appIsOffline = value;}),
             ),
           ),
           DecodPreferenceTile(
@@ -41,7 +41,7 @@ class _OfflineOptionViewState extends State<OfflineOptionView> {
                     final offline = OfflineManager();
                     offline.clearAll();
                     setState(() {
-                      OfflineManager.useOffline = false;
+                      OfflineManager.appIsOffline = false;
                     });
                   });
               },

@@ -39,7 +39,7 @@ Future<List<TourListItem>>  fetchAllTours({
   String? query,
   bool canUseOffline=true
 }) async {
-  if (OfflineManager.useOffline&&canUseOffline) {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchAllTours(limit: limit, offset: offset, isExhibition: isExhibition, query: query);
   }
@@ -83,7 +83,7 @@ Future<List<TourListItem>>  fetchAllTours({
 ///
 /// Throws a [FetchTourException] if there is an error during the request or if the server returns an error.
 Future<Tour> fetchTourById(int id, {bool canUseOffline=true}) async {
-  if (OfflineManager.useOffline&&canUseOffline) {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchTourById(id);
   }

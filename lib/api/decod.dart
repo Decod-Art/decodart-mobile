@@ -45,7 +45,7 @@ Future<List<DecodQuestion>> fetchDecodQuestions(
   int? seed,
   int? uid,
   bool canUseOffline=true}) async {
-  if (OfflineManager.useOffline&&canUseOffline) {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchDecodQuestions(artworkId!);
   }

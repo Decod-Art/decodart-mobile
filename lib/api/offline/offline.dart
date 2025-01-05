@@ -16,14 +16,17 @@ import 'package:decodart/api/offline/mixin_tour.dart' show TourOffline;
 import 'package:decodart/api/tour.dart' as api_tour;
 import 'package:decodart/model/artwork.dart' show Artwork, ArtworkListItem;
 import 'package:decodart/model/decod.dart' show DecodQuestion;
-import 'package:decodart/model/museum.dart' show Museum, MuseumForeignKey;
+import 'package:decodart/model/museum.dart' show Museum, MuseumForeignKey, MuseumListItem;
 import 'package:decodart/model/room.dart' show RoomListItem;
 import 'package:decodart/model/tour.dart' show TourListItem, Tour;
 import 'package:decodart/util/logger.dart' show logger;
 import 'package:mutex/mutex.dart' show Mutex;
 
+/// OfflineManager class to handle offline data.
+/// Uses several mixins to add specific functionalities.
 class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOffline, RoomOffline, PDFOffline {
-  static bool useOffline=false;
+  static bool appIsOffline=false;
+  static const int pauseBetweenQueries = 15;
   // Managing the fact that OfflineManager is a Singleton
   static final OfflineManager _instance = OfflineManager._internal();
   OfflineManager._internal();
@@ -80,24 +83,24 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
 
       museum = await api_museum.fetchMuseumById(uid, canUseOffline: false);
 
-      _artworkList = await loadArtworks(uid, limit);
-      _artworkMap = await loadArtworkDetails(_artworkList);
+      _artworkList = await loadArtworks(uid, limit, pause: pauseBetweenQueries);
+      _artworkMap = await loadArtworkDetails(_artworkList, pause: pauseBetweenQueries);
       
-      _tourList = await loadTours(uid, false, limit);
-      _exhibitionList = await loadTours(uid, true, limit);
-      _tourMap.addAll(await loadTourDetails(_tourList));
-      _tourMap.addAll(await loadTourDetails(_exhibitionList));
+      _tourList = await loadTours(uid, false, limit, pause: pauseBetweenQueries);
+      _exhibitionList = await loadTours(uid, true, limit, pause: pauseBetweenQueries);
+      _tourMap.addAll(await loadTourDetails(_tourList, pause: pauseBetweenQueries));
+      _tourMap.addAll(await loadTourDetails(_exhibitionList, pause: pauseBetweenQueries));
 
-      _questions = await loadQuestions(_artworkMap);
+      _questions = await loadQuestions(_artworkMap, pause: pauseBetweenQueries);
 
-      _roomList = await loadRooms(museum!, limit);
+      _roomList = await loadRooms(museum!, limit, pause: pauseBetweenQueries);
       _artworkPerRoom = indexArtworkPerRoom(_artworkMap);
 
 
-      await loadImageFromArtworks(_artworkMap, _data);
-      await loadImageFromTours(_tourMap, _data);
-      await loadImageFromQuestions(_questions, _data);
-      await loadImageFromMuseum(museum!, _data);
+      await loadImageFromArtworks(_artworkMap, _data, pause: pauseBetweenQueries);
+      await loadImageFromTours(_tourMap, _data, pause: pauseBetweenQueries);
+      await loadImageFromQuestions(_questions, _data, pause: pauseBetweenQueries);
+      await loadImageFromMuseum(museum!, _data, pause: pauseBetweenQueries);
       await loadMapFromMuseum(museum!, _data);
     } catch (e) {
       logger.e("Erreur lors du téléchargement du musée pour usage hors ligne: $e");
@@ -194,6 +197,23 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   Museum fetchMuseumById(int uid) {
     if (museum?.uid == uid) return museum!;
     throw api_museum.FetchMuseumException("No museum $uid available offline");
+  }
+
+  List<MuseumListItem> fetchAllMuseums({
+    int limit=10,
+    int offset=0,
+    String? query
+    }) {
+      final initialList = [museum!];
+      final filteredList = initialList.where((t) {
+      final matchesQuery = query == null || t.name.toLowerCase().contains(query.toLowerCase().trim());
+      return matchesQuery; 
+    }).toList();
+
+    // Appliquer la pagination
+    final paginatedList = filteredList.skip(offset).take(limit).toList();
+
+    return paginatedList;
   }
 
   List<RoomListItem> fetchRooms({int limit=10, int offset=0, String? query, required MuseumForeignKey museum}) {

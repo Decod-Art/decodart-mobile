@@ -39,7 +39,7 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
     int? museumId,
     int? roomId, 
     bool canUseOffline=true}) async {
-      if (OfflineManager.useOffline&&canUseOffline) {
+      if (OfflineManager.appIsOffline&&canUseOffline) {
         OfflineManager offline = OfflineManager();
         return offline.fetchAllArtworks(limit: limit, offset: offset, query: query, roomId: roomId);
       }
@@ -112,7 +112,7 @@ Future<int> countAllArtworks(int museumId) async {
 ///
 /// Throws a [FetchArtworkException] if the artwork is not found or if there is an error during the request.
 Future<Artwork> fetchArtworkById(int uid, {canUseOffline=true}) async {
-  if (OfflineManager.useOffline&&canUseOffline) {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchArtworkById(uid);
   }
