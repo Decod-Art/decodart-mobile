@@ -1,4 +1,4 @@
-import 'package:decodart/api/offline.dart';
+import 'package:decodart/api/offline/offline.dart';
 import 'package:decodart/model/tour.dart' show TourListItem, Tour;
 import 'package:decodart/util/online.dart' show hostName;
 import 'package:decodart/util/logger.dart' show logger;

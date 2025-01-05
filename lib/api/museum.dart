@@ -1,4 +1,4 @@
-import 'package:decodart/api/offline.dart';
+import 'package:decodart/api/offline/offline.dart';
 import 'package:decodart/model/museum.dart' show MuseumListItem, Museum;
 import 'package:decodart/util/logger.dart' show logger;
 import 'package:decodart/util/online.dart' show hostName;

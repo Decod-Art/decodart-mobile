@@ -1,6 +1,6 @@
 import 'dart:typed_data' show Uint8List;
 
-import 'package:decodart/api/offline.dart';
+import 'package:decodart/api/offline/offline.dart';
 import 'package:decodart/util/logger.dart';
 import 'package:http/http.dart' as http;
 

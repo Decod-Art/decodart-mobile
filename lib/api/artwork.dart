@@ -1,5 +1,5 @@
 import 'dart:convert' show jsonDecode;
-import 'package:decodart/api/offline.dart';
+import 'package:decodart/api/offline/offline.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart' show MediaType; // MIME
 
@@ -66,6 +66,33 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
         } else {
           throw FetchArtworkException('Error from server: ${response.statusCode}');
         }
+      } catch (e, stackTrace) {
+        logger.e(e);
+        logger.d(stackTrace);
+        rethrow;
+      }
+}
+
+/// Count all artworks by museum
+///
+/// This method sends a GET request to the server to retrieve the number
+/// of artwork that are within a room that belong to museum with unique identifier [uid].
+///
+/// [uid] is the museum unique identifier.
+///
+/// Returns an [int] if the request is successful.
+///
+/// Throws a [FetchArtworkException] if server returns a status code other than 200
+Future<int> countAllArtworks(int museumId) async {
+      try {
+        final Uri uri = Uri.parse('$hostName/artworks/count/$museumId');
+
+        logger.d(uri);
+        final response = await http.get(uri).timeout(
+          Duration(seconds: 5), onTimeout: () => http.Response('Request timed out', 408),
+        );
+        if (response.statusCode == 200) return jsonDecode(response.body)['data'];
+        throw FetchArtworkException('Error from server: ${response.statusCode}');
       } catch (e, stackTrace) {
         logger.e(e);
         logger.d(stackTrace);

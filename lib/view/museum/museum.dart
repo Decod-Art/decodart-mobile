@@ -1,5 +1,5 @@
 import 'package:decodart/api/artwork.dart' show fetchAllArtworks;
-import 'package:decodart/api/offline.dart';
+import 'package:decodart/api/offline/offline.dart';
 import 'package:decodart/api/tour.dart' show fetchAllTours;
 import 'package:decodart/controller_and_mixins/widgets/list/_util.dart' show SearchableDataFetcher;
 import 'package:decodart/model/artwork.dart' show ArtworkListItem;

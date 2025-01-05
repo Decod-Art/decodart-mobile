@@ -1,4 +1,4 @@
-import 'package:decodart/api/offline.dart' show OfflineManager;
+import 'package:decodart/api/offline/offline.dart' show OfflineManager;
 import 'package:decodart/view/apropos/util/tile.dart' show DecodPreferenceTile;
 import 'package:decodart/widgets/dialog/dialog.dart';
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
