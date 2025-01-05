@@ -94,22 +94,24 @@ class _DecodImageState extends State<DecodImage> {
 
   @override
   Widget build(BuildContext context) {
-    return _isLoading
-    ? SizedBox(width: width, height: height)
-    : _hasFailed
-        ? Image.asset(
-            'images/img_404.jpeg',
-            width: width,
-            height: height,
-            fit: fit,
-            alignment: widget.alignment,
-          )
-        : Image.memory(
-            imageData,
-            width: width,
-            height: height,
-            fit: fit,
-            alignment: widget.alignment,
-          );
+    return RepaintBoundary(
+      child: _isLoading
+        ? SizedBox(width: width, height: height)
+        : _hasFailed
+            ? Image.asset(
+                'images/img_404.jpeg',
+                width: width,
+                height: height,
+                fit: fit,
+                alignment: widget.alignment,
+              )
+            : Image.memory(
+                imageData,
+                width: width,
+                height: height,
+                fit: fit,
+                alignment: widget.alignment,
+              )
+    );
   } 
 }
