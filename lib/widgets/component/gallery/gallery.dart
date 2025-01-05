@@ -94,7 +94,10 @@ class _ImageGalleryState extends State<ImageGallery> {
                       height: double.infinity,
                       child: DecodImage(
                           widget.images[index],
-                          fit: BoxFit.contain
+                          fit: BoxFit.contain,
+                          // When the image goes full screen (on user click),
+                          // It should already be downloaded
+                          keepDataAfterDownload: true,
                         )
                       )
                   )
