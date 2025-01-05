@@ -41,7 +41,7 @@ Future<List<ArtworkListItem>> fetchAllArtworks({
     bool canUseOffline=true}) async {
       if (OfflineManager.useOffline&&canUseOffline) {
         OfflineManager offline = OfflineManager();
-        return offline.fetchAllArtworks(limit: limit, offset: offset, query: query);
+        return offline.fetchAllArtworks(limit: limit, offset: offset, query: query, roomId: roomId);
       }
       try {
         final Uri uri = Uri.parse('$hostName/artworks').replace(

@@ -52,6 +52,7 @@ class _DownloadButtonState extends State<DownloadButton> {
         _percent = 0.0;
         _isAvailableOffLine = widget.isAvailableOffline();
       }
+      if (!_isLoading)_timer?.cancel();
       setState(() {});
 
     });

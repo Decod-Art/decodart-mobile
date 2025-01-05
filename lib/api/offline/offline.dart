@@ -6,19 +6,22 @@ import 'package:decodart/api/artwork.dart' as api_art;
 import 'package:decodart/api/decod.dart' as api_decod;
 import 'package:decodart/api/image.dart' as api_image;
 import 'package:decodart/api/museum.dart' as api_museum;
+import 'package:decodart/api/room.dart' as api_room;
 import 'package:decodart/api/offline/mixin_artwork.dart' show ArtworkOffline;
 import 'package:decodart/api/offline/mixin_image.dart' show ImageOffline;
 import 'package:decodart/api/offline/mixin_question.dart' show QuestionOffline;
+import 'package:decodart/api/offline/mixin_room.dart';
 import 'package:decodart/api/offline/mixin_tour.dart' show TourOffline;
 import 'package:decodart/api/tour.dart' as api_tour;
 import 'package:decodart/model/artwork.dart' show Artwork, ArtworkListItem;
 import 'package:decodart/model/decod.dart' show DecodQuestion;
-import 'package:decodart/model/museum.dart' show Museum;
+import 'package:decodart/model/museum.dart' show Museum, MuseumForeignKey;
+import 'package:decodart/model/room.dart' show RoomListItem;
 import 'package:decodart/model/tour.dart' show TourListItem, Tour;
 import 'package:decodart/util/logger.dart' show logger;
 import 'package:mutex/mutex.dart' show Mutex;
 
-class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOffline {
+class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOffline, RoomOffline {
   static bool useOffline=false;
   // Managing the fact that OfflineManager is a Singleton
   static final OfflineManager _instance = OfflineManager._internal();
@@ -42,6 +45,9 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   List<TourListItem> _tourList = [];
   List<TourListItem> _exhibitionList = [];
   final Map<int, Tour> _tourMap = {};
+
+  List<RoomListItem> _roomList = [];
+  Map<int, List<ArtworkListItem>> _artworkPerRoom = {};
   
   final Map<String, Uint8List> _images = {};
 
@@ -81,12 +87,16 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
 
       _questions = await loadQuestions(_artworkMap);
 
+      _roomList = await loadRooms(museum!, limit);
+      _artworkPerRoom = indexArtworkPerRoom(_artworkMap);
+
+
       await loadImageFromArtworks(_artworkMap, _images);
       await loadImageFromTours(_tourMap, _images);
       await loadImageFromQuestions(_questions, _images);
       await loadImageFromMuseum(museum!, _images);
     } catch (e) {
-      logger.e(e);
+      logger.e("Erreur lors du téléchargement du musée pour usage hors ligne: $e");
       _failed = true;
     } finally {
       _loading = false;
@@ -113,9 +123,18 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   List<ArtworkListItem> fetchAllArtworks({
     int limit=10,
     int offset=0,
-    String? query
+    String? query,
+    int? roomId
     }) {
-      final filteredList = _artworkList.where((artwork) {
+      late final List<ArtworkListItem> artworkList;
+      if (roomId != null) {
+        if (!_artworkPerRoom.containsKey(roomId)) throw api_art.FetchArtworkException("Room $roomId does not contain any artwork...");
+        artworkList = _artworkPerRoom[roomId]!;
+      } else {
+        artworkList = _artworkList;
+      }
+      
+      final filteredList = artworkList.where((artwork) {
       // final matchesMuseum = museumId == null || artwork.room.museum.uid == museumId;
       // final matchesRoom = roomId == null || artwork.room.uid == roomId;
       final matchesQuery = query == null ||
@@ -171,5 +190,20 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   Museum fetchMuseumById(int uid) {
     if (museum?.uid == uid) return museum!;
     throw api_museum.FetchMuseumException("No museum $uid available offline");
+  }
+
+  List<RoomListItem> fetchRooms({int limit=10, int offset=0, String? query, required MuseumForeignKey museum}) {
+    if (this.museum!.uid != museum.uid) throw api_room.FetchRoomsException("Room for museum ${museum.name} not available offline");
+    final filteredList = _roomList.where((artwork) {
+      // final matchesMuseum = museumId == null || artwork.room.museum.uid == museumId;
+      // final matchesRoom = roomId == null || artwork.room.uid == roomId;
+      final matchesQuery = query == null || artwork.name.toLowerCase().contains(query.toLowerCase().trim());
+      return matchesQuery; //matchesMuseum && matchesRoom && 
+    }).toList();
+
+    // Appliquer la pagination
+    final paginatedList = filteredList.skip(offset).take(limit).toList();
+
+    return paginatedList;
   }
 }

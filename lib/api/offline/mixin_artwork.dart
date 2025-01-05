@@ -3,13 +3,13 @@ import 'package:decodart/model/artwork.dart' show ArtworkListItem, Artwork;
 import 'package:decodart/util/logger.dart';
 
 mixin ArtworkOffline {
-  Future< List<ArtworkListItem>> loadArtworks(int museumId, int limit, {int pause=25}) async {
+  Future<List<ArtworkListItem>> loadArtworks(int museumId, int limit, {int pause=25}) async {
     List<ArtworkListItem> artworks = [];
     int lastBatch = limit;
     try {
       while (lastBatch == limit) {
         final offset = artworks.length;
-        final newArtworks = await api_art.fetchAllArtworks(limit: limit, offset: offset, canUseOffline: false);
+        final newArtworks = await api_art.fetchAllArtworks(limit: limit, offset: offset, canUseOffline: false, museumId: museumId);
         artworks.addAll(newArtworks);
         lastBatch = newArtworks.length;
         await Future.delayed(Duration(milliseconds: pause));

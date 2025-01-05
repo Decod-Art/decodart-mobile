@@ -4,6 +4,7 @@ import 'package:decodart/model/artwork.dart' show Artwork;
 import 'package:decodart/model/decod.dart';
 import 'package:decodart/model/image.dart';
 import 'package:decodart/model/museum.dart';
+import 'package:decodart/model/room.dart';
 import 'package:decodart/model/tour.dart';
 
 mixin ImageOffline {
@@ -85,8 +86,6 @@ mixin ImageOffline {
       await Future.delayed(Duration(milliseconds: pause));
     }
   }
-
-  // From museum
 
   Future<void> downloadImage(ImageOnline image, Map<String, Uint8List> images) async {
     final imagePath = image.path;
