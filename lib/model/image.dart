@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
-import 'package:decodart/api/image.dart' show fetchImageData;
+import 'package:decodart/api/data.dart' show fetchData;
 import 'package:decodart/model/abstract_item.dart' show UnnamedAbstractItem;
 import 'package:decodart/util/online.dart' show checkUrlForCdn;
 import 'package:decodart/model/hive/image.dart' as hive;
@@ -51,7 +51,7 @@ class ImageOnline extends AbstractImage {
   Future<Uint8List> downloadImageData({keep=true}) async {
     await mutex.acquire();
     try {
-      final Uint8List data = hasData ? this.data! : await fetchImageData(path);
+      final Uint8List data = hasData ? this.data! : await fetchData(path);
       if (!hasData && keep) {
          this.data = data;
       } else if (keep == false){

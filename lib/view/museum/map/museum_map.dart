@@ -12,12 +12,10 @@ import 'package:flutter/cupertino.dart';
 class MuseumMap extends StatefulWidget {
   final bool isModal;
   final Museum museum;
-  final String? museumMapPath;
   final ScrollController? controller;
 
   const MuseumMap({
     super.key,
-    this.museumMapPath,
     required this.museum,
     required this.isModal,
     this.controller
@@ -76,20 +74,26 @@ class _MuseumMapState extends State<MuseumMap>  {
     }
   }
 
+  Museum get museum => widget.museum;
+  bool get hasMap => museum.hasMap;
+  bool get isLoading => controller.isLoading;
+
+  int get itemCount => controller.length + (isLoading ? 1 : 0) + (hasMap ? 1 : 0);
+
   @override
   Widget build(BuildContext context) {
     return controller.failed&&controller.firstTimeLoading
       ? ErrorView(onPress: loadMoreItems)
       : ListView.builder(
           controller: controller.scrollController,
-          itemCount: controller.length + (controller.isLoading ? 2 : 1),
+          itemCount: controller.length + (controller.isLoading ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index == 0) {
+            final offset = hasMap ? -1 : 0 ;
+            if (index == 0 && hasMap) {
               return Column(
                 children: [
                   const SizedBox(height: 15),
                   ChevronButtonWidget(
-                    // https://museefabre-old.montpellier3m.fr/content/download/12182/92171/version/2/file/Musee_Fabre-Plans.pdf
                     text: "Voir le plan du musée",
                     subtitle: 'Document pdf',
                     icon: const Icon(
@@ -98,23 +102,19 @@ class _MuseumMapState extends State<MuseumMap>  {
                     ),
                     onPressed: (){
                       Navigator.of(context, rootNavigator: true).push(
-                        CupertinoPageRoute(
-                          builder: (context) => FullScreenPDFViewer(
-                            pdfUrl: widget.museumMapPath ?? 'https://api-www.louvre.fr/sites/default/files/2022-03/LOUVRE_PlanG-2022-FR_0.pdf',
-                          ),
-                        ),
+                        CupertinoPageRoute(builder: (context) => FullScreenPDFViewer(pdf: museum.pdfMap,)),
                       );
                     },
                   ),
                 ]
               );
-            } else if (index == controller.length+1) {
+            } else if (index + offset == controller.length) {
               return const Center(child: CupertinoActivityIndicator());
             } else {
               return ContentBlock(
-                title: "Salle ${controller[index-1].name}",
-                fetch: controller.fetchers[index-1],
-                initialValues: controller.initialValues[index-1],
+                title: "Salle ${controller[index+offset].name}",
+                fetch: controller.fetchers[index+offset],
+                initialValues: controller.initialValues[index+offset],
                 onPressed: (artwork){
                   showWidgetInModal(
                     context,

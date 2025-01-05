@@ -4,8 +4,9 @@ import 'dart:typed_data' show Uint8List;
 
 import 'package:decodart/api/artwork.dart' as api_art;
 import 'package:decodart/api/decod.dart' as api_decod;
-import 'package:decodart/api/image.dart' as api_image;
+import 'package:decodart/api/data.dart' as api_image;
 import 'package:decodart/api/museum.dart' as api_museum;
+import 'package:decodart/api/offline/mixin_pdf.dart' show PDFOffline;
 import 'package:decodart/api/room.dart' as api_room;
 import 'package:decodart/api/offline/mixin_artwork.dart' show ArtworkOffline;
 import 'package:decodart/api/offline/mixin_image.dart' show ImageOffline;
@@ -21,7 +22,7 @@ import 'package:decodart/model/tour.dart' show TourListItem, Tour;
 import 'package:decodart/util/logger.dart' show logger;
 import 'package:mutex/mutex.dart' show Mutex;
 
-class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOffline, RoomOffline {
+class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOffline, RoomOffline, PDFOffline {
   static bool useOffline=false;
   // Managing the fact that OfflineManager is a Singleton
   static final OfflineManager _instance = OfflineManager._internal();
@@ -49,7 +50,7 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   List<RoomListItem> _roomList = [];
   Map<int, List<ArtworkListItem>> _artworkPerRoom = {};
   
-  final Map<String, Uint8List> _images = {};
+  final Map<String, Uint8List> _data = {};
 
   final int limit = 25;
 
@@ -58,12 +59,14 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   void clearAll() {
     museum = null;
     _artworkList.clear();
-    _images.clear();
+    _data.clear();
     _artworkMap.clear();
     _tourList.clear();
     _exhibitionList.clear();
     _tourMap.clear();
     _questions.clear();
+    _roomList.clear();
+    _artworkPerRoom.clear();
   }
 
   Future<void> downloadMuseum(int uid) async {
@@ -91,10 +94,11 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
       _artworkPerRoom = indexArtworkPerRoom(_artworkMap);
 
 
-      await loadImageFromArtworks(_artworkMap, _images);
-      await loadImageFromTours(_tourMap, _images);
-      await loadImageFromQuestions(_questions, _images);
-      await loadImageFromMuseum(museum!, _images);
+      await loadImageFromArtworks(_artworkMap, _data);
+      await loadImageFromTours(_tourMap, _data);
+      await loadImageFromQuestions(_questions, _data);
+      await loadImageFromMuseum(museum!, _data);
+      await loadMapFromMuseum(museum!, _data);
     } catch (e) {
       logger.e("Erreur lors du téléchargement du musée pour usage hors ligne: $e");
       _failed = true;
@@ -110,13 +114,13 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
   bool get loading => _loading;
   bool get hasData => _artworkList.isNotEmpty;
   // ~/ refers to the integer division
-  int get nbElements => _artworkList.length ~/ limit + _images.length + _artworkMap.length; // + other lists and Map
+  int get nbElements => _artworkList.length ~/ limit + _data.length + _artworkMap.length; // + other lists and Map
 
   // Offline API
 
-  Uint8List fetchImageData(String path) {
-    final data = _images[path];
-    if (data == null) throw api_image.FetchImageException("Image $path not available offline");
+  Uint8List fetchData(String path) {
+    final data = _data[path];
+    if (data == null) throw api_image.FetchDataException("Image $path not available offline");
     return data;
   }
 

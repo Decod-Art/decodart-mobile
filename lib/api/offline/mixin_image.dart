@@ -1,11 +1,10 @@
 import 'dart:typed_data' show Uint8List;
 
 import 'package:decodart/model/artwork.dart' show Artwork;
-import 'package:decodart/model/decod.dart';
-import 'package:decodart/model/image.dart';
-import 'package:decodart/model/museum.dart';
-import 'package:decodart/model/room.dart';
-import 'package:decodart/model/tour.dart';
+import 'package:decodart/model/decod.dart' show DecodQuestion;
+import 'package:decodart/model/image.dart' show ImageOnline;
+import 'package:decodart/model/museum.dart' show Museum;
+import 'package:decodart/model/tour.dart' show Tour;
 
 mixin ImageOffline {
   Future<void> loadImageFromArtworks(Map<int, Artwork> artworks, Map<String, Uint8List> images, {int pause = 25}) async {

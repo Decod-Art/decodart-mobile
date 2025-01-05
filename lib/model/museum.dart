@@ -1,6 +1,7 @@
 import 'package:decodart/model/abstract_item.dart' show AbstractItem, AbstractListItem;
 import 'package:decodart/model/geolocated.dart' show GeolocatedListItem;
 import 'package:decodart/model/image.dart' show ImageOnline;
+import 'package:decodart/model/pdf.dart';
 
 
 class MuseumForeignKey extends AbstractItem {
@@ -58,6 +59,7 @@ class Museum extends MuseumListItem {
   final bool hasExhibitions;
   final bool hasCollection;
   final bool hasTours;
+  final PDFOnline? map;
 
   const Museum({
     super.uid,
@@ -70,7 +72,8 @@ class Museum extends MuseumListItem {
     required super.image,
     required this.hasExhibitions,
     required this.hasCollection,
-    required this.hasTours
+    required this.hasTours,
+    this.map
     });
 
   factory Museum.fromJson(Map<String, dynamic> json) => Museum(
@@ -85,6 +88,7 @@ class Museum extends MuseumListItem {
     hasExhibitions: json['hasexhibitions'],
     hasCollection: json['hascollection'],
     hasTours: json['hastours'],
+    map: PDFOnline("https://api-www.louvre.fr/sites/default/files/2022-03/LOUVRE_PlanG-2022-FR_0.pdf")
   );
 
   @override
@@ -108,4 +112,7 @@ class Museum extends MuseumListItem {
 
     return filteredLines.join('\n');
   }
+
+  bool get hasMap => map != null;
+  PDFOnline get pdfMap => map!;
 }

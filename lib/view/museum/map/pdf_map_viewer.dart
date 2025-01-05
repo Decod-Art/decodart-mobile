@@ -1,11 +1,12 @@
+import 'package:decodart/model/pdf.dart' show PDFOnline;
+import 'package:decodart/widgets/component/pdf.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' show Colors;
-import 'package:syncfusion_flutter_pdfviewer/pdfviewer.dart' show SfPdfViewer;
 
 class FullScreenPDFViewer extends StatelessWidget {
-  final String pdfUrl;
+  final PDFOnline pdf;
 
-  const FullScreenPDFViewer({super.key, required this.pdfUrl});
+  const FullScreenPDFViewer({super.key, required this.pdf});
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +24,7 @@ class FullScreenPDFViewer extends StatelessWidget {
       ),
       child: Container(
         color: Colors.black, // Fond sombre
-        child: SfPdfViewer.network(
-          pdfUrl,
-        ),
+        child: DecodPDF(pdf),
       ),
     );
   }
