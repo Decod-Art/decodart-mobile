@@ -86,7 +86,7 @@ class _MuseumMapState extends State<MuseumMap>  {
       ? ErrorView(onPress: loadMoreItems)
       : ListView.builder(
           controller: controller.scrollController,
-          itemCount: controller.length + (controller.isLoading ? 1 : 0),
+          itemCount: itemCount,
           itemBuilder: (context, index) {
             final offset = hasMap ? -1 : 0 ;
             if (index == 0 && hasMap) {
