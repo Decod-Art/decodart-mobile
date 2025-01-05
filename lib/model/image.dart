@@ -54,8 +54,6 @@ class ImageOnline extends AbstractImage {
       final Uint8List data = hasData ? this.data! : await fetchData(path);
       if (!hasData && keep) {
          this.data = data;
-      } else if (keep == false){
-        this.data = null;
       }
       return data;
     } finally {
