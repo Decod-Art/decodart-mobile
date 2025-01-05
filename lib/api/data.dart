@@ -19,7 +19,7 @@ class FetchDataException implements Exception {
 /// even when the option is set to True by the user
 Future<Uint8List> fetchData(String path, {bool canUseOffline=true}) async {
   // Offline Mode
-  if (OfflineManager.useOffline&&canUseOffline) {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchData(path);
   }

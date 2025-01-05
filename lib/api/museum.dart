@@ -24,6 +24,7 @@ class FetchMuseumException implements Exception {
 /// [limit] specifies the maximum number of museums to retrieve (default is 10).
 /// [offset] specifies the offset for pagination (default is 0).
 /// [query] is a search string to filter the museums.
+/// [canUseOffline] permits to force the API to collect data online (e.g. when downloading data for the offline mode), (default true)
 ///
 /// Returns a list of [MuseumListItem] objects if the request is successful.
 ///
@@ -31,8 +32,13 @@ class FetchMuseumException implements Exception {
 Future<List<MuseumListItem>>  fetchAllMuseums({
   int limit=10,
   int offset=0,
-  String? query
+  String? query,
+  bool canUseOffline=true
 }) async {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
+    OfflineManager offline = OfflineManager();
+    return offline.fetchAllMuseums(limit: limit, offset: offset, query: query );
+  }
   try {
     final Uri uri = Uri.parse('$hostName/museums').replace(
       queryParameters: {
@@ -71,7 +77,7 @@ Future<List<MuseumListItem>>  fetchAllMuseums({
 ///
 /// Throws a [FetchMuseumException] if there is an error during the request or if the server returns an error.
 Future<Museum> fetchMuseumById(int id, {canUseOffline=true}) async {
-  if (OfflineManager.useOffline&&canUseOffline) {
+  if (OfflineManager.appIsOffline&&canUseOffline) {
     OfflineManager offline = OfflineManager();
     return offline.fetchMuseumById(id);
   }

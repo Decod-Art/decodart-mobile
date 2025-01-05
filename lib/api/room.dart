@@ -39,7 +39,7 @@ Future<List<RoomListItem>> fetchRooms({
     required MuseumForeignKey museum,
     bool canUseOffline=true
   }) async {
-    if (OfflineManager.useOffline&&canUseOffline) {
+    if (OfflineManager.appIsOffline&&canUseOffline) {
       OfflineManager offline = OfflineManager();
       return offline.fetchRooms(limit: limit, offset: offset, query: query, museum: museum);
     }

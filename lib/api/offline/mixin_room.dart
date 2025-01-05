@@ -4,7 +4,17 @@ import 'package:decodart/model/room.dart' show RoomListItem;
 import 'package:decodart/api/room.dart' as api_room;
 import 'package:decodart/util/logger.dart' show logger;
 
+/// Mixin to handle the offline loading of rooms and indexing artworks per room.
 mixin RoomOffline {
+  /// Loads rooms associated with a museum.
+  ///
+  /// This method retrieves rooms in batches of [limit] until all rooms from the museum are fetched.
+  ///
+  /// [museum] The [Museum] object for which rooms are being loaded.
+  /// [limit] The maximum number of rooms to retrieve per batch.
+  /// [pause] The duration of the pause between requests in milliseconds (default is 25 ms).
+  ///
+  /// Returns a list of [RoomListItem] objects.
   Future<List<RoomListItem>> loadRooms(Museum museum, int limit, {int pause=25}) async {
     List<RoomListItem> rooms = [];
     int lastBatch = limit;
@@ -28,6 +38,13 @@ mixin RoomOffline {
     return rooms;
   }
 
+  /// Indexes artworks per room.
+  ///
+  /// This method iterates through the artworks and groups them by their associated room.
+  ///
+  /// [artworks] A map where the keys are artwork IDs and the values are [Artwork] objects.
+  ///
+  /// Returns a map where the keys are room IDs and the values are lists of [ArtworkListItem] objects.
   Map<int, List<ArtworkListItem>> indexArtworkPerRoom(Map<int, Artwork> artworks) {
     Map<int, List<ArtworkListItem>> rooms = {};
     for(final entry in artworks.entries) {
