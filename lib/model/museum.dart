@@ -88,7 +88,7 @@ class Museum extends MuseumListItem {
     hasExhibitions: json['hasexhibitions'],
     hasCollection: json['hascollection'],
     hasTours: json['hastours'],
-    map: PDFOnline("https://api-www.louvre.fr/sites/default/files/2022-03/LOUVRE_PlanG-2022-FR_0.pdf")
+    map: json['map_filename'] != null ? PDFOnline(json['map_filename']) : null
   );
 
   @override

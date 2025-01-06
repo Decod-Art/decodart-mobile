@@ -114,11 +114,13 @@ class _MuseumViewState extends State<MuseumView>  {
           width: double.infinity,
           fit: BoxFit.cover),
         const SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: MuseumMapButton(onPressed: _onMuseumMapPressed)
-        ),
-        const SizedBox(height: 15),
+        if (widget.museum.hasCollection || widget.museum.hasMap) ... [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: MuseumMapButton(onPressed: _onMuseumMapPressed)
+          ),
+          const SizedBox(height: 15),
+        ],
         if (widget.museum.hasExhibitions)
           ContentBlock(
             title: 'Expositions',

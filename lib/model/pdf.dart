@@ -13,7 +13,7 @@ class PDFOnline {
 
   PDFOnline(String path, {this.data}):_path = path;
 
-  String get path => checkUrlForCdn(_path)!;
+  String get path => checkUrlForCdn(_path, image: false)!;
 
   Future<Uint8List> downloadData({keep=true}) async {
     await mutex.acquire();
