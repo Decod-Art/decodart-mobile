@@ -51,7 +51,7 @@ class _NavState extends State<SearchableOrLargeTitleScaffold>{
     scrollController = widget.scrollController??ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       scrollController.addListener(_scrollUpdateListener);
-      scrollController.position.isScrollingNotifier.addListener(_scrollEndingListener);
+      if (hasSearch) scrollController.position.isScrollingNotifier.addListener(_scrollEndingListener);
     });
   }
 
@@ -91,6 +91,7 @@ class _NavState extends State<SearchableOrLargeTitleScaffold>{
 
   bool get showSearchBarAndLargeTitle => widget.showLargeTitle&&widget.onSearch!=null;
   bool get hasClassicNavigationBar => !widget.showLargeTitle&&widget.onSearch == null;
+  bool get hasSearch => widget.onSearch != null;
   List<Widget> get children => widget.children!;
   bool get hasChildren => widget.children != null;
 
