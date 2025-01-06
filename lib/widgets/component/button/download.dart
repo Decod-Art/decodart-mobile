@@ -30,7 +30,10 @@ class _DownloadButtonState extends State<DownloadButton> {
     super.initState();
     _isLoading = widget.isDownloading();
     _isAvailableOffLine = widget.isAvailableOffline();
-    if (_isLoading) _percent = widget.percentOfLoading();
+    if (_isLoading) {
+      _percent = widget.percentOfLoading();
+      startTimer();
+    }
   }
 
   @override
@@ -39,11 +42,7 @@ class _DownloadButtonState extends State<DownloadButton> {
     super.dispose();
   }
 
-  void startDownloading() {
-    setState((){
-      _isLoading=true;
-      widget.startDownload();
-    });
+  void startTimer() {
     _timer = Timer.periodic(Duration(seconds: 2), (timer) {
       _isLoading = widget.isDownloading();
       if (_isLoading) {
@@ -56,6 +55,15 @@ class _DownloadButtonState extends State<DownloadButton> {
       setState(() {});
 
     });
+  }
+
+  void startDownloading() {
+    setState((){
+      _isLoading=true;
+      widget.startDownload();
+      startTimer();
+    });
+    
   }
 
   @override
