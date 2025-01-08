@@ -31,7 +31,7 @@ class _OfflineOptionViewState extends State<OfflineOptionView> {
             ),
           ),
           DecodPreferenceTile(
-            title: const Text('Données'),
+            title: const Text('Cache'),
             trailing: CupertinoButton(
               onPressed: () {
                 showDialog(
