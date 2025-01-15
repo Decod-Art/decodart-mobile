@@ -1,4 +1,4 @@
-const String host = '192.168.1.12';//'192.168.1.23';
+const String host = 'gpu4.lirmm.fr';//'192.168.1.23';
 
 
 /// The base URL for the host server.
