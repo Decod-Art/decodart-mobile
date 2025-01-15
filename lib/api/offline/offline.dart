@@ -59,6 +59,8 @@ class OfflineManager with ArtworkOffline, TourOffline, QuestionOffline, ImageOff
 
   late int estimatedNumberOfItems;
 
+  bool get isAvailable => museum !=null;
+
   void clearAll() {
     museum = null;
     _artworkList.clear();

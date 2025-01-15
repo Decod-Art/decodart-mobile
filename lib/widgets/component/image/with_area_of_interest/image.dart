@@ -20,11 +20,15 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   final GlobalKey _imageKey = GlobalKey();
   double _imageWidth = 0;
   double _imageHeight = 0;
+
+  bool showLegend = false;
   bool showBoundingBox = true;
   bool manuallyHideBoundingBox = false;
   bool isZooming = false;
+  
   late AnimationController _animationController;
   late Animation<Matrix4> _animation;
+
   BoundingBox? selectedBox;
 
   Matrix4 currentTransformation = Matrix4.identity();
@@ -52,7 +56,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
   void _resetZoom() {
     setState(() {
       showBoundingBox = true;
-      selectedBox = null;
+      showLegend = false;
     });
     _animate(Matrix4.identity());
   }
@@ -79,9 +83,10 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
     _animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         isZooming = false;
-        if (selectedBox == null&&!isZoomed) {
+        if (!showLegend&&!isZoomed) {
           setState(() {
             showBoundingBox = true;
+            selectedBox = null;
           });
         }
       }
@@ -90,6 +95,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
 
   void _zoomToBoundingBox(BoundingBox b, BoxConstraints constraints, [double lambda=0.5]) {
     setState(() {
+      showLegend = true;
       selectedBox = b;
       showBoundingBox = false;
     });
@@ -281,6 +287,7 @@ class _ImageWithAreaOfInterestState extends State<ImageWithAreaOfInterest> with 
                 ],
               Description(
                 selectedBox: selectedBox,
+                showLegend: showLegend,
                 onReturnPressed: () => _resetZoom(),
               )
             ],

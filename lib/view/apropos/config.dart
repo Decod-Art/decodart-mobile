@@ -1,3 +1,4 @@
+import 'package:decodart/api/offline/offline.dart';
 import 'package:decodart/util/online.dart';
 import 'package:decodart/widgets/scaffold/decod_scaffold.dart' show DecodPageScaffold;
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,7 @@ class ConfigScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    OfflineManager offline = OfflineManager();
     return DecodPageScaffold(
       title: 'Configuration',
       smallTitle: true,
@@ -20,6 +22,7 @@ class ConfigScreen extends StatelessWidget {
               _buildRow('API', hostName),
               _buildRow('Images', cdnImages),
               _buildRow('Fichiers', cdn),
+              _buildRow('Hors ligne', "${offline.isAvailable}"),
             ],
           ),
         ),

@@ -3,22 +3,27 @@ import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/cupertino.dart';
 
 class Description extends StatelessWidget {
+  final bool showLegend;
   final BoundingBox? selectedBox;
   final VoidCallback onReturnPressed;
-  const Description({super.key, required this.selectedBox, required this.onReturnPressed});
+  const Description({
+    super.key,
+    required this.selectedBox,
+    required this.onReturnPressed,
+    this.showLegend=false});
 
   @override
   Widget build(BuildContext context){
     return AnimatedPositioned(
       duration: const Duration(milliseconds: 500),
-      bottom: selectedBox!=null ? 0 : -200, // Adjust the height as needed
+      bottom: showLegend ? 0 : -200, // Adjust the height as needed
       left: 0,
       right: 0,
       child: Container(
         height: 200, // Adjust the height as needed
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
+            colors: [Colors.transparent, Colors.black.withValues(alpha: 0.9)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -33,7 +38,7 @@ class Description extends StatelessWidget {
                 onPressed: onReturnPressed,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5), // Fond noir transparent
+                    color: Colors.black.withValues(alpha: 0.5), // Fond noir transparent
                     borderRadius: BorderRadius.circular(30), // Extrémités arrondies
                   ),
                   padding: const EdgeInsets.only(left: 10, right: 15, top: 5, bottom: 5), // Ajustez les marges internes si nécessaire
