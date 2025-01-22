@@ -88,7 +88,9 @@ Future<Tour> fetchTourById(int id, {bool canUseOffline=true}) async {
     return offline.fetchTourById(id);
   }
   try {
-    final uri = Uri.parse('$hostName/tours/$id');
+    final uri = Uri.parse('$hostName/tours/$id').replace(queryParameters: {
+      'appendArtworks': 'true'
+    });
     logger.d(uri);
     final response = await http.get(uri);
     if (response.statusCode == 200) {
