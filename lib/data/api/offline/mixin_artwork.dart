@@ -23,6 +23,7 @@ mixin ArtworkOffline {
         final newArtworks = await api_art.fetchAllArtworks(limit: limit, offset: offset, canUseOffline: false, museumId: museumId);
         artworks.addAll(newArtworks);
         lastBatch = newArtworks.length;
+        // Pause to avoid saturating the API
         await Future.delayed(Duration(milliseconds: pause));
       }
       return artworks;
