@@ -15,6 +15,8 @@ Decod'Art is an innovative mobile application that allows users to discover and 
   </tr>
 </table>
 
+Screen recording of the app: [Decod'Art on youtube](https://bit.ly/4g2Cc9K)
+
 ## Installation
 To install the Decod'Art application, follow the steps below:
 
