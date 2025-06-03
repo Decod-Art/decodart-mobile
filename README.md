@@ -38,18 +38,6 @@ To install the Decod'Art application, follow the steps below:
     flutter run
     ```
 
-## Code structure
-The project is structured as follows:
-
-- `lib/`: Contains the main source code of the application.
-  - `api/`: Manages API calls.
-  - `controller_and_mixins/`: Controllers and mixins for state/widget management.
-  - `model/`: Data models used in the application. It contains both model for the API and the local Hive database
-  - `view/`: Views and widgets of the application.
-  - `widgets/`: Reusable UI components.
-- `test/`: Contains unit and integration tests.
-- `images/`: Contains images used in the app.
-
 ## Contribution
 Contributions are welcome! To contribute, please follow the steps below:
 
