@@ -4,6 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/maximiliense/decodart-mobile)](https://github.com/Decod-Art/decodart-mobile/releases)
 [![License](https://img.shields.io/github/license/maximiliense/decodart-mobile)](https://github.com/Decod-Art/decodart-mobile/blob/main/LICENSE)
 
+Authors: Élodie Cayuela, Maximilien Servajean, Romain Chailan & Valentin Leveau
 
 ## Introduction
 Decod'Art is an innovative mobile application that allows users to discover and interact with artworks in a fun and educational way. Through questions and challenges, users can deepen their knowledge of art and artists.
@@ -14,6 +15,8 @@ Decod'Art is an innovative mobile application that allows users to discover and 
     <td><img src="images/screenshot2.png" alt="Decod'Art Screenshot" width="300"></td>
   </tr>
 </table>
+
+Screen recording of the app: [Decod'Art on youtube](https://bit.ly/4g2Cc9K)
 
 ## Installation
 To install the Decod'Art application, follow the steps below:
@@ -34,18 +37,6 @@ To install the Decod'Art application, follow the steps below:
     ```sh
     flutter run
     ```
-
-## Code structure
-The project is structured as follows:
-
-- `lib/`: Contains the main source code of the application.
-  - `api/`: Manages API calls.
-  - `controller_and_mixins/`: Controllers and mixins for state/widget management.
-  - `model/`: Data models used in the application. It contains both model for the API and the local Hive database
-  - `view/`: Views and widgets of the application.
-  - `widgets/`: Reusable UI components.
-- `test/`: Contains unit and integration tests.
-- `images/`: Contains images used in the app.
 
 ## Contribution
 Contributions are welcome! To contribute, please follow the steps below:
