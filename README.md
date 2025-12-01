@@ -4,7 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/maximiliense/decodart-mobile)](https://github.com/Decod-Art/decodart-mobile/releases)
 [![License](https://img.shields.io/github/license/maximiliense/decodart-mobile)](https://github.com/Decod-Art/decodart-mobile/blob/main/LICENSE)
 
-Authors: Élodie Cayuela, Maximilien Servajean, Romain Chailan & Valentin Leveau
+Authors: Élodie Cayuela, Maximilien Servajean
 
 ## Introduction
 Decod'Art is an innovative mobile application that allows users to discover and interact with artworks in a fun and educational way. Through questions and challenges, users can deepen their knowledge of art and artists.
